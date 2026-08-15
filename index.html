@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insurance Circulars Summary — Abu Dhabi Pharmacy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  :root {
+    --green-dark:#0a4f3c;--green-mid:#1a7a5e;--green-light:#2ea87a;
+    --gold:#c9a227;--gold-light:#f0c84a;--bg:#f4f7f5;--white:#ffffff;
+    --text:#1a2a22;--text-light:#4a6355;--border:#d0e4da;
+    --red:#c0392b;--blue:#1a5276;--orange:#d35400;--purple:#6c3483;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;font-size:14px}
+
+  /* PREPARED BY BANNER */
+  .prep-banner{background:#0a4f3c;color:rgba(255,255,255,0.85);text-align:center;padding:8px 24px;font-size:12px;letter-spacing:.3px}
+  .prep-banner strong{color:var(--gold-light)}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green-mid) 60%,var(--green-light) 100%);color:white;padding:36px 48px 28px;position:relative;overflow:hidden}
+  .header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.05)}
+  .header::after{content:'';position:absolute;bottom:-40px;left:80px;width:160px;height:160px;border-radius:50%;background:rgba(201,162,39,0.15)}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px;position:relative;z-index:1}
+  .badge{background:var(--gold);color:var(--green-dark);font-weight:700;font-size:11px;padding:4px 12px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+  .header h1{font-size:24px;font-weight:900;margin-bottom:6px;position:relative;z-index:1;letter-spacing:-.5px}
+  .header .subtitle{font-size:13px;opacity:.85;position:relative;z-index:1}
+  .header-meta{display:flex;gap:16px;margin-top:20px;position:relative;z-index:1;flex-wrap:wrap}
+  .meta-item{text-align:center;background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 18px;min-width:80px}
+  .meta-item .num{font-size:20px;font-weight:900;color:var(--gold-light)}
+  .meta-item .lbl{font-size:10px;opacity:.8;margin-top:2px}
+
+  /* NAV */
+  .toc{background:var(--white);border-bottom:3px solid var(--green-light);padding:12px 48px;display:flex;gap:7px;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.08);align-items:center}
+  .toc-label{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+  .toc a{font-size:11px;font-weight:600;color:var(--green-dark);text-decoration:none;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);transition:all .2s;white-space:nowrap}
+  .toc a:hover{background:var(--green-dark);color:white;border-color:var(--green-dark)}
+
+  /* CONTAINER */
+  .container{max-width:1100px;margin:0 auto;padding:36px 48px}
+
+  /* SECTION */
+  .section{margin-bottom:48px}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:2px solid var(--border)}
+  .section-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+  .icon-doh{background:linear-gradient(135deg,#0a4f3c,#2ea87a)}
+  .icon-daman{background:linear-gradient(135deg,#1a4a7a,#2980b9)}
+  .icon-thiqa{background:linear-gradient(135deg,#6c3483,#9b59b6)}
+  .icon-nas{background:linear-gradient(135deg,#c0392b,#e74c3c)}
+  .icon-buhaira{background:linear-gradient(135deg,#d35400,#e67e22)}
+  .icon-guide{background:linear-gradient(135deg,#1a5276,#2874a6)}
+  .section-title{font-size:18px;font-weight:800;color:var(--green-dark)}
+  .section-sub{font-size:12px;color:var(--text-light);margin-top:3px}
+
+  /* CARD */
+  .circ-card{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:20px 22px;margin-bottom:14px;transition:box-shadow .2s}
+  .circ-card:hover{box-shadow:0 4px 18px rgba(10,79,60,0.09)}
+  .circ-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:13px;gap:10px;flex-wrap:wrap}
+  .circ-title{font-size:14px;font-weight:700;color:var(--green-dark);flex:1}
+  .circ-meta{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+  .tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+  .tag-date{background:#e8f5e9;color:#1b5e20}
+  .tag-ref{background:#e3f2fd;color:#0d47a1}
+  .tag-pharmacy{background:#fff8e1;color:#e65100}
+  .tag-important{background:#fce4ec;color:#880e4f}
+  .tag-new{background:#f3e5f5;color:#4a148c}
+
+  /* POINTS */
+  .points{list-style:none}
+  .points li{padding:6px 0 6px 18px;font-size:13px;color:var(--text);border-bottom:1px dashed #e0ebe6;position:relative}
+  .points li:last-child{border-bottom:none}
+  .points li::before{content:'◆';position:absolute;left:0;color:var(--green-light);font-size:8px;top:10px}
+
+  /* ALERTS */
+  .alert{border-radius:9px;padding:11px 14px;margin-top:11px;font-size:13px;display:flex;gap:9px;align-items:flex-start}
+  .alert-icon{flex-shrink:0;font-size:15px;margin-top:1px}
+  .alert-red{background:#fff0f0;border-left:4px solid var(--red);color:#5a0000}
+  .alert-gold{background:#fffbec;border-left:4px solid var(--gold);color:#5a3000}
+  .alert-green{background:#f0fff6;border-left:4px solid var(--green-light);color:#003320}
+  .alert-blue{background:#f0f4ff;border-left:4px solid var(--blue);color:#001a5a}
+
+  /* TABLE */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:11px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border)}
+  .data-table th{background:var(--green-dark);color:white;padding:9px 13px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  .data-table td{padding:8px 13px;border-bottom:1px solid #ecf5ef;vertical-align:top;font-size:13px}
+  .data-table tr:nth-child(even) td{background:#f8fdf9}
+  .data-table tr:last-child td{border-bottom:none}
+
+  /* GRIDS */
+  .excl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:7px;margin-top:11px}
+  .excl-item{background:#fff5f5;border:1.5px solid #ffcdd2;border-radius:8px;padding:6px 11px;font-size:12px;color:#5a0000;display:flex;align-items:center;gap:6px}
+  .excl-item::before{content:'✗';color:var(--red);font-weight:700}
+  .covered-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:7px;margin-top:11px}
+  .covered-item{background:#f0fff6;border:1.5px solid #a5d6a7;border-radius:8px;padding:6px 11px;font-size:12px;color:#003320;display:flex;align-items:center;gap:6px}
+  .covered-item::before{content:'✓';color:var(--green-light);font-weight:700}
+
+  /* DRUG CARD GRID */
+  .drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-top:6px}
+  .drug-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;transition:box-shadow .2s}
+  .drug-card:hover{box-shadow:0 3px 14px rgba(10,79,60,0.1)}
+  .drug-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+  .drug-name{font-size:13.5px;font-weight:700;color:var(--blue)}
+  .drug-brand{font-size:11px;font-weight:600;background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:10px;white-space:nowrap}
+  .drug-ref{font-size:10px;color:var(--text-light);margin-bottom:8px}
+  .drug-section{margin-top:8px}
+  .drug-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--green-dark);margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid var(--border)}
+  .drug-points{list-style:none}
+  .drug-points li{font-size:12px;padding:3px 0 3px 14px;color:var(--text);position:relative;border-bottom:1px dashed #eef5f1}
+  .drug-points li:last-child{border-bottom:none}
+  .drug-points li::before{content:'→';position:absolute;left:0;color:var(--green-light);font-size:10px;top:4px}
+  .specialty-badge{display:inline-block;font-size:10px;background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;border-radius:10px;padding:2px 7px;margin:2px 2px 2px 0}
+  .not-covered-badge{display:inline-block;font-size:10px;background:#fff0f0;color:#880e4f;border:1px solid #ffcdd2;border-radius:10px;padding:2px 7px;margin:2px 2px 2px 0}
+
+  /* SUMMARY BOX */
+  .summary-box{background:linear-gradient(135deg,#e8f5e9,#f0fff6);border:2px solid var(--green-light);border-radius:12px;padding:18px 22px;margin-bottom:24px}
+  .summary-box h3{color:var(--green-dark);font-size:14px;font-weight:700;margin-bottom:9px}
+
+  /* DIVIDER */
+  .sec-divider{height:4px;border-radius:2px;margin:44px 0;background:linear-gradient(to right,transparent,var(--green-light),transparent)}
+
+  /* FOOTER */
+  .footer{background:var(--green-dark);color:rgba(255,255,255,0.7);text-align:center;padding:26px 24px;font-size:12px;margin-top:36px;line-height:2}
+  .footer strong{color:var(--gold-light)}
+
+  @media(max-width:700px){
+    .container{padding:18px 14px}
+    .header{padding:22px 18px}
+    .toc{padding:10px 14px}
+    .drug-grid{grid-template-columns:1fr}
+  }
+
+  /* LANGUAGE SWITCHER */
+  .lang-bar{background:#0d3d2e;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 24px;border-bottom:2px solid #2ea87a;flex-wrap:wrap}
+  .lang-bar .lang-label{color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-right:6px}
+  .lang-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:22px;padding:6px 16px;cursor:pointer;transition:all .22s;color:rgba(255,255,255,0.75);font-size:13px;font-weight:600;font-family:inherit}
+  .lang-btn:hover{background:rgba(46,168,122,0.25);border-color:#2ea87a;color:#fff;transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,0.2)}
+  .lang-btn.active{background:#2ea87a;border-color:#2ea87a;color:#fff;box-shadow:0 2px 8px rgba(46,168,122,0.4)}
+  .lang-btn .flag{font-size:18px}.lang-btn .lang-name{font-size:12px}
+  body.rtl{direction:rtl;text-align:right}
+  body.rtl .points li{padding:6px 18px 6px 0}
+  body.rtl .points li::before{left:auto;right:0}
+  body.rtl .drug-points li{padding:3px 14px 3px 0}
+  body.rtl .drug-points li::before{left:auto;right:0}
+  body.rtl .alert{border-left:none}
+  body.rtl .alert-red{border-right:4px solid var(--red)}
+  body.rtl .alert-gold{border-right:4px solid var(--gold)}
+  body.rtl .alert-green{border-right:4px solid var(--green-light)}
+  body.rtl .alert-blue{border-right:4px solid var(--blue)}
+  body.rtl .data-table th{text-align:right}
+
+  /* ── SEARCH BAR ─────────────────────────── */
+  .search-bar {
+    background: linear-gradient(135deg, #4a1050 0%, #6b1f6f 100%);
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 3px solid #8bc34a;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    color: #9b59b6;
+    font-size: 16px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 11px 42px 11px 42px;
+    border-radius: 28px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.95);
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a2a22;
+    outline: none;
+    transition: all .2s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .search-input:focus {
+    border-color: #8bc34a;
+    box-shadow: 0 0 0 3px rgba(139,195,74,0.25);
+  }
+  .search-clear {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    font-size: 16px;
+    display: none;
+    padding: 2px 4px;
+    line-height: 1;
+  }
+  .search-clear:hover { color: var(--red); }
+  .search-stats {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    min-width: 120px;
+    text-align: center;
+  }
+  .search-stats .match-count { color: #8bc34a; font-weight: 800; font-size: 16px; }
+  .search-tip {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    width: 100%;
+    padding-top: 4px;
+  }
+
+  /* ── SEARCH HIGHLIGHT ───────────────────── */
+  mark {
+    background: #fff176;
+    color: #1a2a22;
+    border-radius: 3px;
+    padding: 0 2px;
+    font-weight: 700;
+  }
+  .card-hidden { display: none !important; }
+  .section-hidden { opacity: 0.3; }
+  .search-no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-light);
+    font-size: 15px;
+    display: none;
+  }
+  .search-no-results.show { display: block; }
+
+  
+  @media(max-width:700px) {
+    .search-bar { padding: 14px 16px; }
+  }
+
+  /* ── PASSWORD GATE ──────────────────────────── */
+  #gate {
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, #4a1050 0%, #0a4f3c 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 0;
+  }
+  #gate.hidden { display: none; }
+  .gate-box {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 44px 48px;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+  .gate-icon { font-size: 48px; margin-bottom: 16px; }
+  .gate-title { color: #fff; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .gate-sub { color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 28px; }
+  .gate-input {
+    width: 100%; padding: 13px 18px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.9);
+    font-size: 15px; font-family: inherit;
+    outline: none; text-align: center;
+    letter-spacing: 2px;
+    transition: all .2s;
+    margin-bottom: 14px;
+  }
+  .gate-input:focus { border-color: #8bc34a; box-shadow: 0 0 0 3px rgba(139,195,74,0.25); }
+  .gate-btn {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #2ea87a, #8bc34a);
+    border: none; border-radius: 12px;
+    color: #fff; font-size: 15px;
+    font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .gate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46,168,122,0.4); }
+  .gate-error {
+    color: #ff6b6b; font-size: 13px;
+    margin-top: 12px; font-weight: 600;
+    min-height: 20px;
+  }
+  .gate-footer { color: rgba(255,255,255,0.3); font-size: 11px; margin-top: 20px; }
+
+  /* ── ANTI-COPY PROTECTION ───────────────────── */
+  body.protected { user-select: none; -webkit-user-select: none; }
+  .watermark {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    color: rgba(100,100,100,0.08); font-size: 11px;
+    pointer-events: none; z-index: 9999;
+    white-space: nowrap; font-weight: 600; letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- PREPARED BY -->
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🔐</div>
+    <div class="gate-title">Insurance Reference Guide</div>
+    <div class="gate-sub">Abu Dhabi · Internal Access Only<br>أبوظبي · للاستخدام الداخلي فقط</div>
+    <input class="gate-input" id="gateInput" type="password"
+           placeholder="Enter password" autocomplete="off"
+           onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="gate-btn" onclick="checkPass()">🔓 Access</button>
+    <div class="gate-error" id="gateError"></div>
+    <div class="gate-footer">Prepared by Mohamed Elsherbini</div>
+  </div>
+</div>
+<div class="watermark" id="wm">Mohamed Elsherbini — Medicina Pharmacy Abu Dhabi — Internal Use Only</div>
+
+<div class="prep-banner">📋 <span data-i18n="prep_by">Prepared by</span> <strong>Mohamed Elsherbini</strong> &nbsp;·&nbsp; Abu Dhabi Health Insurance Reference Guide &nbsp;·&nbsp; <span data-i18n="internal_use">For Internal Professional Use Only</span></div>
+
+<div class="lang-bar">
+  <span class="lang-label">🌐 Language</span>
+  <button class="lang-btn active" data-lang="en" onclick="switchLang('en')"><span class="flag">🇬🇧</span><span class="lang-name">English</span></button>
+  <button class="lang-btn" data-lang="ar" onclick="switchLang('ar')"><span class="flag">🇦🇪</span><span class="lang-name">العربية</span></button>
+  <button class="lang-btn" data-lang="hi" onclick="switchLang('hi')"><span class="flag">🇮🇳</span><span class="lang-name">हिंदी</span></button>
+</div>
+
+
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <span class="badge">🇦🇪 Abu Dhabi · Pharmacy Sector</span>
+    <span style="font-size:12px;opacity:.7">Last Updated: August 2026</span>
+  </div>
+  <h1 data-i18n="header_title">📋 Insurance Circulars &amp; Drug Guidelines — Complete Reference</h1>
+  <div class="subtitle"><span data-i18n="header_sub">DAMAN · THIQA · DOH · NAS · Al Buhaira &nbsp;|&nbsp; Drug Coverage · Prior Authorization · Dispensing Rules · Specialty Guidelines</span></div>
+  <div class="header-meta">
+    <div class="meta-item"><div class="num">70</div><div class="lbl" data-i18n="meta_files">Source Files</div></div>
+    <div class="meta-item"><div class="num">6</div><div class="lbl" data-i18n="meta_payers">Payers</div></div>
+    <div class="meta-item"><div class="num">42</div><div class="lbl" data-i18n="meta_drugs">Specialty Drugs</div></div>
+    <div class="meta-item"><div class="num">2026</div><div class="lbl" data-i18n="meta_updated">Updated</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="toc">
+  <span class="toc-label" data-i18n="nav_jump">Jump to →</span>
+  <a href="#doh" data-i18n="nav_doh">DOH Circulars</a>
+  <a href="#daman" data-i18n="nav_daman">DAMAN &amp; THIQA</a>
+  <a href="#thiqa" data-i18n="nav_thiqa">THIQA Only</a>
+  <a href="#nas" data-i18n="nav_nas">NAS</a>
+  <a href="#buhaira" data-i18n="nav_buhaira">Al Buhaira</a>
+  <a href="#guidelines" data-i18n="nav_guide">Specialty Drug Guidelines</a>
+</div>
+
+<div class="search-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="mainSearch" type="text"
+           placeholder="Search circulars, drugs, indications, specialties..."
+           oninput="runSearch(this.value)" autocomplete="off">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear search">✕</button>
+  </div>
+  <div class="search-stats" id="searchStats">
+    <span class="match-count" id="matchCount">—</span> results
+  </div>
+  <div class="search-tip" id="searchTip">Type to search across all circulars and drug guidelines</div>
+</div>
+<div class="search-no-results" id="noResults">
+  🔍 No results found — try different keywords
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════
+     SECTION 1: DOH CIRCULARS
+════════════════════════════════════════ -->
+<div class="section" id="doh">
+  <div class="section-header">
+    <div class="section-icon icon-doh">🏛️</div>
+    <div>
+      <div class="section-title" data-i18n="doh_title">DOH Circulars — Department of Health Abu Dhabi</div>
+      <div class="section-sub" data-i18n="doh_sub">Mandatory for ALL insurers & ALL pharmacies in Abu Dhabi · 100% compliance · Effective 1 January 2026</div>
+    </div>
+  </div>
+
+  <!-- DOH 1: Prescription Duration -->
+  
+
+  <!-- DOH 2: Partial Dispensing -->
+  <div class="circ-card">
+    <div class="circ-card-header">
+      <div class="circ-title">⏱️ Circular No. 245/2025 — Prescription Duration Limits (Acute & Chronic)</div>
+      <div class="circ-meta">
+        <span class="tag tag-date">📅 08 Dec 2025</span>
+        <span class="tag tag-important">⭐ Critical</span>
+        <span class="tag tag-pharmacy" data-tag-en="All Pharmacies">All Pharmacies</span>
+      </div>
+    </div>
+    <table class="data-table">
+      <tr><th data-en="Type">Type</th><th data-en="Max Duration">Max Duration</th><th data-en="Scenario">Scenario</th><th data-en="Notes">Notes</th></tr>
+      <tr><td><strong>🔴 Acute</strong></td><td>10 days max</td><td>Per clinical judgment</td><td>Conditions in Annex 1 only</td></tr>
+      <tr><td><strong>🟡 Chronic — Initiation</strong></td><td>1 month only</td><td>New diagnosis or new Rx</td><td>Initiation phase</td></tr>
+      <tr><td><strong>🟢 Chronic — Maintenance</strong></td><td>Up to 3 months</td><td>After confirmed response</td><td>Face-to-face or teleconsultation</td></tr>
+    </table>
+    <div class="alert alert-red"><span class="alert-icon">🚨</span><div><strong>DAMAN Rejection Code:</strong> Exceeding 10 days for acute OR 1 month for chronic initiation → Full rejection: <strong>"DUR01 – Missing/Invalid Duration ~ CLAI-012"</strong></div></div>
+    <div style="margin-top:14px"><strong style="font-size:12.5px;color:var(--green-dark)">📋 Acute Conditions — Annex 1 (10-day max):</strong>
+    <div class="covered-grid" style="margin-top:8px">
+      <div class="covered-item">Acute Bronchiolitis</div><div class="covered-item">Acute Bronchitis</div>
+      <div class="covered-item">Acute Otitis Externa</div><div class="covered-item">Acute Otitis Media</div>
+      <div class="covered-item">Acute Pharyngitis / Tonsillitis</div><div class="covered-item">Acute Sore Throat</div>
+      <div class="covered-item">Back Pain</div><div class="covered-item">Conjunctivitis</div>
+      <div class="covered-item">Constipation</div><div class="covered-item">Diarrhea (Acute Gastroenteritis)</div>
+      <div class="covered-item">Ear Infection</div><div class="covered-item">Epistaxis</div>
+      <div class="covered-item">Headache</div><div class="covered-item">Hemorrhoids</div>
+      <div class="covered-item">Infant Colic</div><div class="covered-item">Infrequent Cold Sores</div>
+      <div class="covered-item">Insect Bites / Stings</div><div class="covered-item">Migraine</div>
+      <div class="covered-item">Mild Cystitis</div><div class="covered-item">Mild Hayfever</div>
+      <div class="covered-item">Minor Burns / Scalds</div><div class="covered-item">Mouth Ulcers</div>
+      <div class="covered-item">Nappy Rash</div><div class="covered-item">Oral Thrush</div>
+      <div class="covered-item">Period Pain</div><div class="covered-item">Sprains and Strains</div>
+      <div class="covered-item">Travel Sickness</div><div class="covered-item">Vertigo</div>
+      <div class="covered-item">Nasal Trauma (no fracture)</div>
+    </div></div>
+  </div>
+
+  <!-- DOH 3: Off-Label -->
+  <div class="circ-card">
+    <div class="circ-card-header">
+      <div class="circ-title">📦 Circular No. 243/2025 — Partial Dispensing of Individually Packaged Medications</div>
+      <div class="circ-meta">
+        <span class="tag tag-date">📅 04 Dec 2025</span>
+        <span class="tag tag-important">⭐ Critical</span>
+        <span class="tag tag-pharmacy" data-tag-en="All Pharmacies">All Pharmacies</span>
+      </div>
+    </div>
+    <ul class="points">
+      <li>Effective <strong>1 Jan 2026</strong>: dispense exactly the prescribed quantity = Dose × Frequency × Duration</li>
+      <li>Rounding up to nearest full strip is permitted — rounding down is NOT allowed</li>
+      <li>Submit dispensed quantity as a fraction of the commercial pack in the claim</li>
+      <li>Applies to all Abu Dhabi pharmacies — outpatient and inpatient</li>
+    </ul>
+    <strong style="font-size:12.5px;color:var(--red);margin-top:12px;display:block">❌ Exempt from Partial Dispensing:</strong>
+    <div class="excl-grid" style="margin-top:8px">
+      <div class="excl-item">Vaccines &amp; Biologics</div>
+      <div class="excl-item">Moisture/Light/Temperature-sensitive</div>
+      <div class="excl-item">Calendar packaging (contraceptives)</div>
+      <div class="excl-item">Solutions &amp; Syrups</div>
+      <div class="excl-item">Topical Creams &amp; Gels</div>
+      <div class="excl-item">Effervescent formulations</div>
+    </div>
+    <div class="alert alert-gold" style="margin-top:12px"><span class="alert-icon">🏷️</span><div><strong>Mandatory Partial Pack Label:</strong> Facility name · Patient name &amp; MRN · Drug name (brand &amp; generic) · Strength · Dose/form · Route · Expiry &amp; dispensing date · Batch No. · Instructions · Quantity &amp; refills · Storage conditions</div></div>
+  </div>
+
+  <!-- PBM CANCELLATION PROCESS -->
+  <div class="circ-card">
+    <div class="circ-card-header">
+      <div class="circ-title">📝 Off-Label Use Application Form — DOH / Research &amp; Innovation Centre (RIC)</div>
+      <div class="circ-meta"><span class="tag tag-date">📅 Nov 2021</span><span class="tag tag-ref">DOH / RIC</span></div>
+    </div>
+    <ul class="points">
+      <li>Submitted through DOH's <strong>Research &amp; Innovation Centre (RIC)</strong></li>
+      <li>Form covers: patient details · drug details · licensed indication · requested off-label indication · clinical rationale + references (PDF)</li>
+      <li>Turnaround: <strong>4–5 business days</strong> · RIC may Approve / Disapprove / Conditionally Approve</li>
+    </ul>
+    <div class="alert alert-blue"><span class="alert-icon">💡</span><div><strong>DAMAN Off-Label Process:</strong> Email <strong>damanoff-labelplatform@damanhealth.ae</strong> first → get approval → resubmit rejected claim with approval attached → resubmission comment must start with <em>"Off-Label Approval…"</em></div></div>
+  </div>
+
+</div>
+
+<div class="sec-divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 2: DAMAN & THIQA CIRCULARS
+════════════════════════════════════════ -->
+<div class="section" id="daman">
+  <div class="section-header">
+    <div class="section-icon icon-daman">🏥</div>
+    <div>
+      <div class="section-title" data-i18n="daman_title">DAMAN &amp; THIQA Circulars</div>
+      <div class="section-sub">17 circulars · Applies to all DAMAN plans unless stated otherwise · Queries: PRDqueries@damanhealth.ae</div>
+    </div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header">
+      <div class="circ-title">🔄 PBM Cancellation Process — Full Pharmacy Protocol</div>
+      <div class="circ-meta">
+        <span class="tag tag-date">📅 12 Aug 2026</span>
+        <span class="tag tag-new" data-tag-en="New">🆕 New</span>
+        <span class="tag tag-pharmacy" data-tag-en="Pharmacies">Pharmacies</span>
+        <span class="tag tag-ref">Ref: PND/SA/AC/26/UAE-39</span>
+      </div>
+    </div>
+
+    <div class="alert alert-red"><span class="alert-icon">🚨</span><div><strong>Golden Rule:</strong> Once "Dispense" is selected OR a claim is submitted (via Eclaim, Riayati, or billed in POS) — <strong>cancellation requests must NOT be raised</strong>. Manual cancellations require formal notification and a complex, time-consuming process. Providers with excessive cancellations will be subject to review and remedial measures.</div></div>
+
+    <div style="margin-top:16px">
+      <strong style="font-size:12.5px;color:var(--green-dark)">✅ Complete Checklist — BEFORE Initiating Any PBM Transaction:</strong>
+    </div>
+
+    <table class="data-table" style="margin-top:10px">
+      <tr><th data-en="Type" style="width:5%">#</th><th data-en="Max Duration" style="width:22%">Check</th><th data-en="Details & Requirements">Details &amp; Requirements</th></tr>
+      <tr>
+        <td><strong>1</strong></td>
+        <td>🪪 <strong>Patient Eligibility</strong></td>
+        <td>Verify eligibility and ensure dispensing is within the card validity/expiry date.<br>
+        <span style="color:#1b5e20;font-weight:600">⭐ Exception:</span> THIQA Category 1 (C1) patients may be dispensed the full prescribed duration <strong>regardless of card expiry</strong> — follow the PBM approval letter instead.</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td>🤝 <strong>Patient Confirmation</strong></td>
+        <td>Confirm all prescribed medications are required and the patient agrees to receive ALL items.<br>Ensure the patient is aware of the applicable <strong>copayment/cost share</strong> and obtain confirmation before dispensing.</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td>📦 <strong>Stock Availability</strong></td>
+        <td>Confirm medication is available in stock before initiating any PBM transaction.</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td>🚚 <strong>Home Delivery</strong></td>
+        <td>Before dispatch, confirm that the patient requires and <strong>will receive all prescribed medications</strong>. Do not dispatch without this confirmation.</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td>👨‍⚕️ <strong>Doctor Details</strong></td>
+        <td>Verify the <strong>doctor code is correct</strong> and the doctor's specialty is appropriate for the patient's age, gender, and diagnosis. Diagnosis must be within the doctor's scope of practice.</td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td>🔢 <strong>Diagnosis Code</strong></td>
+        <td>Ensure the <strong>correct ICD-10 diagnosis code</strong> is selected — it must accurately correspond to the diagnosis on the prescription and clinically support the medication being prescribed.</td>
+      </tr>
+      <tr>
+        <td><strong>7</strong></td>
+        <td>🩺 <strong>Clinical Appropriateness</strong></td>
+        <td>Confirm the medication and dose are <strong>clinically justified</strong> and appropriate for the patient's age, gender, and diagnosis. Check against relevant circulars and guidelines.</td>
+      </tr>
+      <tr>
+        <td><strong>8</strong></td>
+        <td>💊 <strong>Medication Accuracy</strong></td>
+        <td>Verify: correct medication name · correct concentration · correct dosage form · correct quantity.<br>
+        <strong>Quantity = Dose × Frequency × Duration</strong> (as prescribed by the doctor).</td>
+      </tr>
+      <tr>
+        <td><strong>9</strong></td>
+        <td>📋 <strong>Circulars Compliance</strong></td>
+        <td>Ensure compliance with all previously shared circulars, guidelines, and insurance requirements (duration limits, prior auth rules, specialty restrictions, etc.).</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:14px">
+      <strong style="font-size:12.5px;color:var(--green-dark)">⚙️ System Requirements:</strong>
+    </div>
+    <ul class="points" style="margin-top:6px">
+      <li>Pharmacy PBM systems must support <strong>automatic cancellation</strong> for approved requests where medications have NOT yet been dispensed to the patient</li>
+      <li>Manual cancellations are strongly discouraged and should only occur for un-dispensed medications</li>
+      <li>Submit PBM request <strong>only after completing ALL checks above</strong></li>
+      <li>Action "Dispense" or submit claim <strong>only after medications are physically handed to the patient</strong></li>
+    </ul>
+
+    <div class="alert alert-gold" style="margin-top:12px"><span class="alert-icon">⚠️</span><div><strong>Strict compliance required</strong> to avoid rejected claims, audit findings, and unnecessary operational issues. Non-compliance will result in review and appropriate remedial measures by Daman.</div></div>
+
+    <div class="alert alert-blue" style="margin-top:10px"><span class="alert-icon">📧</span><div>Queries: <strong>https://Openjet.inhealth.ae</strong> via DAMAN Provider Services &nbsp;|&nbsp; Signed by: <strong>Mr. Saif Altamimi</strong>, Acting SVP Provider Network — Daman PJSC &nbsp;|&nbsp; Original circular: PRD_MC_CG_18_UAE-94</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">📦 Partial Dispensing — DAMAN Implementation</div><div class="circ-meta"><span class="tag tag-date">📅 12 Jan 2026</span><span class="tag tag-new">🆕 2026</span><span class="tag tag-ref">Ref: PND/AA/SV/26/UAE-04</span></div></div>
+    <ul class="points">
+      <li>Applies to all DAMAN plans including THIQA and Basic · Outpatient and inpatient pharmacies</li>
+      <li>Calculation: <strong>Dose × Frequency × Duration</strong> = dispensed quantity · Rounding up to nearest strip is allowed only</li>
+      <li>Submit dispensed quantity as fraction of commercial pack in the claim</li>
+    </ul>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">🛡️ Drug Safety Controls Enhancement</div><div class="circ-meta"><span class="tag tag-date">📅 25 Aug 2025</span><span class="tag tag-new">🆕 Recent</span><span class="tag tag-ref">Ref: PND/AA/AC/25/UAE-94</span></div></div>
+    <ul class="points">
+      <li>Enhanced detection of: drug-drug interactions · drug-disease contraindications · duplicate therapy</li>
+      <li>Every prescription must be clinically justified: correct diagnosis + approved indication + correct dose + route + duration + quantity</li>
+      <li>Align with latest clinical guidelines and formulary restrictions</li>
+    </ul>
+    <div class="alert alert-red"><span class="alert-icon">⚠️</span><div>Non-compliance → rejection or financial recovery during audit. Appeals must include clinical guidelines + signed/stamped medical report from treating physician.</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">👶 Adult vs. Pediatric Clinician Billing</div><div class="circ-meta"><span class="tag tag-date">📅 13 Feb 2025</span></div></div>
+    <table class="data-table">
+      <tr><th data-en="Specialty">Specialty</th><th data-en="Pediatric Billing Applies Up To">Pediatric Billing Applies Up To</th></tr>
+      <tr><td>Pediatric Surgeons</td><td><strong>16 years of age</strong></td></tr>
+      <tr><td>Pediatric Clinicians (non-surgical)</td><td><strong>18 years of age</strong></td></tr>
+    </table>
+    <div class="alert alert-red" style="margin-top:10px"><span class="alert-icon">⚠️</span><div>Billing outside age thresholds → claim denied with code <strong>CODE-010</strong></div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">🔗 Eligibility Verification — Mandatory Link to Claims Payment</div><div class="circ-meta"><span class="tag tag-date">📅 26 Jan 2024</span></div></div>
+    <ul class="points">
+      <li>Eligibility check via <strong>Open Jet</strong> is mandatory before every patient visit</li>
+      <li>Services during announced system downtime are exempt</li>
+      <li>⚠️ Claims rejected due to missing eligibility check <strong>cannot be resubmitted</strong></li>
+    </ul>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">👁️ Eye Lubricants — Quantity Limits by Specialty</div><div class="circ-meta"><span class="tag tag-date">📅 Effective 06 Dec 2023</span></div></div>
+    <table class="data-table">
+      <tr><th data-en="Group">Group</th><th data-en="Specialties">Specialties</th><th data-en="Max Supply">Max Supply</th></tr>
+      <tr><td>Group 1</td><td>Internal Medicine · Pediatrics · Emergency · GP · Family Medicine</td><td><strong>30 days</strong></td></tr>
+      <tr><td>Group 2</td><td>Ophthalmology / Vitreoretinal Surgery</td><td><strong>90 days</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">🌬️ Budesonide — Inhaler, Respules &amp; Nebulizer Solution</div><div class="circ-meta"><span class="tag tag-date">📅 Updated Nov 2023</span><span class="tag tag-ref">Ref: PND/AA/CG/23/UAE-61</span></div></div>
+    <ul class="points">
+      <li>✅ Covered: Asthma (treatment &amp; maintenance) · COPD (treatment &amp; maintenance) · Croup in infants &amp; children</li>
+      <li>❌ NOT covered: acute bronchospasm or acute asthma exacerbation</li>
+      <li><strong>Initiation &amp; Refills:</strong> Internal Medicine · Pulmonology · ENT · Allergy · Emergency · Pediatrics · Family Medicine</li>
+      <li><strong>Refills only:</strong> General Practitioners (GP)</li>
+    </ul>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">📝 Off-Label Drug Process — DAMAN Steps</div><div class="circ-meta"><span class="tag tag-date">📅 24 Oct 2023</span></div></div>
+    <ul class="points">
+      <li>Step 1: Email <strong>damanoff-labelplatform@damanhealth.ae</strong> before initiating medication</li>
+      <li>Step 2: Resubmit rejected claim with off-label approval attached · Comment: <strong>"Off-Label Approval…"</strong></li>
+      <li>Step 3: For refills — attach same original off-label approval with every submission</li>
+    </ul>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">🧴 Skincare &amp; Emollients — Coverage Criteria</div><div class="circ-meta"><span class="tag tag-date">📅 18 Sep 2023</span></div></div>
+    <ul class="points">
+      <li>✅ Covered: Eczema · Atopic/Chronic/Radiation/Seborrheic Dermatitis · Ichthyosis · Lichen · Pityriasis · Psoriasis · Xerosis Cutis</li>
+      <li><strong>Full quantity:</strong> Dermatology · Gastroenterology · Hematology · Internal Medicine · Oncology · Pulmonology · Rheumatology</li>
+      <li><strong>GP &amp; Family Medicine:</strong> 1 month only, then mandatory referral to eligible specialty</li>
+    </ul>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💉 Dupilumab (DUPIXENT) — Prior Authorization</div><div class="circ-meta"><span class="tag tag-date">📅 15 May 2023</span><span class="tag tag-important" data-tag-en="Prior Auth Required">Prior Auth Required</span></div></div>
+    <table class="data-table">
+      <tr><th data-en="Indication">Indication</th><th data-en="Required Documentation">Required Documentation</th></tr>
+      <tr><td>Atopic Dermatitis</td><td>Prior medication history + <strong>IGA or EASI score</strong> (mandatory in XML Observation node)</td></tr>
+      <tr><td>Asthma</td><td>Prior medication history</td></tr>
+      <tr><td>Eosinophilic Esophagitis &amp; Chronic Rhinosinusitis</td><td>Prior medication history</td></tr>
+    </table>
+    <div class="alert alert-red" style="margin-top:10px"><span class="alert-icon">🚨</span><div>Initial approval: <strong>30 days only</strong> · Refill: up to <strong>90 days, max 3 refills</strong> · Missing IGA/EASI in XML → rejection CLAI-012</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💉 GLP-1 RA Drugs Prior Authorization (Ozempic, Victoza, Trulicity, Saxenda, Rybelsus)</div><div class="circ-meta"><span class="tag tag-date">📅 3 Apr 2023</span><span class="tag tag-important" data-tag-en="Prior Auth Required">Prior Auth Required</span></div></div>
+    <table class="data-table">
+      <tr><th data-en="Scenario">Scenario</th><th data-en="Required Documentation">Required Documentation</th></tr>
+      <tr><td>GLP-1 as first-line therapy</td><td>Prescription + latest HbA1c + comorbidities documentation OR contraindication to Metformin</td></tr>
+      <tr><td>Patient with prior anti-diabetic history</td><td>Prescription + latest HbA1c</td></tr>
+      <tr><td>Switching from one GLP-1 to another</td><td>Prescription + HbA1c + reason for switch</td></tr>
+      <tr><td>Refills</td><td>Continue as per existing process + periodic reassessment</td></tr>
+    </table>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💊 Proton Pump Inhibitors (PPI) — Omeprazole, Pantoprazole, Esomeprazole, etc.</div><div class="circ-meta"><span class="tag tag-date">📅 Jan 2023, Rev. Mar 2025</span><span class="tag tag-ref">Ref: 2022-PH-16 v6</span></div></div>
+    <strong style="font-size:12px;color:var(--green-dark)">✅ Covered Indications:</strong>
+    <div class="covered-grid" style="margin-top:8px">
+      <div class="covered-item">GERD / Extra-digestive GERD</div><div class="covered-item">Non-Erosive Reflux Disease (NERD)</div>
+      <div class="covered-item">Barrett's Esophagus</div><div class="covered-item">Eosinophilic Esophagitis</div>
+      <div class="covered-item">H. Pylori Eradication</div><div class="covered-item">Gastric &amp; Peptic Ulcer Disease</div>
+      <div class="covered-item">Duodenal Ulcer / Lesion</div><div class="covered-item">History of ulcer complications</div>
+      <div class="covered-item">Zollinger-Ellison Syndrome</div><div class="covered-item">NSAID Gastropathy Prevention</div>
+      <div class="covered-item">Functional / New-onset Dyspepsia (&lt;45 yrs)</div><div class="covered-item">Long-term antiplatelet therapy</div>
+      <div class="covered-item">Chronic Pancreatitis</div>
+    </div>
+    <div class="alert alert-red" style="margin-top:10px"><span class="alert-icon">⚠️</span><div>PPI without a documented covered diagnosis = claim rejection. Routine prophylactic use without indication is NOT covered.</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">🟣 THIQA C1 Patients — Special Dispensing Rule</div><div class="circ-meta"><span class="tag tag-date">📅 18 Jul 2021</span><span class="tag tag-pharmacy" data-tag-en="Pharmacies">Pharmacies</span></div></div>
+    <div class="alert alert-blue"><span class="alert-icon">📌</span><div>Dispense the approved quantity in the <strong>PBM approval letter regardless of card expiry date</strong>. Follow the approval letter — not the card expiry.</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💊 Acetaminophen &amp; NSAIDs — Dispensing Restrictions</div><div class="circ-meta"><span class="tag tag-date">📅 20 Apr 2021</span><span class="tag tag-pharmacy" data-tag-en="Pharmacies">Pharmacies</span></div></div>
+    <ul class="points">
+      <li>Maximum <strong>7 days</strong> for: headache syndromes · fever · acute pain · dental conditions · acute inflammatory conditions</li>
+      <li>Any quantity exceeding 7 days → partially approved only by DAMAN PBM</li>
+    </ul>
+    <div class="alert alert-green"><span class="alert-icon">✅</span><div><strong>Exempt:</strong> Oncology · Rheumatology · Severe infectious/inflammatory diseases · Bone infections → follow disease-specific protocols without duration restriction</div></div>
+  </div>
+
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💊 Multivitamins — Restricted Coverage</div><div class="circ-meta"><span class="tag tag-date">📅 20 Apr 2021</span></div></div>
+    <div class="covered-grid">
+      <div class="covered-item">Malabsorption: Celiac, Crohn's, Cystic Fibrosis</div>
+      <div class="covered-item">Whipple's / Blind Loop / Tropical Sprue</div>
+      <div class="covered-item">Anorexia Nervosa / Kwashiorkor / Marasmus</div>
+      <div class="covered-item">Drug-induced deficiency (adjunct)</div>
+      <div class="covered-item">Post-Bariatric Surgery</div>
+      <div class="covered-item">Oncology-related deficiency</div>
+      <div class="covered-item">Low Birth Weight</div>
+      <div class="covered-item">Pregnancy &amp; Breastfeeding (prenatal MVs only)</div>
+    </div>
+    <div class="alert alert-red" style="margin-top:10px"><span class="alert-icon">❌</span><div>General health maintenance multivitamins without documented medical indication = NOT COVERED</div></div>
+  </div>
+</div>
+
+<div class="sec-divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 3: THIQA ONLY
+════════════════════════════════════════ -->
+<div class="section" id="thiqa">
+  <div class="section-header">
+    <div class="section-icon icon-thiqa">👑</div>
+    <div>
+      <div class="section-title" data-i18n="thiqa_title">THIQA Only Circulars</div>
+      <div class="section-sub" data-i18n="thiqa_sub">UAE Nationals and equivalent · Government-funded program</div>
+    </div>
+  </div>
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">💊 Vitamins &amp; Supplements Coverage — THIQA Only</div><div class="circ-meta"><span class="tag tag-date">📅 17 Sep 2024</span><span class="tag tag-ref">Ref: PND/AA/SV/24/UAE-55</span></div></div>
+    <ul class="points">
+      <li>Vitamins: covered only for <strong>established deficiencies with close monitoring</strong></li>
+      <li>Vitamin D: per DOH established standards</li>
+      <li>Minerals (Na, K, Ca, Mg, Phosphate): only for evident deficiency</li>
+    </ul>
+    <strong style="font-size:12px;color:var(--red);margin-top:10px;display:block">❌ NOT Covered for THIQA:</strong>
+    <div class="excl-grid" style="margin-top:8px">
+      <div class="excl-item">Probiotics</div><div class="excl-item">Melatonin</div>
+      <div class="excl-item">Collagen</div><div class="excl-item">Selenium</div>
+      <div class="excl-item">Supplements with limited evidence</div>
+    </div>
+  </div>
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">☀️ Vitamin D Deficiency Coverage Policy</div><div class="circ-meta"><span class="tag tag-date">📅 July 2022</span><span class="tag tag-ref">DOH/Pol/CPL/1/2022</span></div></div>
+    <ul class="points">
+      <li>Coverage based on <strong>documented medical necessity only</strong> — NOT routine prophylaxis</li>
+      <li>Follow DOH clinical pathways for adults and children</li>
+      <li>Accurate medical documentation required in patient record</li>
+      <li>Billing must comply with DOH-approved coding rules</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec-divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 4: NAS
+════════════════════════════════════════ -->
+<div class="section" id="nas">
+  <div class="section-header">
+    <div class="section-icon icon-nas">🏢</div>
+    <div>
+      <div class="section-title" data-i18n="nas_title">NAS Circulars — NAS Administration Services LLC</div>
+      <div class="section-sub" data-i18n="nas_sub">Regulatory compliance notification · Queries: Networks@nas.ae</div>
+    </div>
+  </div>
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">📋 Mandatory Compliance — DOH Circular 245/2025 (Prescription Duration)</div><div class="circ-meta"><span class="tag tag-date">📅 Effective 1 Jan 2026</span><span class="tag tag-important" data-tag-en="Mandatory">Mandatory</span></div></div>
+    <table class="data-table">
+      <tr><th data-en="Phase">Phase</th><th>Maximum Supply</th><th data-en="Scenario">Scenario</th></tr>
+      <tr><td>Acute</td><td><strong>10 days</strong></td><td>All conditions in DOH Annex 1</td></tr>
+      <tr><td>Chronic — Initiation</td><td><strong>1 month</strong></td><td>New diagnosis OR new medication</td></tr>
+      <tr><td>Chronic — Maintenance</td><td><strong>Up to 3 months</strong></td><td>After confirmed patient stability</td></tr>
+    </table>
+    <div class="alert alert-blue" style="margin-top:10px"><span class="alert-icon">📧</span><div>NAS will monitor via claims analytics and medical audits. Non-compliant claims subject to review and adjustment.</div></div>
+  </div>
+</div>
+
+<div class="sec-divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 5: AL BUHAIRA
+════════════════════════════════════════ -->
+<div class="section" id="buhaira">
+  <div class="section-header">
+    <div class="section-icon icon-buhaira">🏛️</div>
+    <div>
+      <div class="section-title" data-i18n="buhaira_title">Al Buhaira — ABNIC Standard Pharmacy Exclusions</div>
+      <div class="section-sub" data-i18n="buhaira_sub">Al Buhaira National Insurance Co. · 31 March 2019 · Via NANOPBM</div>
+    </div>
+  </div>
+  <div class="circ-card">
+    <div class="circ-card-header"><div class="circ-title">❌ ABNIC Standard Pharmacy Exclusion List</div><div class="circ-meta"><span class="tag tag-date">📅 31 Mar 2019</span><span class="tag tag-pharmacy" data-tag-en="Pharmacies">Pharmacies</span></div></div>
+    <div class="alert alert-gold" style="margin-bottom:12px"><span class="alert-icon">⚠️</span><div>Even if NANOPBM approves these items, ABNIC reserves the right to reject claims afterwards. Verify eligibility before dispensing.</div></div>
+    <div class="excl-grid">
+      <div class="excl-item">Infertility medications</div><div class="excl-item">Contraceptives</div>
+      <div class="excl-item">Vaccines</div><div class="excl-item">Immunomodulators (need approval)</div>
+      <div class="excl-item">Acne medications (need approval)</div><div class="excl-item">Appetite stimulants / Amino acids / Omega-3</div>
+      <div class="excl-item">Eyeglasses &amp; contact lenses</div><div class="excl-item">Contact lens preparations &amp; eye lubricants</div>
+      <div class="excl-item">Vitamins &amp; minerals (unless specified)</div><div class="excl-item">Shampoos / Soaps / Moisturizers / Barrier creams</div>
+      <div class="excl-item">Dental medicines (unless "Dental: Yes" on card)</div><div class="excl-item">Toothbrushes / Dental floss / Toothpaste</div>
+      <div class="excl-item">Mouth gargles / Mouthwashes / Lozenges</div><div class="excl-item">Hearing aids</div>
+      <div class="excl-item">Hormone Replacement Therapy (HRT)</div><div class="excl-item">General antiseptics (Savlon, Dettol)</div>
+      <div class="excl-item">Breast pumps / Baby formula</div><div class="excl-item">Massage &amp; exercise machines</div>
+      <div class="excl-item">Cosmetic preparations</div><div class="excl-item">Psychiatry drugs &amp; anxiolytics</div>
+      <div class="excl-item">AIDS-related medications</div><div class="excl-item">Medications unrelated to diagnosis</div>
+      <div class="excl-item">Weight loss / Weight gain medications</div><div class="excl-item">Osteoporosis medications</div>
+      <div class="excl-item">Herbal preparations &amp; supplements</div><div class="excl-item">Normal saline (patients &gt;12 years)</div>
+      <div class="excl-item">Probiotics</div><div class="excl-item">Electrolytes</div>
+      <div class="excl-item">Throat sprays / Oral gels / Medicated shampoos</div><div class="excl-item">Local anesthesia patches</div>
+    </div>
+    <div class="alert alert-green" style="margin-top:12px"><span class="alert-icon">✅</span><div><strong>Covered Herbal Exceptions:</strong> Tablet Cystone · Tablet Daflon · Syrup Prospan · Syrup Koflet — covered for all ABNIC policies</div></div>
+  </div>
+</div>
+
+<div class="sec-divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 6: SPECIALTY DRUG GUIDELINES
+════════════════════════════════════════ -->
+<div class="section" id="guidelines">
+  <div class="section-header">
+    <div class="section-icon icon-guide">📚</div>
+    <div>
+      <div class="section-title" data-i18n="guide_title">DAMAN &amp; THIQA — Specialty Drug Prior Authorization Guidelines</div>
+      <div class="section-sub" data-i18n="guide_sub">42 specialty drugs · Coverage criteria · Eligible specialties · Key requirements · All require Prior Authorization</div>
+    </div>
+  </div>
+
+  <div class="summary-box">
+    <h3 data-i18n="univ_rules">⚡ Universal Rules for ALL Specialty Drugs</h3>
+    <ul class="points">
+      <li><strong>Prior Authorization (PA) is mandatory</strong> for all drugs in this section — dispensing without PA = claim rejection</li>
+      <li>ICD-10 and drug codes must be <strong>coded to the highest level of specificity</strong></li>
+      <li>All specialty drugs are <strong>NOT covered for Visitor's Plan</strong> unless explicitly stated otherwise</li>
+      <li>Prescriptions must be from <strong>eligible specialist</strong> — GP prescriptions are rejected</li>
+      <li>Medical reports must be <strong>signed and stamped</strong> by treating physician</li>
+      <li>Questionnaire submission is required for most drugs — check each guideline</li>
+    </ul>
+  </div>
+
+  <div class="drug-grid">
+
+    <!-- 1. ACNE -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Acne Management</div><span class="drug-brand">Isotretinoin</span></div>
+      <div class="drug-ref">Ref: 2011-PH-0004 v5 · Rev: 01/07/2026</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points"><li>Infected acne (treatment targeting the infection)</li><li>Severe cystic acne (medically necessary only)</li><li>Isotretinoin (systemic): always requires prior authorization</li></ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Dermatology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Cosmetic acne treatment</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 2. ANTI-TNF -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Anti-TNF-α Agents</div><span class="drug-brand">HUMIRA · CIMZIA · ENBREL · REMICADE · SIMPONI</span></div>
+      <div class="drug-ref">Ref: 2012-PH-08 v5 · Rev: 29/11/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Rheumatoid Arthritis (RA)</li><li>Juvenile Idiopathic Arthritis (JIA)</li>
+          <li>Psoriatic Arthritis (PsA)</li><li>Ankylosing Spondylitis (AS)</li>
+          <li>Crohn's Disease &amp; Ulcerative Colitis</li><li>Moderate-to-severe Plaque Psoriasis</li>
+          <li>Only after failure of conventional DMARDs — document failure properly</li>
+          <li>Biosimilar preferred for biologic-naive patients</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Gastroenterology</span><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Pediatrics</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Without documented DMARD failure</span></div>
+    </div>
+
+    <!-- 3. ANTI-VEGF -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Anti-VEGF Therapy</div><span class="drug-brand">LUCENTIS · EYLEA · VABYSMO · BEOVU</span></div>
+      <div class="drug-ref">Ref: 2018-PH-005 v5 · Rev: 20/10/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Neovascular (wet) Age-related Macular Degeneration (AMD)</li>
+          <li>Diabetic Macular Edema (DME)</li>
+          <li>Macular edema secondary to Retinal Vein Occlusion (RVO)</li>
+          <li>Intravitreal injection only — prerequisite form mandatory before PA</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Ophthalmology</span><span class="specialty-badge">Vitreoretinal Surgery</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 4. CGRP -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">CGRP Inhibitors — Antimigraine</div><span class="drug-brand">EMGALITY · AJOVY · AIMOVIG · VYEPTI</span></div>
+      <div class="drug-ref">Ref: 2024-PH-43 v2 · Rev: 15/07/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Episodic Migraine: &lt;15 headache days/month — prevention</li>
+          <li>Chronic Migraine: ≥15 headache days/month — prevention</li>
+          <li>After documented failure of ≥2 preventive migraine treatments</li>
+          <li>Gepants (Ubrogepant): acute treatment &amp; prevention</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Neurology</span><span class="specialty-badge">Internal Medicine</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Without prior preventive treatment failure</span></div>
+    </div>
+
+    <!-- 5. AVACOPAN -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Avacopan</div><span class="drug-brand">TAVNEOS</span></div>
+      <div class="drug-ref">Ref: 2024-PH-0035 v1 · Rev: 15/04/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Granulomatosis with Polyangiitis (GPA / Wegener's)</li>
+          <li>Microscopic Polyangiitis (MPA) — severe, active disease</li>
+          <li>Used in combination with rituximab or cyclophosphamide regimen</li>
+          <li>Not established in children under 17 — no pediatric data</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Nephrology</span><span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Immunology</span><span class="specialty-badge">Pulmonology</span><span class="specialty-badge">Internal Medicine</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Age &lt;17 years</span></div>
+    </div>
+
+    <!-- 6. BOTOX -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Botulinum Toxin</div><span class="drug-brand">BOTOX · DYSPORT · XEOMIN · MYOBLOC</span></div>
+      <div class="drug-ref">Ref: 2014-PH-0004 v3 · Rev: 25/10/2025</div>
+      <div class="drug-section"><div class="drug-section-title">Covered Therapeutic Indications</div>
+        <ul class="drug-points">
+          <li>Cervical Dystonia (sustained neck muscle contraction)</li>
+          <li>Primary Hyperhidrosis (excessive underarm sweating)</li>
+          <li>Neurogenic Bladder / Urinary Incontinence</li>
+          <li>Chronic Migraine (≥15 headache days/month)</li>
+          <li>Spasticity (upper/lower limb)</li>
+          <li>Blepharospasm / Strabismus</li>
+          <li>Must document failure of ≥6 months alternative treatment</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Neurology</span><span class="specialty-badge">Urology</span><span class="specialty-badge">Ophthalmology</span><span class="specialty-badge">Rehabilitation Medicine</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Cosmetic purposes</span><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Without 6-month failed alternative</span></div>
+    </div>
+
+    <!-- 7. BULEVIRTIDE -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Bulevirtide</div><span class="drug-brand">HEPCLUDEX</span></div>
+      <div class="drug-ref">Ref: 2024-PH-0036 v3 · Rev: 12/12/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Chronic Hepatitis Delta Virus (HDV) infection — HDV-RNA positive</li>
+          <li>Adults and pediatric patients ≥3 years weighing ≥10 kg</li>
+          <li>Compensated liver disease only</li>
+          <li>Dose: 2 mg SC daily (adults); weight-based for pediatrics</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Gastroenterology</span><span class="specialty-badge">Hepatology</span><span class="specialty-badge">Internal Medicine</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Decompensated liver disease</span></div>
+    </div>
+
+    <!-- 8. CANAKINUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Canakinumab</div><span class="drug-brand">ILARIS</span></div>
+      <div class="drug-ref">Ref: 2022-PH-014 v3 · Rev: 22/11/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>CAPS: Muckle-Wells · NOMID/CINCA · Severe FCAS — age ≥2 years</li>
+          <li>TRAPS — CRP &gt;10 mg/L or Physician Global Assessment ≥2</li>
+          <li>HIDS / Mevalonate Kinase Deficiency (MKD)</li>
+          <li>Familial Mediterranean Fever (FMF) — with colchicine if appropriate</li>
+          <li>Still's Disease (including Adult-onset AOSD)</li>
+          <li>Systemic JIA — inadequate response to NSAIDs/corticosteroids, age ≥2</li>
+          <li>Gouty Arthritis — frequent attacks in adults</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Immunology</span><span class="specialty-badge">Pediatrics</span><span class="specialty-badge">Internal Medicine</span>
+      </div>
+    </div>
+
+    <!-- 9. CRIZANLIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Crizanlizumab</div><span class="drug-brand">ADAKVEO</span></div>
+      <div class="drug-ref">Ref: 2022-PH-18 v3 · Rev: 26/11/2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Sickle Cell Disease — reduce frequency of Vaso-occlusive crises (VOC)</li>
+          <li>Minimum 1 VOC in the past year</li>
+          <li>Age ≥16 years</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Hematology</span><span class="specialty-badge">Medical Oncology</span><span class="specialty-badge">Internal Medicine</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Age &lt;16 years</span></div>
+    </div>
+
+    <!-- 10. DARATUMUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Daratumumab</div><span class="drug-brand">DARZALEX</span></div>
+      <div class="drug-ref">Ref: 2023-PH-27 v1 · Aug 2023</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Multiple Myeloma — Newly Diagnosed (eligible for ASCT): with bortezomib + thalidomide + dexamethasone</li>
+          <li>Multiple Myeloma — Newly Diagnosed (ASCT-ineligible): with bortezomib + melphalan + prednisone OR lenalidomide + dexamethasone</li>
+          <li>Relapsed/Refractory Multiple Myeloma: multiple combination regimens after ≥1 prior therapy</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Hematology / Oncology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 11. DUPILUMAB UPDATED -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Dupilumab</div><span class="drug-brand">DUPIXENT</span></div>
+      <div class="drug-ref">Ref: Updated 2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Atopic Dermatitis — moderate-to-severe, age ≥6 months</li>
+          <li>Asthma — moderate-to-severe, eosinophilic or OCS-dependent, age ≥6 years</li>
+          <li>Chronic Rhinosinusitis with Nasal Polyposis (CRSwNP) — adults</li>
+          <li>Eosinophilic Esophagitis (EoE) — age ≥12 years, weight ≥40 kg</li>
+          <li>Prurigo Nodularis (PN) — adults</li>
+          <li>COPD with eosinophilic phenotype — add-on maintenance</li>
+          <li>Chronic Spontaneous Urticaria (CSU) — age ≥12 years</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Key Requirements">Key Requirements</div>
+        <ul class="drug-points"><li>Initial approval: 30 days only</li><li>Atopic Dermatitis: IGA or EASI score mandatory in XML</li></ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Dermatology</span><span class="specialty-badge">Pulmonology</span><span class="specialty-badge">ENT</span><span class="specialty-badge">Gastroenterology</span><span class="specialty-badge">Allergy/Immunology</span>
+      </div>
+    </div>
+
+    <!-- 12. ECULIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Eculizumab</div><span class="drug-brand">SOLIRIS</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Paroxysmal Nocturnal Hemoglobinuria (PNH)</li>
+          <li>Atypical Hemolytic Uremic Syndrome (aHUS)</li>
+          <li>Neuromyelitis Optica Spectrum Disorder (NMOSD)</li>
+          <li>Vaccination required 2 weeks before initiation; antibacterial prophylaxis if urgent</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Hematology</span><span class="specialty-badge">Nephrology</span><span class="specialty-badge">Neurology</span>
+      </div>
+    </div>
+
+    <!-- 13. EMICIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Emicizumab</div><span class="drug-brand">HEMLIBRA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Hemophilia A — with or without Factor VIII inhibitors</li>
+          <li>Confirmed diagnosis required</li>
+          <li>Not covered for Visitor Plan</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Hematology</span><span class="specialty-badge">Pediatric Hematology</span>
+      </div>
+    </div>
+
+    <!-- 14. ETELCALCITIDE -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Etelcalcitide</div><span class="drug-brand">PARSABIV</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Secondary Hyperparathyroidism in adults on hemodialysis</li>
+          <li>Not established in pediatric patients</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Nephrology</span><span class="specialty-badge">Endocrinology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Pediatric patients</span></div>
+    </div>
+
+    <!-- 15. FILGRASTIM -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Filgrastim &amp; Peg-Filgrastim</div><span class="drug-brand">NEUPOGEN · NEULASTA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Chemotherapy-induced febrile neutropenia prevention</li>
+          <li>Bone marrow transplant (myeloablative chemotherapy)</li>
+          <li>Severe Chronic Neutropenia (SCN)</li>
+          <li>Peripheral Blood Progenitor Cell (PBPC) collection</li>
+          <li>HIV-related neutropenia</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Oncology</span><span class="specialty-badge">Hematology</span><span class="specialty-badge">Internal Medicine</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Basic Plan (not in HAAD drug list)</span></div>
+    </div>
+
+    <!-- 16. GALCANEZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Galcanezumab</div><span class="drug-brand">EMGALITY</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Episodic Migraine prevention (ICHD-3 criteria)</li>
+          <li>Chronic Migraine prevention (≥15 headache days/month)</li>
+          <li>Cluster Headache (episodic)</li>
+          <li>Must document failure of preventive treatments</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Neurology</span><span class="specialty-badge">Internal Medicine</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 17. GLP-1 UPDATED -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">GLP-1 Receptor Agonists</div><span class="drug-brand">OZEMPIC · VICTOZA · TRULICITY · SAXENDA · WEGOVY</span></div>
+      <div class="drug-ref">Updated 2025 — Extended Indications</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li><strong>Type 2 DM with ASCVD or CKD:</strong> HbA1c ≥6.5% + failed metformin ≥6 months OR documented intolerance</li>
+          <li><strong>Obesity Management:</strong> as per plan — specific eligibility criteria apply</li>
+          <li><strong>MASH (Metabolic Steatohepatitis):</strong> confirmed by biopsy or non-invasive test; continued only with documented improvement</li>
+          <li>CKD patients: must document inadequate response to SGLT2 inhibitor OR contraindication</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Endocrinology</span><span class="specialty-badge">Internal Medicine</span><span class="specialty-badge">Cardiology</span><span class="specialty-badge">Gastroenterology (MASH)</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Without documented ASCVD or CKD (DM)</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 18. GROWTH HORMONE -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Growth Hormone</div><span class="drug-brand">GENOTROPIN · NORDITROPIN · HUMATROPE</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Growth Hormone Deficiency (GHD) — children and adults</li>
+          <li>Turner Syndrome · Prader-Willi Syndrome · SGA (Short for Gestational Age)</li>
+          <li>Chronic Renal Insufficiency (pediatric)</li>
+          <li>Idiopathic Short Stature (ISS)</li>
+          <li>Authorization request form mandatory</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Pediatric Endocrinology</span><span class="specialty-badge">Endocrinology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">GP prescription</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 19. GUSELKUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Guselkumab</div><span class="drug-brand">TREMFYA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Plaque Psoriasis</li>
+          <li>Psoriatic Arthritis (PsA)</li>
+          <li>Moderate-to-severe Ulcerative Colitis (UC)</li>
+          <li>Moderate-to-severe Crohn's Disease (CD)</li>
+          <li>IBD must be prescribed by a gastroenterologist consultant</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Dermatology</span><span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Gastroenterology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 20. HEPATITIS C -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Hepatitis C Adjunct Therapy</div><span class="drug-brand">HARVONI · EPCLUSA · MAVIRET</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Chronic Hepatitis C — all genotypes</li>
+          <li>Pre/post liver transplant (awaiting or post-transplant)</li>
+          <li>Questionnaire + prior HCV regimen history required</li>
+          <li>eGFR must be &gt;30 mL/min/1.73m² for renal impairment cases</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Gastroenterology</span><span class="specialty-badge">Hepatology</span><span class="specialty-badge">Internal Medicine</span><span class="specialty-badge">Infectious Disease</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Basic Plan</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 21. IPTACOPAN -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Iptacopan</div><span class="drug-brand">FABHALTA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>PNH — confirmed by peripheral blood flow cytometry; intolerance or contraindication to C5 inhibitor</li>
+          <li>Primary IgA Nephropathy — confirmed by renal biopsy; prescribed by Nephrologist</li>
+          <li>Complement 3 Glomerulopathy (C3G) — confirmed by renal biopsy</li>
+          <li>Reassessment of therapy effectiveness required after 6 months</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Hematology</span><span class="specialty-badge">Nephrology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">End-stage kidney disease on dialysis</span></div>
+    </div>
+
+    <!-- 22. IXEKIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Ixekizumab</div><span class="drug-brand">TALTZ</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Plaque Psoriasis</li>
+          <li>Psoriatic Arthritis (PsA) — after NSAID failure</li>
+          <li>Ankylosing Spondylitis (AS) — after NSAID failure</li>
+          <li>Non-radiographic Axial Spondyloarthritis</li>
+          <li>Must be prescribed by or in consultation with Dermatologist</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Dermatology</span><span class="specialty-badge">Rheumatology</span>
+      </div>
+    </div>
+
+    <!-- 23. JAK INHIBITORS -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">JAK Inhibitors</div><span class="drug-brand">CIBINQO · OLUMIANT · XELJANZ · RINVOQ · OPZELURA · ANZUPGO</span></div>
+      <div class="drug-ref">Ref: Updated 2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Rheumatoid Arthritis (RA) — after DMARD or biologic failure</li>
+          <li>Juvenile Idiopathic Arthritis (JIA)</li>
+          <li>Ankylosing Spondylitis / Psoriatic Arthritis</li>
+          <li>Ulcerative Colitis / Crohn's Disease — after anti-TNF or anti-IL failure</li>
+          <li>Atopic Dermatitis — per age-based therapy line table</li>
+          <li>Alopecia Areata — after topical corticosteroids &amp; minoxidil failure</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Key Requirements">Key Requirements</div>
+        <ul class="drug-points"><li>Prior therapy lines documented per condition (see table in guideline)</li><li>Disease activity score required (DAS28, CDAI, etc.)</li><li>Lab tests required in medical report</li></ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Gastroenterology</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Active serious infection</span><span class="not-covered-badge">Malignancy</span><span class="not-covered-badge">MACE history</span><span class="not-covered-badge">Thrombosis</span></div>
+    </div>
+
+    <!-- 24. MEPOLIZUMAB -->
+    
+    <!-- 24. MEPOLIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Mepolizumab</div><span class="drug-brand">NUCALA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Severe Eosinophilic Asthma — add-on maintenance, age &#8805;6 years</li>
+          <li>Eosinophilic Granulomatosis with Polyangiitis (EGPA)</li>
+          <li>Hypereosinophilic Syndrome (HES)</li>
+          <li>Chronic Rhinosinusitis with Nasal Polyposis (CRSwNP)</li>
+          <li>Blood eosinophil count required at diagnosis</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div>
+        <span class="specialty-badge">Pulmonology</span><span class="specialty-badge">Allergy/Immunology</span><span class="specialty-badge">ENT</span>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Basic Plan</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 25. MITAPIVAT -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Mitapivat</div><span class="drug-brand">PYRUKYND</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points"><li>Pyruvate Kinase (PK) Deficiency hemolytic anemia</li><li>Genetic test results confirming PK deficiency required</li></ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Hematology</span><span class="specialty-badge">Internal Medicine</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 26. NUSINERSEN -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Nusinersen</div><span class="drug-brand">SPINRAZA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Spinal Muscular Atrophy (SMA) — all types</li>
+          <li>Must be prescribed by a Neurologist</li>
+          <li>Cannot be used concurrently with Evrysdi or Zolgensma</li>
+          <li>12-month periodic re-examination mandatory</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Neurology</span><span class="specialty-badge">Pediatric Neurology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Basic Plan</span><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Concurrent with Evrysdi/Zolgensma</span></div>
+    </div>
+
+    <!-- 27. OCRELIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Ocrelizumab</div><span class="drug-brand">OCREVUS</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Relapsing MS (RRMS, CIS, active SPMS) &#8212; age &#8805;18</li>
+          <li>Primary Progressive Multiple Sclerosis (PPMS)</li>
+          <li>MRI lesions required in &#8805;2 topography locations</li>
+          <li>Prior DMT failure must be documented</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Neurology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Active Hepatitis B</span></div>
+    </div>
+
+    <!-- 28. OMALIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Omalizumab</div><span class="drug-brand">XOLAIR</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Allergic Asthma &#8212; IgE-mediated, age &#8805;6</li>
+          <li>Chronic Idiopathic Urticaria (CSU) &#8212; UAS7 score weekly</li>
+          <li>IgE-mediated Food Allergy</li>
+          <li>Nasal Polyposis &#8212; NPS endoscopic score required pre-treatment</li>
+          <li>Pre-treatment IgE level + body weight required; stop if no improvement by 4th dose</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Allergy/Immunology</span><span class="specialty-badge">Pulmonology</span><span class="specialty-badge">ENT</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Basic Plan</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 29. OMEGA-3 -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Omega-3 Acid Ethyl Esters</div><span class="drug-brand">VASCEPA / OMACOR</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Severe Hypertriglyceridemia (TG &#8805;500 mg/dL) &#8212; adjunct to diet &amp; exercise</li>
+          <li>Adjunct to max-tolerated statin for CV risk reduction</li>
+          <li>Documented failure/intolerance to &#8805;1 lipid-lowering therapy required</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Cardiology</span><span class="specialty-badge">Endocrinology</span><span class="specialty-badge">Internal Medicine</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Ophthalmology (unrelated)</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 30. ONDANSETRON -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Ondansetron</div><span class="drug-brand">ZOFRAN</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Chemotherapy-induced Nausea &amp; Vomiting (CINV)</li>
+          <li>Radiotherapy-induced Nausea &amp; Vomiting (RINV)</li>
+          <li>Post-operative Nausea &amp; Vomiting (PONV)</li>
+          <li>Must be supported by primary diagnosis (cancer/surgery)</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Standalone without cancer/surgery</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 31. PALIVIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Palivizumab</div><span class="drug-brand">SYNAGIS</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>RSV prophylaxis in high-risk infants &#8212; premature &#8804;35 weeks GA</li>
+          <li>Congenital heart disease or chronic lung disease of prematurity</li>
+          <li>Monthly dosing during RSV season</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Pediatrics</span><span class="specialty-badge">Neonatology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 32. PARENTERAL IG -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Parenteral Immunoglobulin</div><span class="drug-brand">IG VENA / PRIVIGEN / GAMUNEX</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>All FDA/EMA labelled indications: Primary Immunodeficiencies, ITP, Kawasaki, GBS, CIDP</li>
+          <li>Max duration is diagnosis-specific &#8212; only eligible clinician orders accepted</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Hematology</span><span class="specialty-badge">Immunology</span><span class="specialty-badge">Neurology</span><span class="specialty-badge">Rheumatology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Basic Plan (not in drug list)</span></div>
+    </div>
+
+    <!-- 33. PCSK9 -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">PCSK9 Inhibitors</div><span class="drug-brand">REPATHA / PRALUENT / LEQVIO</span></div>
+      <div class="drug-ref">Updated 2026</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>HeFH &#8212; adults &amp; pediatrics &#8805;10 years; HoFH</li>
+          <li>Established ASCVD &#8212; MACE risk reduction</li>
+          <li>Statin-intolerant or not reaching LDL-C goals on max statin</li>
+          <li>Note: Alirocumab 75 mg 2 boxes for 150 mg dose NOT covered</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Cardiology</span><span class="specialty-badge">Endocrinology</span><span class="specialty-badge">Internal Medicine</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Basic Plan</span><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 34. PROSTATE CANCER -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Prostate Cancer Treatment</div><span class="drug-brand">ZYTIGA / XTANDI / ORGOVYX / NUBEQA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Castration-sensitive Prostate Cancer (CSPC)</li>
+          <li>Castration-resistant Prostate Cancer (CRPC) &#8212; metastatic &amp; non-metastatic</li>
+          <li>Coding: primary = prostate cancer; secondary = reason for therapy</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Urology</span><span class="specialty-badge">Medical Oncology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 35. RIBOCICLIB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Ribociclib</div><span class="drug-brand">KISQALI</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>HR+/HER2&#8722; Advanced or Metastatic Breast Cancer &#8212; with aromatase inhibitor or fulvestrant</li>
+          <li>Pre/perimenopausal: in combination with LHRH agonist</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Medical Oncology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 36. RISANKIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Risankizumab</div><span class="drug-brand">SKYRIZI</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Plaque Psoriasis</li><li>Psoriatic Arthritis (PsA)</li>
+          <li>Crohn&#39;s Disease &#8212; after conventional/biologic failure</li>
+          <li>Ulcerative Colitis &#8212; after conventional/biologic failure</li>
+          <li>Pre-treatment: TB screening + vaccinations</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Gastroenterology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 37. SECUKINUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Secukinumab</div><span class="drug-brand">COSENTYX</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Plaque Psoriasis (BSA &gt;5% or palmoplantar/scalp/genital) &#8212; age &#8805;6, after DMARD/phototherapy failure</li>
+          <li>Psoriatic Arthritis &#8212; age &#8805;2, after DMARD failure</li>
+          <li>Ankylosing Spondylitis / Non-radiographic AxSpA &#8212; after NSAID failure</li>
+          <li>Hidradenitis Suppurativa (HS) &#8212; added indication</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Rheumatology</span></div>
+    </div>
+
+    <!-- 38. TEPOTINIB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Tepotinib</div><span class="drug-brand">TEPMETKO</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points"><li>Advanced/Metastatic NSCLC with MET exon 14 skipping mutation</li><li>Prescribed by experienced oncologists only</li></ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Medical Oncology</span><span class="specialty-badge">Pulmonary Oncology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+    <!-- 39. TRALOKINUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Tralokinumab</div><span class="drug-brand">ADTRALZA</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Atopic Dermatitis &#8212; age &#8805;12 years</li>
+          <li>Must fail: topical therapy + phototherapy (if feasible)</li>
+          <li>Diagnosis validated by clinical scoring tools</li>
+          <li>Not during concurrent live vaccines</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Allergy/Immunology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span><span class="not-covered-badge">Age &lt;12</span></div>
+    </div>
+
+    <!-- 40. USTEKINUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Ustekinumab</div><span class="drug-brand">STELARA</span></div>
+      <div class="drug-ref">Updated August 2025</div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Plaque Psoriasis &#8212; age &#8805;6, BSA &#8805;10%, inadequate response to systemic/phototherapy</li>
+          <li>Psoriatic Arthritis &#8212; age &#8805;6</li>
+          <li>Crohn&#39;s Disease &#8212; moderate-to-severe, adults &amp; pediatrics &#8805;2 years</li>
+          <li>Ulcerative Colitis &#8212; moderate-to-severe, adults; failed biologic or conventional</li>
+          <li>Pre-treatment: TB screening; all age-appropriate vaccinations</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Dermatology</span><span class="specialty-badge">Rheumatology</span><span class="specialty-badge">Gastroenterology</span></div>
+    </div>
+
+    <!-- 41. VEDOLIZUMAB -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Vedolizumab</div><span class="drug-brand">ENTYVIO</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Moderate-to-severe Ulcerative Colitis &#8212; failed/intolerant to conventional therapy</li>
+          <li>Moderate-to-severe Crohn&#39;s Disease &#8212; failed conventional or anti-TNF therapy</li>
+          <li>Pre-initiation: all immunizations up to date</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Gastroenterology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Non-FDA approved indications</span></div>
+    </div>
+
+    <!-- 42. VILAZODONE -->
+    <div class="drug-card">
+      <div class="drug-card-header"><div class="drug-name">Vilazodone</div><span class="drug-brand">VIIBRYD</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Covered Indications">Covered Indications</div>
+        <ul class="drug-points">
+          <li>Major Depressive Disorder (MDD) &#8212; adults</li>
+          <li>Screen for personal/family history of bipolar disorder before initiating</li>
+          <li>Full psychiatric history in medical report required</li>
+        </ul>
+      </div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Eligible Specialties">Eligible Specialties</div><span class="specialty-badge">Psychiatry</span><span class="specialty-badge">Neurology</span></div>
+      <div class="drug-section"><div class="drug-section-title" data-en="Not Covered">Not Covered</div><span class="not-covered-badge">Visitor Plan</span></div>
+    </div>
+
+  </div><!-- end drug-grid -->
+</div>
+
+</div><!-- end container -->
+
+<div class="footer" style="background:linear-gradient(135deg,#3a0d3e 0%,#2a0a30 40%,#0a4f3c 100%)">
+  
+
+  <strong>&#128203; Abu Dhabi Insurance Circulars &amp; Drug Guidelines &#8212; Complete Reference</strong><br>
+  Prepared by <strong>Mohamed Elsherbini</strong> &nbsp;&#183;&nbsp; For Internal Professional Use Only &nbsp;&#183;&nbsp; Updated Regularly<br>
+  <span>DAMAN: PRDqueries@damanhealth.ae &nbsp;&#183;&nbsp; DOH: healthsystemfinancing@doh.gov.ae &nbsp;&#183;&nbsp; NAS: Networks@nas.ae</span><br>
+  <span style="font-size:11px;opacity:.7">Send new circulars to update this document &nbsp;&#183;&nbsp; Last updated: August 2026</span>
+</div>
+
+
+<script>
+const T = {
+  en: {
+    prep_by:'Prepared by',internal_use:'For Internal Professional Use Only',last_updated:'Last Updated: August 2026',
+    header_title:'📋 Insurance Circulars & Drug Guidelines — Complete Reference',
+    header_sub:'DAMAN · THIQA · DOH · NAS · Al Buhaira &nbsp;|&nbsp; Drug Coverage · Prior Authorization · Dispensing Rules · Specialty Guidelines',
+    meta_files:'Source Files',meta_payers:'Payers',meta_drugs:'Specialty Drugs',meta_updated:'Updated',
+    nav_jump:'Jump to →',nav_doh:'DOH Circulars',nav_daman:'DAMAN & THIQA',nav_thiqa:'THIQA Only',
+    nav_nas:'NAS',nav_buhaira:'Al Buhaira',nav_guide:'Specialty Drug Guidelines',
+    doh_title:'DOH Circulars — Department of Health Abu Dhabi',
+    doh_sub:'Mandatory for ALL insurers & ALL pharmacies in Abu Dhabi · 100% compliance · Effective 1 January 2026',
+    daman_title:'DAMAN & THIQA Circulars',
+    daman_sub:'15 circulars · Applies to all DAMAN plans unless stated otherwise · Queries: PRDqueries@damanhealth.ae',
+    thiqa_title:'THIQA Only Circulars',thiqa_sub:'UAE Nationals and equivalent · Government-funded program',
+    nas_title:'NAS Circulars — NAS Administration Services LLC',
+    nas_sub:'Regulatory compliance notification · Queries: Networks@nas.ae',
+    buhaira_title:'Al Buhaira — ABNIC Standard Pharmacy Exclusions',
+    buhaira_sub:'Al Buhaira National Insurance Co. · 31 March 2019 · Via NANOPBM',
+    guide_title:'DAMAN & THIQA — Specialty Drug Prior Authorization Guidelines',
+    guide_sub:'42 specialty drugs · Coverage criteria · Eligible specialties · Key requirements · All require Prior Authorization',
+    snapshot:'⚡ Quick Snapshot — What Pharmacists Must Know',
+    univ_rules:'⚡ Universal Rules for ALL Specialty Drugs',
+    footer_main:'📋 Abu Dhabi Insurance Circulars & Drug Guidelines — Complete Reference',
+    footer_use:'For Internal Professional Use Only · Updated Regularly',
+    footer_send:'Send new circulars to update this document · Last updated: August 2026',
+  },
+  ar: {
+    prep_by:'أعده',internal_use:'للاستخدام المهني الداخلي فقط',last_updated:'آخر تحديث: أغسطس 2026',
+    header_title:'📋 التعميمات التأمينية وإرشادات الأدوية — المرجع الشامل',
+    header_sub:'دامان · ثيقا · DOH · NAS · البحيرة &nbsp;|&nbsp; تغطية الأدوية · الموافقات المسبقة · قواعد الصرف · إرشادات الأدوية المتخصصة',
+    meta_files:'الملفات المصدرية',meta_payers:'جهات التأمين',meta_drugs:'دواء متخصص',meta_updated:'محدّث',
+    nav_jump:'← انتقل إلى',nav_doh:'تعميمات DOH',nav_daman:'دامان وثيقا',nav_thiqa:'ثيقا فقط',
+    nav_nas:'NAS',nav_buhaira:'البحيرة',nav_guide:'إرشادات الأدوية المتخصصة',
+    doh_title:'تعميمات هيئة الصحة — أبوظبي',
+    doh_sub:'إلزامية لجميع شركات التأمين وجميع الصيدليات في أبوظبي · امتثال 100% · سارية من 1 يناير 2026',
+    daman_title:'تعميمات دامان وثيقا',
+    daman_sub:'15 تعميم · تسري على جميع خطط دامان ما لم يُحدد خلاف ذلك · الاستفسارات: PRDqueries@damanhealth.ae',
+    thiqa_title:'تعميمات ثيقا فقط',thiqa_sub:'المواطنون الإماراتيون ومن في حكمهم · برنامج ممول حكومياً',
+    nas_title:'تعميمات NAS — شركة NAS لإدارة الخدمات',
+    nas_sub:'إشعار امتثال تنظيمي · الاستفسارات: Networks@nas.ae',
+    buhaira_title:'تعميم البحيرة — استثناءات الصيدلية المعيارية لـ ABNIC',
+    buhaira_sub:'شركة البحيرة الوطنية للتأمين · 31 مارس 2019 · عبر NANOPBM',
+    guide_title:'إرشادات الموافقة المسبقة للأدوية المتخصصة — دامان وثيقا',
+    guide_sub:'42 دواء متخصص · معايير التغطية · التخصصات المؤهلة · المتطلبات الرئيسية · جميعها تستلزم موافقة مسبقة',
+    snapshot:'⚡ ملخص سريع — أهم ما يجب على الصيدلاني معرفته',
+    univ_rules:'⚡ القواعد العامة لجميع الأدوية المتخصصة',
+    footer_main:'📋 التعميمات التأمينية وإرشادات الأدوية — أبوظبي — المرجع الشامل',
+    footer_use:'للاستخدام المهني الداخلي فقط · يُحدَّث بانتظام',
+    footer_send:'أرسل تعميمات جديدة لتحديث هذه الوثيقة · آخر تحديث: أغسطس 2026',
+  },
+  hi: {
+    prep_by:'द्वारा तैयार',internal_use:'केवल आंतरिक व्यावसायिक उपयोग हेतु',last_updated:'अंतिम अपडेट: अगस्त 2026',
+    header_title:'📋 बीमा परिपत्र और दवा दिशानिर्देश — संपूर्ण संदर्भ',
+    header_sub:'DAMAN · THIQA · DOH · NAS · अल बुहैरा &nbsp;|&nbsp; दवा कवरेज · पूर्व प्राधिकरण · वितरण नियम · विशेष दवा दिशानिर्देश',
+    meta_files:'स्रोत फ़ाइलें',meta_payers:'बीमाकर्ता',meta_drugs:'विशेष दवाएं',meta_updated:'अपडेट',
+    nav_jump:'यहाँ जाएं →',nav_doh:'DOH परिपत्र',nav_daman:'DAMAN और THIQA',nav_thiqa:'केवल THIQA',
+    nav_nas:'NAS',nav_buhaira:'अल बुहैरा',nav_guide:'विशेष दवा दिशानिर्देश',
+    doh_title:'DOH परिपत्र — स्वास्थ्य विभाग, अबू धाबी',
+    doh_sub:'अबू धाबी के सभी बीमाकर्ताओं और फार्मेसियों के लिए अनिवार्य · 100% अनुपालन · 1 जनवरी 2026 से प्रभावी',
+    daman_title:'DAMAN और THIQA परिपत्र',
+    daman_sub:'15 परिपत्र · सभी DAMAN योजनाओं पर लागू · प्रश्न: PRDqueries@damanhealth.ae',
+    thiqa_title:'केवल THIQA परिपत्र',thiqa_sub:'UAE नागरिक और समकक्ष · सरकारी वित्त पोषित कार्यक्रम',
+    nas_title:'NAS परिपत्र — NAS प्रशासन सेवाएं LLC',
+    nas_sub:'नियामक अनुपालन अधिसूचना · प्रश्न: Networks@nas.ae',
+    buhaira_title:'अल बुहैरा — ABNIC मानक फार्मेसी बहिष्करण',
+    buhaira_sub:'अल बुहैरा राष्ट्रीय बीमा कंपनी · 31 मार्च 2019 · NANOPBM के माध्यम से',
+    guide_title:'DAMAN और THIQA — विशेष दवा पूर्व प्राधिकरण दिशानिर्देश',
+    guide_sub:'42 विशेष दवाएं · कवरेज मानदंड · पात्र विशेषताएं · मुख्य आवश्यकताएं · सभी के लिए पूर्व प्राधिकरण आवश्यक',
+    snapshot:'⚡ त्वरित सारांश — फार्मासिस्टों के लिए महत्वपूर्ण बातें',
+    univ_rules:'⚡ सभी विशेष दवाओं के लिए सामान्य नियम',
+    footer_main:'📋 अबू धाबी बीमा परिपत्र और दवा दिशानिर्देश — संपूर्ण संदर्भ',
+    footer_use:'केवल आंतरिक व्यावसायिक उपयोग हेतु · नियमित रूप से अपडेट',
+    footer_send:'इस दस्तावेज़ को अपडेट करने हेतु नए परिपत्र भेजें · अंतिम अपडेट: अगस्त 2026',
+  }
+};
+
+const DS_AR = {'Covered Indications':'المؤشرات المغطاة','Eligible Specialties':'التخصصات المؤهلة','Not Covered':'غير مغطى','Key Requirements':'المتطلبات الرئيسية'};
+const DS_HI = {'Covered Indications':'कवर किए गए संकेत','Eligible Specialties':'पात्र विशेषताएं','Not Covered':'कवर नहीं','Key Requirements':'मुख्य आवश्यकताएं'};
+const TH_AR = {'Type':'النوع','Max Duration':'المدة القصوى','Scenario':'الحالة','Notes':'ملاحظات','Indication':'المؤشر','Required Documentation':'المستندات المطلوبة','Group':'المجموعة','Specialties':'التخصصات','Max Supply':'الكمية القصوى','Specialty':'التخصص','Pediatric Billing Applies Up To':'الفوترة بكودات الأطفال حتى','Phase':'المرحلة','Check':'التحقق','Details & Requirements':'التفاصيل والمتطلبات','#':'#','Coverage':'التغطية'};
+const TH_HI = {'Type':'प्रकार','Max Duration':'अधिकतम अवधि','Scenario':'परिदृश्य','Notes':'नोट्स','Indication':'संकेत','Required Documentation':'आवश्यक दस्तावेज़','Group':'समूह','Specialties':'विशेषताएं','Max Supply':'अधिकतम आपूर्ति','Specialty':'विशेषता','Pediatric Billing Applies Up To':'बाल चिकित्सा बिलिंग आयु','Phase':'चरण','Check':'जाँच','Details & Requirements':'विवरण और आवश्यकताएं','#':'#','Coverage':'कवरेज'};
+const TAG_AR = {'Pharmacies':'صيدليات','Critical':'مهم جداً','New':'جديد','Mandatory':'إلزامي','Prior Auth Required':'موافقة مسبقة مطلوبة','All Pharmacies':'جميع الصيدليات','Recent':'حديث'};
+const TAG_HI = {'Pharmacies':'फार्मेसी','Critical':'अत्यंत महत्वपूर्ण','New':'नया','Mandatory':'अनिवार्य','Prior Auth Required':'पूर्व प्राधिकरण आवश्यक','All Pharmacies':'सभी फार्मेसी','Recent':'हाल ही में'};
+
+function switchLang(lang) {
+  const t = T[lang];
+  const isAr = lang === 'ar';
+  document.body.classList.toggle('rtl', isAr);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector('.lang-btn[data-lang="' + lang + '"]');
+  if (btn) btn.classList.add('active');
+
+  // i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  // Table headers
+  document.querySelectorAll('th[data-en]').forEach(el => {
+    const en = el.getAttribute('data-en');
+    if (lang === 'en') el.textContent = en;
+    else if (lang === 'ar' && TH_AR[en]) el.textContent = TH_AR[en];
+    else if (lang === 'hi' && TH_HI[en]) el.textContent = TH_HI[en];
+  });
+
+  // Drug section labels
+  document.querySelectorAll('.drug-section-title[data-en]').forEach(el => {
+    const en = el.getAttribute('data-en');
+    if (lang === 'en') el.textContent = en;
+    else if (lang === 'ar' && DS_AR[en]) el.textContent = DS_AR[en];
+    else if (lang === 'hi' && DS_HI[en]) el.textContent = DS_HI[en];
+  });
+
+  // Tags
+  document.querySelectorAll('[data-tag-en]').forEach(el => {
+    const en = el.getAttribute('data-tag-en');
+    if (lang === 'en') el.textContent = (el.textContent.includes('🆕') ? '🆕 ' : '') + en;
+    else if (lang === 'ar' && TAG_AR[en]) el.textContent = TAG_AR[en];
+    else if (lang === 'hi' && TAG_HI[en]) el.textContent = TAG_HI[en];
+  });
+
+
+  const si = document.getElementById('mainSearch');
+  if (si) {
+    if (lang==='ar') si.placeholder='ابحث عن تعميم، دواء، مؤشر، تخصص...';
+    else if (lang==='hi') si.placeholder='परिपत्र, दवा, संकेत, विशेषता खोजें...';
+    else si.placeholder='Search circulars, drugs, indications, specialties...';
+  }
+  const tip2=document.getElementById('searchTip');
+  if (tip2 && !document.getElementById('mainSearch')?.value) {
+    if (lang==='ar') tip2.textContent='اكتب للبحث في جميع التعميمات وإرشادات الأدوية';
+    else if (lang==='hi') tip2.textContent='सभी परिपत्रों और दिशानिर्देशों में खोजने के लिए टाइप करें';
+    else tip2.textContent='Type to search across all circulars and drug guidelines';
+  }
+
+  try { localStorage.setItem('insref_lang', lang); } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  let saved = 'en';
+  try { saved = localStorage.getItem('insref_lang') || 'en'; } catch(e) {}
+  switchLang(saved);
+});
+</script>
+
+
+<script>
+let searchTimer = null;
+function runSearch(query) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => doSearch(query.trim()), 200);
+}
+function doSearch(q) {
+  const clearBtn = document.getElementById('searchClear');
+  const statsEl  = document.getElementById('searchStats');
+  const countEl  = document.getElementById('matchCount');
+  const tipEl    = document.getElementById('searchTip');
+  const noRes    = document.getElementById('noResults');
+  clearBtn.style.display = q ? 'block' : 'none';
+  removeHighlights();
+  if (!q) {
+    document.querySelectorAll('.circ-card,.drug-card').forEach(c=>c.classList.remove('card-hidden'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('section-hidden'));
+    statsEl.innerHTML = '<span class="match-count">—</span> results';
+    tipEl.textContent = 'Type to search across all circulars and drug guidelines';
+    noRes.classList.remove('show');
+    return;
+  }
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  let total = 0;
+  document.querySelectorAll('.circ-card,.drug-card').forEach(card => {
+    const txt = card.textContent.toLowerCase();
+    if (terms.every(t => txt.includes(t))) {
+      card.classList.remove('card-hidden');
+      highlightTerms(card, terms);
+      total++;
+    } else {
+      card.classList.add('card-hidden');
+    }
+  });
+  document.querySelectorAll('.section').forEach(sec => {
+    const visible = sec.querySelectorAll('.circ-card:not(.card-hidden),.drug-card:not(.card-hidden)').length;
+    sec.classList.toggle('section-hidden', visible === 0);
+  });
+  const lang = document.querySelector('.lang-btn.active')?.getAttribute('data-lang') || 'en';
+  const lbl = lang==='ar'?'نتيجة':lang==='hi'?'परिणाम':'results';
+  statsEl.innerHTML = `<span class="match-count">${total}</span> ${lbl}`;
+  tipEl.textContent = total > 0 ? `Showing ${total} result${total===1?'':'s'} for "${q}"` : '';
+  noRes.classList.toggle('show', total === 0);
+}
+function highlightTerms(card, terms) {
+  const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      const p = n.parentElement;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (['SCRIPT','STYLE','MARK'].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+      if (p.id==='mainSearch' || p.classList.contains('search-input')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const orig = node.textContent;
+    let hi = orig; let found = false;
+    terms.forEach(term => {
+      const rx = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+      if (rx.test(hi)) { found = true; hi = hi.replace(rx,'<mark>$1</mark>'); }
+    });
+    if (found) {
+      const sp = document.createElement('span');
+      sp.innerHTML = hi;
+      try { node.parentNode.replaceChild(sp, node); } catch(e){}
+    }
+  });
+}
+function removeHighlights() {
+  document.querySelectorAll('mark').forEach(m => {
+    try { m.outerHTML = m.textContent; } catch(e){}
+  });
+}
+function clearSearch() {
+  document.getElementById('mainSearch').value = '';
+  doSearch('');
+  document.getElementById('mainSearch').focus();
+}
+document.addEventListener('keydown', e => {
+  const inp = document.getElementById('mainSearch');
+  if ((e.ctrlKey && e.key==='k') || (e.key==='/' && document.activeElement !== inp)) {
+    e.preventDefault(); inp.focus(); inp.select();
+  }
+  if (e.key==='Escape') { clearSearch(); inp.blur(); }
+});
+</script>
+
+
+<script>
+// ── Password Gate ─────────────────────────────────────────────
+const HASH = '6372aaf05138d8fc5e65e0eecf104424a009defe752803fae79e0e5a4d3ee478';
+
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPass() {
+  const val = document.getElementById('gateInput').value;
+  const err = document.getElementById('gateError');
+  if (!val) { err.textContent = 'Please enter the password'; return; }
+  const h = await sha256(val);
+  if (h === HASH) {
+    document.getElementById('gate').classList.add('hidden');
+    document.body.classList.add('protected');
+    try { sessionStorage.setItem('auth','1'); } catch(e){}
+    err.textContent = '';
+  } else {
+    err.textContent = '❌ Incorrect password — please try again';
+    document.getElementById('gateInput').value = '';
+    document.getElementById('gateInput').focus();
+    // Shake animation
+    const box = document.querySelector('.gate-box');
+    box.style.animation = 'none';
+    box.offsetHeight;
+    box.style.animation = 'shake .4s ease';
+  }
+}
+
+// Auto-unlock if already authenticated this session
+(function() {
+  try {
+    if (sessionStorage.getItem('auth') === '1') {
+      document.getElementById('gate').classList.add('hidden');
+      document.body.classList.add('protected');
+    }
+  } catch(e) {}
+})();
+
+// ── Anti-Copy Protection ──────────────────────────────────────
+// Disable right-click
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// Disable print screen / copy shortcuts
+document.addEventListener('keydown', e => {
+  const blocked = (
+    (e.ctrlKey && ['u','s','a','p'].includes(e.key.toLowerCase())) ||
+    (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) ||
+    e.key === 'F12' || e.key === 'PrintScreen'
+  );
+  if (blocked) {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// Disable drag
+document.addEventListener('dragstart', e => e.preventDefault());
+
+// Watermark update
+const wm = document.getElementById('wm');
+if (wm) wm.textContent = 'Mohamed Elsherbini · Internal Use Only · ' + new Date().getFullYear();
+
+// Shake CSS
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake {0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}`;
+document.head.appendChild(shakeStyle);
+</script>
+
+</body>
+</html>
