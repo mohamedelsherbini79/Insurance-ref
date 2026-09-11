@@ -415,9 +415,9 @@ async function apiSave(sheetName, records){
 }
 
 async function loadData(){
-  entries = await apiGet(STORAGE_KEY);
-  const empRecords = await apiGet(EMPLOYEE_KEY);
-  employees = empRecords.map(r => r.name || r.id).filter(Boolean);
+  const [entriesData, empData] = await Promise.all([apiGet(STORAGE_KEY), apiGet(EMPLOYEE_KEY)]);
+  entries = entriesData;
+  employees = empData.map(r => r.name || r.id).filter(Boolean);
   renderEmployeeOptions();
   renderList();
   renderSummary();

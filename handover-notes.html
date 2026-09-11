@@ -211,9 +211,9 @@ async function apiSave(sheetName, records){
 }
 
 async function loadData(){
-  notes = await apiGet(NOTES_KEY);
-  const empRecords = await apiGet(EMPLOYEE_KEY);
-  employees = empRecords.map(r => r.name || r.id).filter(Boolean);
+  const [notesData, empData] = await Promise.all([apiGet(NOTES_KEY), apiGet(EMPLOYEE_KEY)]);
+  notes = notesData;
+  employees = empData.map(r => r.name || r.id).filter(Boolean);
   renderEmployeeOptions();
   renderBoard();
 }
@@ -303,17 +303,17 @@ document.getElementById('newNoteSubmit').addEventListener('click', async () => {
     updates: []
   };
   notes.unshift(note);
+  document.getElementById('newNoteText').value = '';
+  document.getElementById('newNoteForm').style.display = 'none';
+  statusEl.textContent = '';
+  statusEl.classList.remove('error');
+  renderBoard();
+
   const ok = await saveNotes();
-  if(ok){
-    document.getElementById('newNoteText').value = '';
-    document.getElementById('newNoteForm').style.display = 'none';
-    statusEl.textContent = '';
-    statusEl.classList.remove('error');
-    renderBoard();
-  }else{
+  if(!ok){
     notes.shift();
-    statusEl.textContent = 'Something went wrong, try again';
-    statusEl.classList.add('error');
+    renderBoard();
+    alert('Could not save this note. Please check your connection and try again.');
   }
 });
 
@@ -330,40 +330,63 @@ async function addUpdate(noteId){
   const note = notes.find(n => n.id === noteId);
   if(!note) return;
   const stamp = nowStamp();
-  note.updates.push({
+  const previousStatus = note.status;
+  const newUpdate = {
     author: currentEmployee,
     text: text,
     dateDisplay: stamp.dateDisplay,
     timeDisplay: stamp.timeDisplay
-  });
+  };
+  note.updates.push(newUpdate);
   // an update on an open thread keeps it open; if it was somehow done, adding a new update reopens it
   note.status = 'open';
-  await saveNotes();
   renderBoard();
+
+  const ok = await saveNotes();
+  if(!ok){
+    note.updates.pop();
+    note.status = previousStatus;
+    renderBoard();
+    alert('Could not save this update. Please check your connection and try again.');
+  }
 }
 
 async function markDone(noteId){
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
   const note = notes.find(n => n.id === noteId);
   if(!note) return;
-  note.status = 'done';
   const stamp = nowStamp();
+  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
+  note.status = 'done';
   note.doneDate = stamp.dateDisplay;
   note.doneTime = stamp.timeDisplay;
   note.closedBy = currentEmployee;
-  await saveNotes();
   renderBoard();
+
+  const ok = await saveNotes();
+  if(!ok){
+    Object.assign(note, prev);
+    renderBoard();
+    alert('Could not save this change. Please check your connection and try again.');
+  }
 }
 
 async function reopenNote(noteId){
   const note = notes.find(n => n.id === noteId);
   if(!note) return;
+  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
   note.status = 'open';
   note.closedBy = null;
   note.doneDate = null;
   note.doneTime = null;
-  await saveNotes();
   renderBoard();
+
+  const ok = await saveNotes();
+  if(!ok){
+    Object.assign(note, prev);
+    renderBoard();
+    alert('Could not save this change. Please check your connection and try again.');
+  }
 }
 
 function renderNoteCard(note){
