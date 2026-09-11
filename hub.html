@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branch Tools Hub - Medicina Airport 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#6b1f6f; --purple-dark:#4d1650; --green:#8bc34a; --green-dark:#6f9c38;
+    --bg:#faf8fb; --card:#ffffff; --ink:#2a1f2d; --muted:#8a7d8e; --line:#e9e0eb; --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:32px 20px 40px;border-radius:0 0 26px 26px;box-shadow:0 4px 14px rgba(107,31,111,.25);text-align:center;}
+  header h1{margin:0;font-size:1.5rem;font-weight:900;}
+  header p{margin:8px 0 0;font-size:.9rem;opacity:.85;}
+  main{max-width:720px;margin:0 auto;padding:26px 18px 50px;}
+  .tool-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media (min-width:640px){ .tool-grid{grid-template-columns:1fr 1fr;} }
+  .tool-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;text-decoration:none;color:var(--ink);display:block;
+    box-shadow:0 2px 10px rgba(107,31,111,.05);transition:transform .15s, box-shadow .15s;
+    border-right:4px solid var(--purple);
+  }
+  .tool-card:active{transform:scale(.98);}
+  .tool-icon{font-size:1.8rem;margin-bottom:10px;display:block;}
+  .tool-name{font-weight:900;font-size:1.02rem;margin-bottom:6px;}
+  .tool-desc{font-size:.82rem;color:var(--muted);line-height:1.5;}
+  .tool-card.tc-green{border-right-color:var(--green-dark);}
+  .tool-card.tc-amber{border-right-color:#e0a72c;}
+  .tool-card.tc-purple{border-right-color:var(--purple);}
+  .note-box{
+    background:#fff8ea;border:1px solid #f0d99a;border-radius:12px;padding:14px 16px;
+    font-size:.8rem;color:#6b5410;margin-top:24px;line-height:1.6;
+  }
+  .note-box strong{display:block;margin-bottom:4px;color:#4d3c08;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Medicina Airport 3</h1>
+  <p>Branch Management Tools</p>
+</header>
+
+<main>
+  <div class="tool-grid">
+    <a class="tool-card tc-purple" href="shortage-tracker.html">
+      <span class="tool-icon">📦</span>
+      <div class="tool-name">Shortage Tracker</div>
+      <div class="tool-desc">Log missing items on the spot, track lost sales per employee, export monthly to Excel.</div>
+    </a>
+
+    <a class="tool-card tc-green" href="daily-checklist.html">
+      <span class="tool-icon">✅</span>
+      <div class="tool-name">Daily Checklist</div>
+      <div class="tool-desc">5-point daily routine per employee, with a monthly compliance report and CSV export.</div>
+    </a>
+
+    <a class="tool-card tc-amber" href="handover-notes.html">
+      <span class="tool-icon">📝</span>
+      <div class="tool-name">Handover Notes</div>
+      <div class="tool-desc">Leave notes for colleagues, thread updates on them, and close them out when resolved.</div>
+    </a>
+
+    <a class="tool-card tc-purple" href="refill-tracker.html">
+      <span class="tool-icon">💊</span>
+      <div class="tool-name">Chronic Refill Tracker</div>
+      <div class="tool-desc">Scan prescriptions and invoices with AI, track chronic patients, get refill reminders (30/60/90-day).</div>
+    </a>
+  </div>
+
+  <div class="note-box">
+    <strong>How this works</strong>
+    Each tool keeps its own data — they don't share patient records, notes, or shortages with each other. This page is just a shared front door: keep all 5 files (this one + the 4 tools) together in the same folder, whether on your computer or uploaded to your GitHub Pages site, and the links above will work. Each tool still has its own employee list, so add your name once per tool the first time you use it.
+  </div>
+</main>
+
+</body>
+</html>

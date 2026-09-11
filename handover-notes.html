@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handover Notes - Medicina Airport 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#6b1f6f;
+    --purple-dark:#4d1650;
+    --green:#8bc34a;
+    --green-dark:#6f9c38;
+    --amber:#e0a72c;
+    --bg:#faf8fb;
+    --card:#ffffff;
+    --ink:#2a1f2d;
+    --muted:#8a7d8e;
+    --line:#e9e0eb;
+    --danger:#c0392b;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:30px;}
+
+  #loginGate{
+    position:fixed;inset:0;
+    background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);
+    display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
+  }
+  .login-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);}
+  .login-card h2{margin:0 0 6px;font-size:1.25rem;font-weight:900;}
+  .login-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);}
+  .login-card label{display:block;font-size:.8rem;font-weight:700;margin-bottom:8px;}
+  .login-row{display:flex;gap:8px;margin-bottom:14px;}
+  .login-row select{flex:1;}
+  .add-emp-btn{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:44px;font-size:1.2rem;cursor:pointer;color:var(--purple);}
+  .continue-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 4px 10px rgba(139,195,74,.35);}
+  #loginGate.hidden{display:none;}
+
+  header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:22px 18px 26px;border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(107,31,111,.25);}
+  header .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  header h1{margin:0;font-size:1.3rem;font-weight:900;}
+  header p{margin:6px 0 0;font-size:.85rem;opacity:.85;font-weight:400;}
+  .who-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:6px 12px;font-size:.75rem;white-space:nowrap;text-align:center;}
+  .who-badge button{background:none;border:none;color:#fff;text-decoration:underline;font-size:.7rem;cursor:pointer;padding:0;margin-top:2px;display:block;font-family:'Inter',sans-serif;opacity:.85;}
+
+  main{padding:26px 18px 0;}
+  textarea, select, input[type=text]{font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;}
+  textarea:focus, select:focus, input:focus{outline:2px solid var(--green);outline-offset:1px;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;}
+  .tab-btn{flex:1;padding:9px 4px;text-align:center;background:transparent;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;}
+  .tab-btn.active{background:var(--purple);color:#fff;}
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .new-note-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
+
+  .new-note-form textarea{margin-bottom:10px;min-height:70px;}
+  .submit-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;}
+  .cancel-btn{width:100%;background:none;border:none;color:var(--muted);padding:8px;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer;margin-top:4px;}
+  .status-msg{text-align:center;font-size:.8rem;margin-top:8px;min-height:14px;color:var(--green-dark);font-weight:700;}
+  .status-msg.error{color:var(--danger);}
+
+  .note-thread{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--purple);}
+  .note-thread.done{border-right-color:var(--green);opacity:.85;}
+  .note-main{margin-bottom:6px;}
+  .note-text{font-size:.92rem;font-weight:500;line-height:1.5;margin:0 0 6px;white-space:pre-wrap;}
+  .note-meta{font-size:.72rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
+  .note-meta .author{font-weight:700;color:var(--purple);}
+  .tag{
+    display:inline-block;
+    font-size:.72rem;
+    padding:4px 10px;
+    border-radius:20px;
+    background:var(--bg);
+    border:1px solid var(--line);
+  }
+  .tag-created{color:var(--purple-dark);border-color:#e3d0e5;}
+  .tag-closed{color:var(--green-dark);border-color:#d9ecc4;background:#f3f9ec;}
+
+  .updates-list{margin:12px 0 0;padding-inline-start:14px;border-inline-start:2px dashed var(--line);}
+  .update-item{margin-bottom:10px;}
+  .update-item:last-child{margin-bottom:0;}
+  .update-text{font-size:.85rem;line-height:1.5;margin:0 0 4px;white-space:pre-wrap;}
+  .update-meta{font-size:.7rem;color:var(--muted);}
+  .update-meta .author{font-weight:700;color:var(--green-dark);}
+
+  .thread-actions{display:flex;gap:8px;margin-top:12px;}
+  .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;color:var(--ink);}
+  .action-btn.done-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
+  .action-btn.reopen-btn{background:var(--amber);color:#3d2f0a;border-color:var(--amber);}
+
+  .reply-form{margin-top:10px;display:none;}
+  .reply-form.active{display:block;}
+  .reply-form textarea{margin-bottom:8px;min-height:56px;font-size:.85rem;}
+  .reply-form .row{display:flex;gap:8px;}
+  .reply-form button{flex:1;padding:9px;border-radius:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;border:none;}
+  .reply-form .send-reply{background:var(--purple);color:#fff;}
+  .reply-form .cancel-reply{background:var(--bg);color:var(--muted);border:1px solid var(--line);}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+  .empty-state .big{font-size:2rem;margin-bottom:8px;}
+
+  @media (min-width: 860px){
+    header{border-radius:0 0 26px 26px;padding:28px 40px 34px;}
+    header h1{font-size:1.7rem;}
+    main{max-width:760px;margin:0 auto;padding:32px 24px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="loginGate">
+  <div class="login-card">
+    <h2>Welcome</h2>
+    <p>Select your name to read and leave handover notes. You only need to do this once per session.</p>
+    <label>Your name</label>
+    <div class="login-row">
+      <select id="loginSelect"></select>
+      <button class="add-emp-btn" id="loginAddBtn" title="Add new employee">+</button>
+    </div>
+    <button class="continue-btn" id="loginContinueBtn">Continue</button>
+  </div>
+</div>
+
+<header>
+  <div class="top-row">
+    <div>
+      <h1>Handover Notes</h1>
+      <p>Medicina Airport 3</p>
+    </div>
+    <div class="who-badge">
+      Logged in as<br><strong id="whoName">-</strong>
+      <button id="switchUserBtn">Switch user</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="active">Open Notes</button>
+    <button class="tab-btn" data-tab="completed">Completed</button>
+  </div>
+
+  <!-- TAB: ACTIVE -->
+  <div class="panel active" id="panel-active">
+    <button class="new-note-btn" id="newNoteToggle">+ Leave a New Note</button>
+    <div class="card new-note-form" id="newNoteForm" style="display:none;">
+      <textarea id="newNoteText" placeholder="Write your note for the next shift / colleague..."></textarea>
+      <button class="submit-btn" id="newNoteSubmit">Post Note</button>
+      <button class="cancel-btn" id="newNoteCancel">Cancel</button>
+      <div class="status-msg" id="newNoteStatus"></div>
+    </div>
+    <div id="activeList"></div>
+  </div>
+
+  <!-- TAB: COMPLETED -->
+  <div class="panel" id="panel-completed">
+    <div id="completedList"></div>
+  </div>
+</main>
+
+<div class="fixed-footer" style="position:static;display:flex;gap:10px;flex-wrap:wrap;max-width:760px;margin:0 auto;padding:0 18px 30px;">
+  <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">💾 Backup</button>
+  <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">⬆ Restore</button>
+  <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+</div>
+
+<script>
+const NOTES_KEY = 'handover-notes';
+const EMPLOYEE_KEY = 'handover-employees';
+let notes = [];
+let employees = [];
+let currentEmployee = '';
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function nowStamp(){
+  const now = new Date();
+  return {
+    iso: now.toISOString(),
+    dateDisplay: now.toLocaleDateString('en-GB'),
+    timeDisplay: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
+  };
+}
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(NOTES_KEY, true);
+    notes = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ notes = []; }
+  try{
+    const res2 = await window.storage.get(EMPLOYEE_KEY, true);
+    employees = res2 && res2.value ? JSON.parse(res2.value) : [];
+  }catch(e){ employees = []; }
+  renderEmployeeOptions();
+  renderBoard();
+}
+
+async function saveNotes(){
+  try{ await window.storage.set(NOTES_KEY, JSON.stringify(notes), true); return true; }
+  catch(e){ return false; }
+}
+async function saveEmployees(){
+  try{ await window.storage.set(EMPLOYEE_KEY, JSON.stringify(employees), true); return true; }
+  catch(e){ return false; }
+}
+
+function renderEmployeeOptions(){
+  const loginSel = document.getElementById('loginSelect');
+  if(employees.length === 0){
+    loginSel.innerHTML = `<option value="">No employees yet - tap +</option>`;
+  }else{
+    loginSel.innerHTML = employees.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+  }
+}
+
+document.getElementById('loginAddBtn').addEventListener('click', async () => {
+  const name = prompt('Enter new employee name:');
+  if(!name || !name.trim()) return;
+  const clean = name.trim();
+  if(!employees.includes(clean)){
+    employees.push(clean);
+    await saveEmployees();
+    renderEmployeeOptions();
+  }
+  document.getElementById('loginSelect').value = clean;
+});
+
+document.getElementById('loginContinueBtn').addEventListener('click', () => {
+  const val = document.getElementById('loginSelect').value;
+  if(!val){ alert('Please select or add your name first.'); return; }
+  currentEmployee = val;
+  document.getElementById('whoName').textContent = val;
+  document.getElementById('loginGate').classList.add('hidden');
+});
+
+document.getElementById('switchUserBtn').addEventListener('click', () => {
+  document.getElementById('loginGate').classList.remove('hidden');
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    renderBoard();
+  });
+});
+
+document.getElementById('newNoteToggle').addEventListener('click', () => {
+  const form = document.getElementById('newNoteForm');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+});
+document.getElementById('newNoteCancel').addEventListener('click', () => {
+  document.getElementById('newNoteForm').style.display = 'none';
+  document.getElementById('newNoteText').value = '';
+});
+
+document.getElementById('newNoteSubmit').addEventListener('click', async () => {
+  const text = document.getElementById('newNoteText').value.trim();
+  const statusEl = document.getElementById('newNoteStatus');
+  if(!currentEmployee){
+    statusEl.textContent = 'Please select your name at login first';
+    statusEl.classList.add('error');
+    return;
+  }
+  if(!text){
+    statusEl.textContent = 'Write a note first';
+    statusEl.classList.add('error');
+    return;
+  }
+  const stamp = nowStamp();
+  const note = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    author: currentEmployee,
+    text: text,
+    dateISO: stamp.iso,
+    dateDisplay: stamp.dateDisplay,
+    timeDisplay: stamp.timeDisplay,
+    status: 'open',
+    updates: []
+  };
+  notes.unshift(note);
+  const ok = await saveNotes();
+  if(ok){
+    document.getElementById('newNoteText').value = '';
+    document.getElementById('newNoteForm').style.display = 'none';
+    statusEl.textContent = '';
+    statusEl.classList.remove('error');
+    renderBoard();
+  }else{
+    notes.shift();
+    statusEl.textContent = 'Something went wrong, try again';
+    statusEl.classList.add('error');
+  }
+});
+
+function toggleReplyForm(noteId){
+  const el = document.getElementById('reply-form-' + noteId);
+  if(el) el.classList.toggle('active');
+}
+
+async function addUpdate(noteId){
+  const textEl = document.getElementById('reply-text-' + noteId);
+  const text = textEl.value.trim();
+  if(!text) return;
+  if(!currentEmployee){ alert('Please select your name at login first'); return; }
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
+  const stamp = nowStamp();
+  note.updates.push({
+    author: currentEmployee,
+    text: text,
+    dateDisplay: stamp.dateDisplay,
+    timeDisplay: stamp.timeDisplay
+  });
+  // an update on an open thread keeps it open; if it was somehow done, adding a new update reopens it
+  note.status = 'open';
+  await saveNotes();
+  renderBoard();
+}
+
+async function markDone(noteId){
+  if(!currentEmployee){ alert('Please select your name at login first'); return; }
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
+  note.status = 'done';
+  const stamp = nowStamp();
+  note.doneDate = stamp.dateDisplay;
+  note.doneTime = stamp.timeDisplay;
+  note.closedBy = currentEmployee;
+  await saveNotes();
+  renderBoard();
+}
+
+async function reopenNote(noteId){
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
+  note.status = 'open';
+  note.closedBy = null;
+  note.doneDate = null;
+  note.doneTime = null;
+  await saveNotes();
+  renderBoard();
+}
+
+function renderNoteCard(note){
+  const updatesHtml = note.updates.length ? `
+    <div class="updates-list">
+      ${note.updates.map(u => `
+        <div class="update-item">
+          <div class="update-text">${escapeHtml(u.text)}</div>
+          <div class="update-meta"><span class="author">${escapeHtml(u.author)}</span> — ${escapeHtml(u.dateDisplay)} ${escapeHtml(u.timeDisplay)}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const isDone = note.status === 'done';
+
+  return `
+    <div class="note-thread ${isDone ? 'done' : ''}">
+      <div class="note-main">
+        <div class="note-text">${escapeHtml(note.text)}</div>
+        <div class="note-meta">
+          <span class="tag tag-created">🟣 Created by <strong>${escapeHtml(note.author)}</strong> — ${escapeHtml(note.dateDisplay)} ${escapeHtml(note.timeDisplay)}</span>
+        </div>
+      </div>
+      ${updatesHtml}
+      ${isDone ? `
+        <div class="note-meta" style="margin-top:10px;">
+          <span class="tag tag-closed">🟢 Closed by <strong>${escapeHtml(note.closedBy || 'Unknown')}</strong> — ${escapeHtml(note.doneDate || '')} ${escapeHtml(note.doneTime || '')}</span>
+        </div>
+        <div class="thread-actions">
+          <button class="action-btn reopen-btn" onclick="reopenNote('${note.id}')">↺ Reopen</button>
+        </div>
+      ` : `
+        <div class="thread-actions">
+          <button class="action-btn" onclick="toggleReplyForm('${note.id}')">💬 Add Update</button>
+          <button class="action-btn done-btn" onclick="markDone('${note.id}')">✓ Mark Done</button>
+        </div>
+        <div class="reply-form" id="reply-form-${note.id}">
+          <textarea id="reply-text-${note.id}" placeholder="Add an update to this note..."></textarea>
+          <div class="row">
+            <button class="send-reply" onclick="addUpdate('${note.id}')">Send</button>
+            <button class="cancel-reply" onclick="toggleReplyForm('${note.id}')">Cancel</button>
+          </div>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderBoard(){
+  const activeNotes = notes.filter(n => n.status === 'open')
+    .sort((a,b) => {
+      const aLast = a.updates.length ? a.updates[a.updates.length-1].dateDisplay + a.updates[a.updates.length-1].timeDisplay : a.dateDisplay + a.timeDisplay;
+      const bLast = b.updates.length ? b.updates[b.updates.length-1].dateDisplay + b.updates[b.updates.length-1].timeDisplay : b.dateDisplay + b.timeDisplay;
+      return b.dateISO.localeCompare(a.dateISO);
+    });
+  const completedNotes = notes.filter(n => n.status === 'done').sort((a,b) => b.dateISO.localeCompare(a.dateISO));
+
+  const activeList = document.getElementById('activeList');
+  activeList.innerHTML = activeNotes.length
+    ? activeNotes.map(renderNoteCard).join('')
+    : `<div class="empty-state"><div class="big">📝</div>No open notes right now</div>`;
+
+  const completedList = document.getElementById('completedList');
+  completedList.innerHTML = completedNotes.length
+    ? completedNotes.map(renderNoteCard).join('')
+    : `<div class="empty-state"><div class="big">✅</div>No completed notes yet</div>`;
+}
+
+loadData();
+
+// ===== BACKUP & RESTORE =====
+document.getElementById('backupBtn').addEventListener('click', () => {
+  const backup = {
+    tool: 'handover-notes',
+    exportedAt: new Date().toISOString(),
+    [NOTES_KEY]: notes,
+    [EMPLOYEE_KEY]: employees
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `handover-notes-backup_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('restoreBtn').addEventListener('click', () => {
+  document.getElementById('restoreInput').click();
+});
+
+document.getElementById('restoreInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data[NOTES_KEY] && !data[EMPLOYEE_KEY]){
+      alert('This file does not look like a valid Handover Notes backup.');
+      return;
+    }
+    const count = (data[NOTES_KEY] || []).length;
+    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will contain ${count} notes and will REPLACE all current data.`)) return;
+
+    notes = data[NOTES_KEY] || [];
+    employees = data[EMPLOYEE_KEY] || [];
+    const ok1 = await saveNotes();
+    const ok2 = await saveEmployees();
+    if(ok1 && ok2){
+      alert('✓ Backup restored successfully.');
+      renderEmployeeOptions();
+      renderBoard();
+    }else{
+      alert('Something went wrong while restoring. Please try again.');
+    }
+  }catch(err){
+    alert('Could not read this file. Make sure it is a valid backup JSON file.');
+  }
+  e.target.value = '';
+});
+</script>
+</body>
+</html>
