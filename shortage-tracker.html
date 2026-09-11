@@ -351,18 +351,32 @@
 
   <!-- TAB: SUMMARY -->
   <div class="panel" id="panel-summary">
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-title">Filter by period</div>
+      <div class="row2">
+        <div class="field">
+          <label>From</label>
+          <input type="date" id="statsFrom">
+        </div>
+        <div class="field">
+          <label>To</label>
+          <input type="date" id="statsTo">
+        </div>
+      </div>
+    </div>
     <div class="summary-grid">
-      <div class="stat"><div class="num" id="totalCount">0</div><div class="lbl">Total shortages</div></div>
+      <div class="stat"><div class="num" id="totalCount">0</div><div class="lbl">Total in period</div></div>
       <div class="stat"><div class="num" id="todayCount">0</div><div class="lbl">Today</div></div>
     </div>
     <div class="card">
-      <div class="section-title">Shortages logged per employee</div>
+      <div class="section-title">Shortages logged per employee (in period)</div>
       <div id="empSummary"></div>
     </div>
   </div>
 </main>
 
 <div class="fixed-footer" style="flex-wrap:wrap;">
+
   <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export to Excel (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
@@ -370,7 +384,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwrLCvZBIhfJrjU5X47RYWJsclATHEPwok7UglJjGuwmNoyXs83dSO5hfUHXGSHoi7XBw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
 const STORAGE_KEY = 'shortage-entries';
 const EMPLOYEE_KEY = 'shortage-employees';
 let entries = [];
@@ -567,21 +581,48 @@ function renderList(){
 document.getElementById('filterEmployee').addEventListener('change', renderList);
 document.getElementById('searchItem').addEventListener('input', renderList);
 
+function initStatsDates(){
+  const fromEl = document.getElementById('statsFrom');
+  const toEl = document.getElementById('statsTo');
+  if(!fromEl.value){
+    const now = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    fromEl.value = firstOfMonth.toISOString().slice(0,10);
+  }
+  if(!toEl.value){
+    toEl.value = new Date().toISOString().slice(0,10);
+  }
+}
+document.getElementById('statsFrom').addEventListener('change', renderSummary);
+document.getElementById('statsTo').addEventListener('change', renderSummary);
+
 function renderSummary(){
-  const total = entries.length;
+  initStatsDates();
+  const fromVal = document.getElementById('statsFrom').value;
+  const toVal = document.getElementById('statsTo').value;
+
+  const inRange = entries.filter(e => {
+    const d = (e.dateISO || '').slice(0,10);
+    if(!d) return false;
+    if(fromVal && d < fromVal) return false;
+    if(toVal && d > toVal) return false;
+    return true;
+  });
+
+  const total = inRange.length;
   const today = new Date().toLocaleDateString('en-GB');
   const todayCount = entries.filter(e => e.dateDisplay === today).length;
   document.getElementById('totalCount').textContent = total;
   document.getElementById('todayCount').textContent = todayCount;
 
   const counts = {};
-  entries.forEach(e => { counts[e.employee] = (counts[e.employee] || 0) + 1; });
+  inRange.forEach(e => { counts[e.employee] = (counts[e.employee] || 0) + 1; });
   const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
   const max = sorted.length ? sorted[0][1] : 1;
 
   const empSummary = document.getElementById('empSummary');
   if(sorted.length === 0){
-    empSummary.innerHTML = `<div class="empty-state"><div class="big">📊</div>No data yet</div>`;
+    empSummary.innerHTML = `<div class="empty-state"><div class="big">📊</div>No data in this period</div>`;
     return;
   }
   empSummary.innerHTML = sorted.map(([name, count]) => `

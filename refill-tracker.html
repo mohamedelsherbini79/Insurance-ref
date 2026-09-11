@@ -153,6 +153,7 @@
     <button class="tab-btn active" data-tab="add">New Record</button>
     <button class="tab-btn" data-tab="patients">Patients</button>
     <button class="tab-btn" data-tab="due">Due Soon <span class="badge-count" id="dueCount" style="display:none;">0</span></button>
+    <button class="tab-btn" data-tab="stats">Stats</button>
   </div>
 
   <!-- TAB: ADD -->
@@ -235,6 +236,31 @@
   <div class="panel" id="panel-due">
     <div id="dueList"></div>
   </div>
+
+  <!-- TAB: STATS -->
+  <div class="panel" id="panel-stats">
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-title">Filter by period</div>
+      <div class="row2">
+        <div class="field">
+          <label>From</label>
+          <input type="date" id="statsFrom">
+        </div>
+        <div class="field">
+          <label>To</label>
+          <input type="date" id="statsTo">
+        </div>
+      </div>
+    </div>
+    <div class="summary-grid">
+      <div class="stat"><div class="num" id="statsTotalDispenses">0</div><div class="lbl">Refills logged in period</div></div>
+      <div class="stat"><div class="num" id="statsNewPatients">0</div><div class="lbl">New patients in period</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Refills logged per employee (in period)</div>
+      <div id="statsEmpSummary"></div>
+    </div>
+  </div>
 </main>
 
 <div class="fixed-footer">
@@ -245,7 +271,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwrLCvZBIhfJrjU5X47RYWJsclATHEPwok7UglJjGuwmNoyXs83dSO5hfUHXGSHoi7XBw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
 const PATIENTS_KEY = 'refill-patients';
 const EMPLOYEE_KEY = 'refill-employees';
 let patients = [];
@@ -352,6 +378,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
     if(btn.dataset.tab === 'patients') renderPatients();
     if(btn.dataset.tab === 'due') renderDue();
+    if(btn.dataset.tab === 'stats') renderStats();
   });
 });
 
@@ -614,6 +641,60 @@ function renderDue(){
   const badge = document.getElementById('dueCount');
   if(dueList.length){ badge.style.display='inline-block'; badge.textContent = dueList.length; }
   else{ badge.style.display='none'; }
+}
+
+// ===== STATS =====
+function initStatsDates(){
+  const fromEl = document.getElementById('statsFrom');
+  const toEl = document.getElementById('statsTo');
+  if(!fromEl.value){
+    const now = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    fromEl.value = firstOfMonth.toISOString().slice(0,10);
+  }
+  if(!toEl.value){
+    toEl.value = todayISO();
+  }
+}
+document.getElementById('statsFrom').addEventListener('change', renderStats);
+document.getElementById('statsTo').addEventListener('change', renderStats);
+
+function renderStats(){
+  initStatsDates();
+  const fromVal = document.getElementById('statsFrom').value;
+  const toVal = document.getElementById('statsTo').value;
+  const inRange = (d) => d && d >= fromVal && d <= toVal;
+
+  let totalDispenses = 0;
+  let newPatients = 0;
+  const counts = {};
+
+  patients.forEach(p => {
+    const hist = p.history || [];
+    if(hist.length && inRange(hist[0].date)) newPatients++;
+    hist.forEach(h => {
+      if(inRange(h.date)){
+        totalDispenses++;
+        const who = h.addedBy || 'Unknown';
+        counts[who] = (counts[who] || 0) + 1;
+      }
+    });
+  });
+
+  document.getElementById('statsTotalDispenses').textContent = totalDispenses;
+  document.getElementById('statsNewPatients').textContent = newPatients;
+
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  const max = sorted.length ? sorted[0][1] : 1;
+  const container = document.getElementById('statsEmpSummary');
+  container.innerHTML = sorted.length
+    ? sorted.map(([name, count]) => `
+        <div class="emp-bar">
+          <div class="top"><span>${escapeHtml(name)}</span><span>${count}</span></div>
+          <div class="track"><div class="fill" style="width:${(count/max*100).toFixed(0)}%;background:linear-gradient(90deg,var(--purple),var(--green));"></div></div>
+        </div>
+      `).join('')
+    : `<div class="empty-state"><div class="big">📊</div>No data in this period</div>`;
 }
 
 // ===== EXPORT / BACKUP / RESTORE =====
