@@ -370,6 +370,7 @@
 </div>
 
 <script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwrLCvZBIhfJrjU5X47RYWJsclATHEPwok7UglJjGuwmNoyXs83dSO5hfUHXGSHoi7XBw/exec';
 const STORAGE_KEY = 'shortage-entries';
 const EMPLOYEE_KEY = 'shortage-employees';
 let entries = [];
@@ -380,32 +381,41 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+async function apiGet(sheetName){
+  try{
+    const res = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
+    const data = await res.json();
+    return data.records || [];
+  }catch(e){ return []; }
+}
+async function apiSave(sheetName, records){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, records: records})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+
 async function loadData(){
-  try{
-    const res = await window.storage.get(STORAGE_KEY, true);
-    entries = res && res.value ? JSON.parse(res.value) : [];
-  }catch(e){ entries = []; }
-  try{
-    const res2 = await window.storage.get(EMPLOYEE_KEY, true);
-    employees = res2 && res2.value ? JSON.parse(res2.value) : [];
-  }catch(e){ employees = []; }
+  entries = await apiGet(STORAGE_KEY);
+  const empRecords = await apiGet(EMPLOYEE_KEY);
+  employees = empRecords.map(r => r.name || r.id).filter(Boolean);
   renderEmployeeOptions();
   renderList();
   renderSummary();
 }
 
 async function saveEntries(){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(entries), true);
-    return true;
-  }catch(e){ return false; }
+  return await apiSave(STORAGE_KEY, entries);
 }
 
 async function saveEmployees(){
-  try{
-    await window.storage.set(EMPLOYEE_KEY, JSON.stringify(employees), true);
-    return true;
-  }catch(e){ return false; }
+  const records = employees.map(name => ({id: name, name: name}));
+  return await apiSave(EMPLOYEE_KEY, records);
 }
 
 function renderEmployeeOptions(){
