@@ -243,6 +243,39 @@ async function apiSave(sheetName, records){
     return !!data.success;
   }catch(e){ return false; }
 }
+async function apiAppend(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'append', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiUpdateOne(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'updateOne', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiDeleteOne(sheetName, id){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'deleteOne', id: id, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 
 async function loadData(){
   const [notesData, empData] = await Promise.all([apiGet(NOTES_KEY), apiGet(EMPLOYEE_KEY)]);
@@ -343,7 +376,7 @@ document.getElementById('newNoteSubmit').addEventListener('click', async () => {
   statusEl.classList.remove('error');
   renderBoard();
 
-  const ok = await saveNotes();
+  const ok = await apiAppend(NOTES_KEY, note);
   if(!ok){
     notes.shift();
     renderBoard();
@@ -376,7 +409,7 @@ async function addUpdate(noteId){
   note.status = 'open';
   renderBoard();
 
-  const ok = await saveNotes();
+  const ok = await apiUpdateOne(NOTES_KEY, note);
   if(!ok){
     note.updates.pop();
     note.status = previousStatus;
@@ -397,7 +430,7 @@ async function markDone(noteId){
   note.closedBy = currentEmployee;
   renderBoard();
 
-  const ok = await saveNotes();
+  const ok = await apiUpdateOne(NOTES_KEY, note);
   if(!ok){
     Object.assign(note, prev);
     renderBoard();
@@ -415,7 +448,7 @@ async function reopenNote(noteId){
   note.doneTime = null;
   renderBoard();
 
-  const ok = await saveNotes();
+  const ok = await apiUpdateOne(NOTES_KEY, note);
   if(!ok){
     Object.assign(note, prev);
     renderBoard();

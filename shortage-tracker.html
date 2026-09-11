@@ -447,6 +447,39 @@ async function apiSave(sheetName, records){
     return !!data.success;
   }catch(e){ return false; }
 }
+async function apiAppend(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'append', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiUpdateOne(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'updateOne', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiDeleteOne(sheetName, id){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'deleteOne', id: id, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 
 async function loadData(){
   const [entriesData, empData] = await Promise.all([apiGet(STORAGE_KEY), apiGet(EMPLOYEE_KEY)]);
@@ -539,10 +572,6 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     return;
   }
 
-  btn.disabled = true;
-  statusEl.classList.remove('error');
-  statusEl.textContent = 'Saving...';
-
   const now = new Date();
   const entry = {
     id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
@@ -557,28 +586,30 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   };
 
   entries.unshift(entry);
-  const ok = await saveEntries();
-  btn.disabled = false;
-
-  if(ok){
-    statusEl.textContent = '✓ Shortage logged successfully';
-    document.getElementById('itemName').value = '';
-    document.getElementById('itemQty').value = '';
-    document.getElementById('itemNotes').value = '';
-  }else{
-    entries.shift();
-    statusEl.textContent = 'Something went wrong, please try again';
-    statusEl.classList.add('error');
-  }
+  statusEl.classList.remove('error');
+  statusEl.textContent = '✓ Shortage logged successfully';
+  document.getElementById('itemName').value = '';
+  document.getElementById('itemQty').value = '';
+  document.getElementById('itemNotes').value = '';
+  renderList();
+  renderSummary();
   setTimeout(() => { statusEl.textContent=''; statusEl.classList.remove('error'); }, 2500);
+
+  const ok = await apiAppend(STORAGE_KEY, entry);
+  if(!ok){
+    entries.shift();
+    renderList();
+    renderSummary();
+    alert('Could not save this entry. Please check your connection and try again.');
+  }
 });
 
 async function deleteEntry(id){
   if(!confirm('Delete this entry?')) return;
   entries = entries.filter(e => e.id !== id);
-  await saveEntries();
   renderList();
   renderSummary();
+  await apiDeleteOne(STORAGE_KEY, id);
 }
 
 function renderList(){

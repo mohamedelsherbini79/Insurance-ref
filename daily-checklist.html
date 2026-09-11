@@ -280,6 +280,39 @@ async function apiSave(sheetName, records){
     return !!data.success;
   }catch(e){ return false; }
 }
+async function apiAppend(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'append', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiUpdateOne(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'updateOne', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiDeleteOne(sheetName, id){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'deleteOne', id: id, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 
 async function loadData(){
   const [entriesData, empData] = await Promise.all([apiGet(ENTRIES_KEY), apiGet(EMPLOYEE_KEY)]);
@@ -386,10 +419,6 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const checkedArr = Array.from(boxes).map(b => b.checked);
   const completedCount = checkedArr.filter(Boolean).length;
 
-  btn.disabled = true;
-  statusEl.classList.remove('error');
-  statusEl.textContent = 'Saving...';
-
   const now = new Date();
   const dKey = todayKey();
   const newEntry = {
@@ -404,20 +433,21 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     timeDisplay: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
   };
 
+  const previousEntry = entries.find(e => e.employee === currentEmployee && e.dateKey === dKey) || null;
   entries = entries.filter(e => !(e.employee === currentEmployee && e.dateKey === dKey));
   entries.push(newEntry);
 
-  const ok = await saveEntries();
-  btn.disabled = false;
-
-  if(ok){
-    statusEl.textContent = '✓ Checklist saved for today';
-    document.getElementById('submitBtn').textContent = 'Update Today\'s Checklist';
-  }else{
-    statusEl.textContent = 'Something went wrong, please try again';
-    statusEl.classList.add('error');
-  }
+  statusEl.classList.remove('error');
+  statusEl.textContent = '✓ Checklist saved for today';
+  document.getElementById('submitBtn').textContent = 'Update Today\'s Checklist';
   setTimeout(() => { statusEl.textContent=''; statusEl.classList.remove('error'); }, 2500);
+
+  const ok = await apiUpdateOne(ENTRIES_KEY, newEntry);
+  if(!ok){
+    entries = entries.filter(e => e.id !== newEntry.id);
+    if(previousEntry) entries.push(previousEntry);
+    alert('Could not save the checklist. Please check your connection and try again.');
+  }
 });
 
 // ===== REPORT =====

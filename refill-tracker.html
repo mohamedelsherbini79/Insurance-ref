@@ -359,6 +359,39 @@ async function apiSave(sheetName, records){
     return !!data.success;
   }catch(e){ return false; }
 }
+async function apiAppend(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'append', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiUpdateOne(sheetName, record){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'updateOne', record: record, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+async function apiDeleteOne(sheetName, id){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, action: 'deleteOne', id: id, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 
 async function loadData(){
   const [patientsData, empData] = await Promise.all([apiGet(PATIENTS_KEY), apiGet(EMPLOYEE_KEY)]);
@@ -553,6 +586,8 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 
   const nextDueDate = addDays(dispenseDate, cycleDays);
   let patient = patients.find(p => normalizePhone(p.phone) === phone);
+  const isNewPatient = !patient;
+  const snapshot = patient ? JSON.parse(JSON.stringify(patient)) : null;
   const historyEntry = {date: dispenseDate, medications: meds, addedBy: currentEmployee};
 
   if(patient){
@@ -575,30 +610,36 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     patients.push(patient);
   }
 
-  const ok = await savePatients();
-  if(ok){
-    statusEl.textContent = '✓ Record saved. Next refill due ' + displayDate(nextDueDate);
-    statusEl.classList.remove('error');
-    document.getElementById('patName').value = '';
-    document.getElementById('patPhone').value = '';
-    document.getElementById('patNotes').value = '';
-    document.getElementById('dispenseDate').value = todayISO();
-    document.getElementById('cycleDays').value = 30;
-    clearMedsForm(); addMedRow();
-    rxBase64 = null; invBase64 = null;
-    document.getElementById('rxLabel').textContent = '📄 Tap to upload prescription photo';
-    document.getElementById('invLabel').textContent = '🧾 Tap to upload invoice photo';
-    document.getElementById('rxPreview').style.display='none';
-    document.getElementById('invPreview').style.display='none';
-    document.getElementById('rxFile').value='';
-    document.getElementById('invFile').value='';
-    document.getElementById('extractStatus').textContent='';
-    renderPatients(); renderDue();
-  }else{
-    statusEl.textContent = 'Something went wrong, please try again';
-    statusEl.classList.add('error');
-  }
+  statusEl.textContent = '✓ Record saved. Next refill due ' + displayDate(nextDueDate);
+  statusEl.classList.remove('error');
+  document.getElementById('patName').value = '';
+  document.getElementById('patPhone').value = '';
+  document.getElementById('patNotes').value = '';
+  document.getElementById('dispenseDate').value = todayISO();
+  document.getElementById('cycleDays').value = 30;
+  clearMedsForm(); addMedRow();
+  rxBase64 = null; invBase64 = null;
+  document.getElementById('rxLabel').textContent = '📄 Tap to upload prescription photo';
+  document.getElementById('invLabel').textContent = '🧾 Tap to upload invoice photo';
+  document.getElementById('rxPreview').style.display='none';
+  document.getElementById('invPreview').style.display='none';
+  document.getElementById('rxFile').value='';
+  document.getElementById('invFile').value='';
+  document.getElementById('extractStatus').textContent='';
+  renderPatients(); renderDue();
   setTimeout(() => { statusEl.textContent=''; statusEl.classList.remove('error'); }, 4000);
+
+  const ok = await apiUpdateOne(PATIENTS_KEY, patient);
+  if(!ok){
+    if(isNewPatient){
+      patients = patients.filter(p => p.id !== patient.id);
+    }else{
+      const idx = patients.findIndex(p => p.id === patient.id);
+      if(idx !== -1) patients[idx] = snapshot;
+    }
+    renderPatients(); renderDue();
+    alert('Could not save this record. Please check your connection and try again.');
+  }
 });
 
 // ===== STATUS CALC =====
