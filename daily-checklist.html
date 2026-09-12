@@ -262,7 +262,7 @@
   </div>
 </main>
 
-<div class="fixed-footer" style="flex-wrap:wrap;">
+<div class="fixed-footer" id="footerActions" style="flex-wrap:wrap;display:none;">
   <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export Monthly Report (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
@@ -481,6 +481,8 @@ function loginAs(name){
   currentEmployee = name;
   try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
   document.getElementById('adminPanelBtn').style.display = isAdmin() ? 'block' : 'none';
+  const footerEl = document.getElementById('footerActions');
+  if(footerEl) footerEl.style.display = isAdmin() ? 'flex' : 'none';
   document.getElementById('adminItemsCard').style.display = isAdmin() ? 'block' : 'none';
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
@@ -542,12 +544,31 @@ function renderAdminPanel(){
   const list = document.getElementById('adminEmployeeList');
   list.innerHTML = employees.length
     ? employees.map(e => `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem;gap:8px;">
           <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}${e === ADMIN_NAME ? ' <strong style=\'color:var(--purple)\'>(admin)</strong>' : ''}</span>
-          ${e === ADMIN_NAME ? '' : `<button onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;">Remove</button>`}
+          <span style="display:flex;gap:6px;flex-shrink:0;">
+            <button onclick="setEmployeePin('${e.replace(/'/g, "\\'")}')" style="background:var(--bg);color:var(--purple);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;">PIN</button>
+            ${e === ADMIN_NAME ? '' : `<button onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;">Remove</button>`}
+          </span>
         </div>
       `).join('')
     : '<div style="color:var(--muted);font-size:.85rem;">No names yet.</div>';
+}
+async function setEmployeePin(name){
+  if(!isAdmin()) return;
+  const input = prompt('Set a 4-digit PIN for ' + name + ' (leave empty to remove the PIN):', employeePins[name] || '');
+  if(input === null) return;
+  if(input === ''){
+    delete employeePins[name];
+  }else if(/^\d{4}$/.test(input)){
+    employeePins[name] = input;
+  }else{
+    alert('PIN must be exactly 4 digits.');
+    return;
+  }
+  renderAdminPanel();
+  renderEmployeeOptions();
+  await apiUpdateOne(EMPLOYEE_KEY, {id: name, name: name, pin: employeePins[name] || ''});
 }
 
 function renderAdminItems(){
