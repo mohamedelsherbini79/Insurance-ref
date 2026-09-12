@@ -437,11 +437,17 @@ function escapeHtml(s){
 const API_KEY = 'Medicina-airport3-2026';
 
 async function apiGet(sheetName){
-  try{
-    const res = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`);
-    const data = await res.json();
-    return data.records || [];
-  }catch(e){ return []; }
+  // Apps Script occasionally has a transient hiccup on a single request - retry
+  // a couple of times before giving up, so a blip doesn't look like missing data.
+  for(let attempt = 0; attempt < 3; attempt++){
+    try{
+      const res = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`);
+      const data = await res.json();
+      if(data && Array.isArray(data.records)) return data.records;
+    }catch(e){}
+    if(attempt < 2) await new Promise(r => setTimeout(r, 700));
+  }
+  return [];
 }
 async function apiSave(sheetName, records){
   try{
