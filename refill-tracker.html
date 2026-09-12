@@ -746,7 +746,8 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
     }
     statusEl.textContent = '✓ Extracted — please review the fields below before saving';
   }catch(err){
-    statusEl.textContent = 'Could not read the image(s) automatically. Please fill the fields manually below.';
+    console.error('Extract with AI failed:', err);
+    statusEl.textContent = 'Could not read the image(s): ' + (err.message || err) + '. Please fill the fields manually below.';
     statusEl.classList.add('error');
   }
   btn.disabled = false;
