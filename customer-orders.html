@@ -232,13 +232,25 @@ function updateSyncBadge(){
   if(n > 0){ el.style.display = 'inline-block'; el.textContent = '⏳ ' + n + ' pending sync'; }
   else{ el.style.display = 'none'; }
 }
+async function fetchWithTimeout(url, options, timeoutMs){
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs || 8000);
+  try{
+    const res = await fetch(url, Object.assign({}, options || {}, {signal: controller.signal}));
+    clearTimeout(id);
+    return res;
+  }catch(e){
+    clearTimeout(id);
+    throw e;
+  }
+}
 async function sendOp(op){
   try{
-    const res = await fetch(API_URL, {
+    const res = await fetchWithTimeout(API_URL, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify(Object.assign({key: API_KEY}, op))
-    });
+    }, 10000);
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
@@ -259,9 +271,10 @@ setInterval(flushQueue, 30000);
 async function apiGet(sheetName){
   // Apps Script occasionally has a transient hiccup on a single request - retry
   // a couple of times before giving up, so a blip doesn't look like missing data.
+  // Each attempt has an 8s hard timeout so a stalled connection fails fast instead of hanging.
   for(let attempt = 0; attempt < 3; attempt++){
     try{
-      const res = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`);
+      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 8000);
       const data = await res.json();
       if(data && Array.isArray(data.records)) return data.records;
     }catch(e){}
