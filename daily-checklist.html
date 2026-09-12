@@ -187,10 +187,21 @@
       <div class="who-badge">
         Logged in as<br><strong id="whoName">-</strong>
         <button id="switchUserBtn">Switch user</button>
+        <button id="adminPanelBtn" style="display:none;">⚙️ Manage team</button>
       </div>
     </div>
   </div>
 </header>
+
+<div id="adminPanel" style="display:none;position:fixed;inset:0;background:rgba(45,20,48,.55);z-index:997;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:18px;padding:24px;max-width:380px;width:100%;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h3 style="margin:0;font-size:1.05rem;font-weight:900;">Manage Team</h3>
+      <button id="adminPanelClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);">✕</button>
+    </div>
+    <div id="adminEmployeeList"></div>
+  </div>
+</div>
 <div class="quick-nav">
     <a href="hub.html">🏠 Hub</a>
     <a href="dashboard.html">📊 Dashboard</a>
@@ -209,6 +220,14 @@
 
   <!-- TAB: TODAY -->
   <div class="panel active" id="panel-today">
+    <div class="card" id="adminItemsCard" style="display:none;">
+      <div class="section-title">⚙️ Manage checklist items (admin only)</div>
+      <div id="adminItemsList" style="margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="newItemText" placeholder="New checklist item..." style="flex:1;">
+        <button id="addItemBtn" style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;">Add</button>
+      </div>
+    </div>
     <div class="card">
       <div class="today-badge" id="todayLabel">Today</div>
       <div id="checklistItems"></div>
@@ -254,13 +273,15 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
 const ENTRIES_KEY = 'checklist-entries';
 const EMPLOYEE_KEY = 'checklist-employees';
-const CHECKLIST_ITEMS = [
+const ITEMS_KEY = 'checklist-items';
+const DEFAULT_CHECKLIST_ITEMS = [
   "Promotions reviewed and displayed correctly",
   "Shortage tracker reviewed (new entries checked)",
   "Recurring zero-stock items followed up",
   "Escalation emails checked for replies (ceiling / AC / pending requests)",
   "Store appearance checked (fridges, testers, shelves)"
 ];
+let CHECKLIST_ITEMS = DEFAULT_CHECKLIST_ITEMS.slice();
 
 let entries = [];
 let employees = [];
@@ -409,12 +430,28 @@ function applyEmployees(empData){
 async function loadData(){
   const cachedEmp = getCached(EMPLOYEE_KEY);
   const cachedEntries = getCached(ENTRIES_KEY);
+  const cachedItems = getCached(ITEMS_KEY);
+  if(cachedItems && cachedItems.length){ CHECKLIST_ITEMS = cachedItems.map(r => r.text || r.id); }
   if(cachedEmp) applyEmployees(cachedEmp);
   if(cachedEntries){ entries = cachedEntries; buildChecklist(); renderReport(); }
 
   apiGet(EMPLOYEE_KEY).then(empData => {
     applyEmployees(empData);
     setCached(EMPLOYEE_KEY, empData);
+  });
+
+  apiGet(ITEMS_KEY).then(async itemsData => {
+    if(itemsData.length === 0){
+      // First run: seed the sheet with the default items so everyone starts from the same list
+      for(const text of DEFAULT_CHECKLIST_ITEMS){
+        await apiAppend(ITEMS_KEY, {id: text, text: text});
+      }
+      itemsData = DEFAULT_CHECKLIST_ITEMS.map(text => ({id: text, text: text}));
+    }
+    CHECKLIST_ITEMS = itemsData.map(r => r.text || r.id);
+    setCached(ITEMS_KEY, itemsData);
+    buildChecklist();
+    renderAdminItems();
   });
 
   const entriesData = await apiGet(ENTRIES_KEY);
@@ -437,21 +474,18 @@ function initials(name){
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
 
+const ADMIN_NAME = 'Mohamed Elsherbini';
+function isAdmin(){ return currentEmployee === ADMIN_NAME; }
+
 function loginAs(name){
   currentEmployee = name;
   try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
+  document.getElementById('adminPanelBtn').style.display = isAdmin() ? 'block' : 'none';
+  document.getElementById('adminItemsCard').style.display = isAdmin() ? 'block' : 'none';
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
   buildChecklist();
   notifyIfNeeded();
-}
-
-async function deleteEmployee(name){
-  if(!confirm('Remove "' + name + '" from this list?')) return;
-  employees = employees.filter(e => e !== name);
-  delete employeePins[name];
-  renderEmployeeOptions();
-  await apiDeleteOne(EMPLOYEE_KEY, name);
 }
 
 function attemptLogin(name){
@@ -467,13 +501,10 @@ function renderEmployeeOptions(){
   const grid = document.getElementById('avatarGrid');
   grid.innerHTML = employees.length
     ? employees.map(e => `
-        <div class="avatar-tile" style="position:relative;cursor:default;">
-          <button type="button" class="avatar-del" onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" title="Remove this name">✕</button>
-          <div onclick="attemptLogin('${e.replace(/'/g, "\\'")}')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
-            <div class="avatar-circle">${escapeHtml(initials(e))}</div>
-            <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
-          </div>
-        </div>
+        <button class="avatar-tile" onclick="attemptLogin('${e.replace(/'/g, "\\'")}')">
+          <div class="avatar-circle">${escapeHtml(initials(e))}</div>
+          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
+        </button>
       `).join('')
     : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
@@ -499,6 +530,65 @@ document.getElementById('switchUserBtn').addEventListener('click', () => {
   try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+document.getElementById('adminPanelBtn').addEventListener('click', () => {
+  renderAdminPanel();
+  document.getElementById('adminPanel').style.display = 'flex';
+});
+document.getElementById('adminPanelClose').addEventListener('click', () => {
+  document.getElementById('adminPanel').style.display = 'none';
+});
+function renderAdminPanel(){
+  const list = document.getElementById('adminEmployeeList');
+  list.innerHTML = employees.length
+    ? employees.map(e => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem;">
+          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}${e === ADMIN_NAME ? ' <strong style=\'color:var(--purple)\'>(admin)</strong>' : ''}</span>
+          ${e === ADMIN_NAME ? '' : `<button onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;">Remove</button>`}
+        </div>
+      `).join('')
+    : '<div style="color:var(--muted);font-size:.85rem;">No names yet.</div>';
+}
+
+function renderAdminItems(){
+  const list = document.getElementById('adminItemsList');
+  list.innerHTML = CHECKLIST_ITEMS.map(text => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:.82rem;">
+      <span>${escapeHtml(text)}</span>
+      <button onclick="deleteChecklistItem('${text.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:4px 9px;font-size:.7rem;cursor:pointer;">✕</button>
+    </div>
+  `).join('');
+}
+document.getElementById('addItemBtn').addEventListener('click', async () => {
+  const input = document.getElementById('newItemText');
+  const text = input.value.trim();
+  if(!text) return;
+  if(CHECKLIST_ITEMS.includes(text)){ alert('This item already exists.'); return; }
+  CHECKLIST_ITEMS.push(text);
+  input.value = '';
+  renderAdminItems();
+  buildChecklist();
+  setCached(ITEMS_KEY, CHECKLIST_ITEMS.map(t => ({id: t, text: t})));
+  await apiAppend(ITEMS_KEY, {id: text, text: text});
+});
+async function deleteChecklistItem(text){
+  if(!isAdmin()) return;
+  if(!confirm('Remove this checklist item for everyone?')) return;
+  CHECKLIST_ITEMS = CHECKLIST_ITEMS.filter(t => t !== text);
+  renderAdminItems();
+  buildChecklist();
+  setCached(ITEMS_KEY, CHECKLIST_ITEMS.map(t => ({id: t, text: t})));
+  await apiDeleteOne(ITEMS_KEY, text);
+}
+async function deleteEmployee(name){
+  if(!isAdmin()) return;
+  if(!confirm('Remove "' + name + '" from this list?')) return;
+  employees = employees.filter(e => e !== name);
+  delete employeePins[name];
+  renderEmployeeOptions();
+  renderAdminPanel();
+  await apiDeleteOne(EMPLOYEE_KEY, name);
+}
 
 let sharedLoginTried = false;
 function trySharedLogin(){

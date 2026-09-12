@@ -178,10 +178,21 @@
       <div class="who-badge">
         Logged in as<br><strong id="whoName">-</strong>
         <button id="switchUserBtn">Switch user</button>
+        <button id="adminPanelBtn" style="display:none;">⚙️ Manage team</button>
       </div>
     </div>
   </div>
 </header>
+
+<div id="adminPanel" style="display:none;position:fixed;inset:0;background:rgba(45,20,48,.55);z-index:997;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:18px;padding:24px;max-width:380px;width:100%;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h3 style="margin:0;font-size:1.05rem;font-weight:900;">Manage Team</h3>
+      <button id="adminPanelClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);">✕</button>
+    </div>
+    <div id="adminEmployeeList"></div>
+  </div>
+</div>
 <div class="quick-nav">
     <a href="hub.html">🏠 Hub</a>
     <a href="dashboard.html">📊 Dashboard</a>
@@ -399,20 +410,16 @@ function initials(name){
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
 
+const ADMIN_NAME = 'Mohamed Elsherbini';
+function isAdmin(){ return currentEmployee === ADMIN_NAME; }
+
 function loginAs(name){
   currentEmployee = name;
   try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
+  document.getElementById('adminPanelBtn').style.display = isAdmin() ? 'block' : 'none';
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
   notifyIfNeeded();
-}
-
-async function deleteEmployee(name){
-  if(!confirm('Remove "' + name + '" from this list?')) return;
-  employees = employees.filter(e => e !== name);
-  delete employeePins[name];
-  renderEmployeeOptions();
-  await apiDeleteOne(EMPLOYEE_KEY, name);
 }
 
 function attemptLogin(name){
@@ -428,13 +435,10 @@ function renderEmployeeOptions(){
   const grid = document.getElementById('avatarGrid');
   grid.innerHTML = employees.length
     ? employees.map(e => `
-        <div class="avatar-tile" style="position:relative;cursor:default;">
-          <button type="button" class="avatar-del" onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" title="Remove this name">✕</button>
-          <div onclick="attemptLogin('${e.replace(/'/g, "\\'")}')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
-            <div class="avatar-circle">${escapeHtml(initials(e))}</div>
-            <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
-          </div>
-        </div>
+        <button class="avatar-tile" onclick="attemptLogin('${e.replace(/'/g, "\\'")}')">
+          <div class="avatar-circle">${escapeHtml(initials(e))}</div>
+          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
+        </button>
       `).join('')
     : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
@@ -460,6 +464,34 @@ document.getElementById('switchUserBtn').addEventListener('click', () => {
   try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+document.getElementById('adminPanelBtn').addEventListener('click', () => {
+  renderAdminPanel();
+  document.getElementById('adminPanel').style.display = 'flex';
+});
+document.getElementById('adminPanelClose').addEventListener('click', () => {
+  document.getElementById('adminPanel').style.display = 'none';
+});
+function renderAdminPanel(){
+  const list = document.getElementById('adminEmployeeList');
+  list.innerHTML = employees.length
+    ? employees.map(e => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem;">
+          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}${e === ADMIN_NAME ? ' <strong style=\'color:var(--purple)\'>(admin)</strong>' : ''}</span>
+          ${e === ADMIN_NAME ? '' : `<button onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;">Remove</button>`}
+        </div>
+      `).join('')
+    : '<div style="color:var(--muted);font-size:.85rem;">No names yet.</div>';
+}
+async function deleteEmployee(name){
+  if(!isAdmin()) return;
+  if(!confirm('Remove "' + name + '" from this list?')) return;
+  employees = employees.filter(e => e !== name);
+  delete employeePins[name];
+  renderEmployeeOptions();
+  renderAdminPanel();
+  await apiDeleteOne(EMPLOYEE_KEY, name);
+}
 
 let sharedLoginTried = false;
 function trySharedLogin(){
