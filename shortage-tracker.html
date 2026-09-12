@@ -598,9 +598,10 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
     const pinInput = prompt('Set a 4-digit PIN to protect your name (optional - press Cancel to skip):');
     if(pinInput && /^\d{4}$/.test(pinInput)) employeePins[clean] = pinInput;
     employees.push(clean);
-    await saveEmployees();
     renderEmployeeOptions();
     loginAs(clean);
+    // Append-only: never overwrites names other people may have added on their own devices
+    await apiAppend(EMPLOYEE_KEY, {id: clean, name: clean, pin: employeePins[clean] || ''});
   }else{
     attemptLogin(clean);
   }
