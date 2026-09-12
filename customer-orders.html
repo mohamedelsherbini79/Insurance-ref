@@ -486,7 +486,7 @@ function trySharedLogin(){
     renderEmployeeOptions();
     apiAppend(EMPLOYEE_KEY, {id: shared, name: shared, pin: ''});
   }
-  loginAs(shared);
+  attemptLogin(shared);
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
