@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Medicina Airport 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --purple:#6b1f6f; --purple-dark:#4d1650; --green:#8bc34a; --green-dark:#6f9c38;
+    --amber:#e0a72c; --danger:#c0392b; --bg:#faf8fb; --card:#ffffff; --ink:#2a1f2d;
+    --muted:#8a7d8e; --line:#e9e0eb; --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px;}
+
+  #pwGate{position:fixed;inset:0;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+  .pw-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;}
+  .pw-card input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  .pw-card button{width:100%;background:var(--green);color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;}
+  #pwError{color:var(--danger);font-size:.78rem;margin-top:10px;min-height:14px;}
+
+  header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:28px 20px 34px;border-radius:0 0 26px 26px;box-shadow:0 4px 14px rgba(107,31,111,.25);text-align:center;}
+  header h1{margin:0;font-size:1.5rem;font-weight:900;}
+  header p{margin:8px 0 0;font-size:.9rem;opacity:.85;}
+
+  main{max-width:960px;margin:0 auto;padding:26px 18px 20px;}
+  .loading{text-align:center;color:var(--muted);padding:60px 20px;font-size:.9rem;}
+
+  .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+  @media (min-width:640px){ .grid4{grid-template-columns:repeat(4,1fr);} }
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px;text-align:center;}
+  .stat-card .num{font-size:1.7rem;font-weight:900;color:var(--purple);}
+  .stat-card .lbl{font-size:.72rem;color:var(--muted);margin-top:4px;}
+  .stat-card.warn .num{color:var(--amber);}
+  .stat-card.danger .num{color:var(--danger);}
+
+  .tool-section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+  .tool-section h2{margin:0 0 14px;font-size:1rem;font-weight:900;display:flex;align-items:center;gap:8px;}
+  .row-line{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.85rem;}
+  .row-line:last-child{border-bottom:none;}
+  .row-line .val{font-weight:800;color:var(--purple);}
+  .tool-link{display:inline-block;margin-top:10px;font-size:.78rem;color:var(--purple);text-decoration:none;font-weight:700;}
+
+  .export-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:14px;border-radius:12px;font-family:'Inter',sans-serif;font-weight:900;font-size:.92rem;cursor:pointer;margin-top:6px;}
+  .export-status{text-align:center;font-size:.78rem;color:var(--muted);margin-top:8px;min-height:14px;}
+</style>
+</head>
+<body>
+
+<div id="pwGate">
+  <div class="pw-card">
+    <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
+    <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;">Medicina Airport 3</h2>
+    <p style="margin:0 0 18px;font-size:.82rem;color:var(--muted);">Enter the branch password to continue</p>
+    <input type="password" id="pwInput" placeholder="Password">
+    <button id="pwSubmit">Enter</button>
+    <div id="pwError"></div>
+  </div>
+</div>
+
+<header>
+  <h1>Branch Dashboard</h1>
+  <p>Medicina Airport 3 — overview across all tools</p>
+</header>
+
+<main>
+  <div id="loadingMsg" class="loading">Loading data from all tools...</div>
+  <div id="content" style="display:none;">
+
+    <div class="grid4">
+      <div class="stat-card"><div class="num" id="statShortageToday">0</div><div class="lbl">Shortages today</div></div>
+      <div class="stat-card"><div class="num" id="statChecklistToday">0/0</div><div class="lbl">Checklist done today</div></div>
+      <div class="stat-card warn" id="notesCard"><div class="num" id="statNotesOpen">0</div><div class="lbl">Open handover notes</div></div>
+      <div class="stat-card danger" id="refillsCard"><div class="num" id="statRefillsDue">0</div><div class="lbl">Refills due/overdue</div></div>
+    </div>
+
+    <div class="tool-section">
+      <h2>📦 Shortage Tracker</h2>
+      <div class="row-line"><span>Total shortages logged</span><span class="val" id="dShortageTotal">0</span></div>
+      <div class="row-line"><span>Logged today</span><span class="val" id="dShortageToday">0</span></div>
+      <div class="row-line"><span>Top item this month</span><span class="val" id="dShortageTop">-</span></div>
+      <a class="tool-link" href="shortage-tracker.html">Open Shortage Tracker →</a>
+    </div>
+
+    <div class="tool-section">
+      <h2>✅ Daily Checklist</h2>
+      <div class="row-line"><span>Team compliance today</span><span class="val" id="dChecklistToday">0%</span></div>
+      <div class="row-line"><span>Employees checked in today</span><span class="val" id="dChecklistNames">-</span></div>
+      <a class="tool-link" href="daily-checklist.html">Open Daily Checklist →</a>
+    </div>
+
+    <div class="tool-section">
+      <h2>📝 Handover Notes</h2>
+      <div class="row-line"><span>Open notes</span><span class="val" id="dNotesOpen">0</span></div>
+      <div class="row-line"><span>Closed notes</span><span class="val" id="dNotesClosed">0</span></div>
+      <a class="tool-link" href="handover-notes.html">Open Handover Notes →</a>
+    </div>
+
+    <div class="tool-section">
+      <h2>💊 Chronic Refill Tracker</h2>
+      <div class="row-line"><span>Total patients</span><span class="val" id="dRefillTotal">0</span></div>
+      <div class="row-line"><span>Due within window</span><span class="val" id="dRefillDue">0</span></div>
+      <div class="row-line"><span>Overdue</span><span class="val" id="dRefillOverdue">0</span></div>
+      <a class="tool-link" href="refill-tracker.html">Open Refill Tracker →</a>
+    </div>
+
+    <div class="tool-section">
+      <h2>⬇ Combined Report</h2>
+      <p style="font-size:.8rem;color:var(--muted);margin:0 0 4px;">Exports every tool's current data into one Excel file, each on its own sheet.</p>
+      <button class="export-btn" id="exportAllBtn">Export Combined Report (Excel)</button>
+      <div class="export-status" id="exportStatus"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
+const API_KEY = 'Medicina-airport3-2026';
+const SITE_PASSWORD = '2026';
+
+document.getElementById('pwSubmit').addEventListener('click', checkPw);
+document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkPw(); });
+function checkPw(){
+  const val = document.getElementById('pwInput').value;
+  if(val === SITE_PASSWORD){
+    sessionStorage.setItem('medicina-branch-auth', 'ok');
+    document.getElementById('pwGate').style.display = 'none';
+    loadAll();
+  }else{
+    document.getElementById('pwError').textContent = 'Incorrect password, try again.';
+  }
+}
+if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
+  document.getElementById('pwGate').style.display = 'none';
+  loadAll();
+}
+
+async function apiGet(sheetName){
+  try{
+    const res = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`);
+    const data = await res.json();
+    return data.records || [];
+  }catch(e){ return []; }
+}
+
+let allData = {};
+
+async function loadAll(){
+  const [shortages, checklist, notes, patients] = await Promise.all([
+    apiGet('shortage-entries'),
+    apiGet('checklist-entries'),
+    apiGet('handover-notes'),
+    apiGet('refill-patients')
+  ]);
+  allData = { shortages, checklist, notes, patients };
+
+  document.getElementById('loadingMsg').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+
+  renderShortages(shortages);
+  renderChecklist(checklist);
+  renderNotes(notes);
+  renderRefills(patients);
+}
+
+function renderShortages(list){
+  const today = new Date().toLocaleDateString('en-GB');
+  const todayCount = list.filter(e => e.dateDisplay === today).length;
+  document.getElementById('statShortageToday').textContent = todayCount;
+  document.getElementById('dShortageTotal').textContent = list.length;
+  document.getElementById('dShortageToday').textContent = todayCount;
+
+  const counts = {};
+  const now = new Date();
+  list.forEach(e => {
+    const d = new Date(e.dateISO || e.dateDisplay);
+    if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()){
+      counts[e.item] = (counts[e.item] || 0) + 1;
+    }
+  });
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+  document.getElementById('dShortageTop').textContent = top ? `${top[0]} (${top[1]})` : '-';
+}
+
+function renderChecklist(list){
+  const todayKey = new Date().toISOString().slice(0,10);
+  const todayEntries = list.filter(e => e.dateKey === todayKey);
+  const names = [...new Set(todayEntries.map(e => e.employee))];
+  document.getElementById('statChecklistToday').textContent = names.length + ' logged';
+  const avgPct = todayEntries.length ? Math.round(todayEntries.reduce((s,e)=>s+(e.completionPct||0),0)/todayEntries.length) : 0;
+  document.getElementById('dChecklistToday').textContent = avgPct + '%';
+  document.getElementById('dChecklistNames').textContent = names.length ? names.join(', ') : 'None yet';
+}
+
+function renderNotes(list){
+  const open = list.filter(n => n.status === 'open').length;
+  const closed = list.filter(n => n.status === 'done').length;
+  document.getElementById('statNotesOpen').textContent = open;
+  document.getElementById('dNotesOpen').textContent = open;
+  document.getElementById('dNotesClosed').textContent = closed;
+}
+
+function renderRefills(list){
+  const today = new Date().toISOString().slice(0,10);
+  function reminderWindow(cycleDays){
+    if(Number(cycleDays) === 90) return 7;
+    if(Number(cycleDays) === 60) return 5;
+    return 3;
+  }
+  function daysBetween(a,b){
+    return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
+  }
+  let due = 0, overdue = 0;
+  list.forEach(p => {
+    const diff = daysBetween(today, p.nextDueDate);
+    const w = reminderWindow(p.cycleDays);
+    if(diff < 0) overdue++;
+    else if(diff <= w) due++;
+  });
+  document.getElementById('statRefillsDue').textContent = due + overdue;
+  document.getElementById('dRefillTotal').textContent = list.length;
+  document.getElementById('dRefillDue').textContent = due;
+  document.getElementById('dRefillOverdue').textContent = overdue;
+}
+
+document.getElementById('exportAllBtn').addEventListener('click', () => {
+  const statusEl = document.getElementById('exportStatus');
+  statusEl.textContent = 'Building file...';
+  try{
+    const wb = XLSX.utils.book_new();
+
+    const shortageRows = allData.shortages.map(e => ({
+      Date: e.dateDisplay, Time: e.timeDisplay, Employee: e.employee, Item: e.item,
+      Qty: e.qty, Type: e.type, Notes: e.notes || ''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(shortageRows), 'Shortages');
+
+    const checklistRows = allData.checklist.map(e => ({
+      Date: e.dateDisplay, Employee: e.employee, Completed: e.completedCount,
+      Total: e.totalCount, 'Completion %': e.completionPct
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(checklistRows), 'Checklist');
+
+    const notesRows = allData.notes.map(n => ({
+      Text: n.text, Author: n.author, Date: n.dateDisplay, Status: n.status,
+      'Closed By': n.closedBy || '', 'Closed Date': n.doneDate || '',
+      Updates: (n.updates||[]).map(u => `${u.author}: ${u.text}`).join(' | ')
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(notesRows), 'Handover Notes');
+
+    const refillRows = allData.patients.map(p => ({
+      Name: p.name, Phone: p.phone, 'Last Dispense': p.lastDispenseDate,
+      'Next Due': p.nextDueDate, 'Cycle (days)': p.cycleDays,
+      Medications: (p.medications||[]).map(m => `${m.name} (${m.qty})`).join(', '),
+      'Added By': p.addedBy || ''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(refillRows), 'Refill Patients');
+
+    const filename = `Medicina_Combined_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    statusEl.textContent = '✓ Downloaded ' + filename;
+  }catch(err){
+    statusEl.textContent = 'Something went wrong building the file. Try again.';
+  }
+  setTimeout(() => { statusEl.textContent = ''; }, 4000);
+});
+</script>
+</body>
+</html>

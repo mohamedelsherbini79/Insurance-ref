@@ -33,6 +33,13 @@
   .login-card h2{margin:0 0 6px;font-size:1.25rem;font-weight:900;}
   .login-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);}
   .login-card label{display:block;font-size:.8rem;font-weight:700;margin-bottom:8px;}
+  .avatar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;margin:6px 0 18px;}
+  .avatar-tile{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:6px 2px;border-radius:12px;font-family:'Inter',sans-serif;}
+  .avatar-tile:active{background:var(--bg);}
+  .avatar-circle{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--green));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.05rem;flex-shrink:0;}
+  .avatar-tile span{font-size:.72rem;color:var(--ink);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .add-name-btn-wide{width:100%;background:var(--bg);border:1px dashed var(--line);color:var(--purple);padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
+  .avatar-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0;}
   .login-row{display:flex;gap:8px;margin-bottom:14px;}
   .login-row select{flex:1;}
   .add-emp-btn{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:44px;font-size:1.2rem;cursor:pointer;color:var(--purple);}
@@ -151,12 +158,8 @@
   <div class="login-card">
     <h2>Welcome</h2>
     <p>Select your name to read and leave handover notes. You only need to do this once per session.</p>
-    <label>Your name</label>
-    <div class="login-row">
-      <select id="loginSelect"></select>
-      <button class="add-emp-btn" id="loginAddBtn" title="Add new employee">+</button>
-    </div>
-    <button class="continue-btn" id="loginContinueBtn">Continue</button>
+    <div class="avatar-grid" id="avatarGrid"></div>
+    <button class="add-name-btn-wide" id="loginAddBtn">+ Add your name</button>
   </div>
 </div>
 
@@ -166,9 +169,12 @@
       <h1>Handover Notes</h1>
       <p>Medicina Airport 3</p>
     </div>
-    <div class="who-badge">
-      Logged in as<br><strong id="whoName">-</strong>
-      <button id="switchUserBtn">Switch user</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="syncBadge" style="display:none;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:6px 10px;font-size:.7rem;font-weight:700;white-space:nowrap;"></span>
+      <div class="who-badge">
+        Logged in as<br><strong id="whoName">-</strong>
+        <button id="switchUserBtn">Switch user</button>
+      </div>
     </div>
   </div>
 </header>
@@ -209,6 +215,7 @@ const NOTES_KEY = 'handover-notes';
 const EMPLOYEE_KEY = 'handover-employees';
 let notes = [];
 let employees = [];
+let employeePins = {};
 let currentEmployee = '';
 
 function escapeHtml(s){
@@ -243,44 +250,83 @@ async function apiSave(sheetName, records){
     return !!data.success;
   }catch(e){ return false; }
 }
-async function apiAppend(sheetName, record){
+// ===== OFFLINE QUEUE: nothing is ever lost, even if the connection drops =====
+const QUEUE_KEY = 'medicina-pending-sync';
+function getQueue(){
+  try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
+}
+function setQueue(q){
+  try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){}
+  updateSyncBadge();
+}
+function queueOp(op){
+  const q = getQueue();
+  q.push(op);
+  setQueue(q);
+}
+function updateSyncBadge(){
+  const el = document.getElementById('syncBadge');
+  if(!el) return;
+  const n = getQueue().length;
+  if(n > 0){
+    el.style.display = 'inline-block';
+    el.textContent = '\u23f3 ' + n + ' pending sync';
+  }else{
+    el.style.display = 'none';
+  }
+}
+async function sendOp(op){
   try{
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({sheet: sheetName, action: 'append', record: record, key: API_KEY})
+      body: JSON.stringify(Object.assign({key: API_KEY}, op))
     });
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
+}
+async function flushQueue(){
+  let q = getQueue();
+  if(q.length === 0) return;
+  const remaining = [];
+  for(const op of q){
+    const ok = await sendOp(op);
+    if(!ok) remaining.push(op);
+  }
+  setQueue(remaining);
+}
+window.addEventListener('online', flushQueue);
+setInterval(flushQueue, 30000);
+
+async function apiAppend(sheetName, record){
+  const op = {sheet: sheetName, action: 'append', record: record};
+  if(!navigator.onLine){ queueOp(op); return true; }
+  const ok = await sendOp(op);
+  if(!ok) queueOp(op);
+  return true;
 }
 async function apiUpdateOne(sheetName, record){
-  try{
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({sheet: sheetName, action: 'updateOne', record: record, key: API_KEY})
-    });
-    const data = await res.json();
-    return !!data.success;
-  }catch(e){ return false; }
+  const op = {sheet: sheetName, action: 'updateOne', record: record};
+  if(!navigator.onLine){ queueOp(op); return true; }
+  const ok = await sendOp(op);
+  if(!ok) queueOp(op);
+  return true;
 }
 async function apiDeleteOne(sheetName, id){
-  try{
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({sheet: sheetName, action: 'deleteOne', id: id, key: API_KEY})
-    });
-    const data = await res.json();
-    return !!data.success;
-  }catch(e){ return false; }
+  const op = {sheet: sheetName, action: 'deleteOne', id: id};
+  if(!navigator.onLine){ queueOp(op); return true; }
+  const ok = await sendOp(op);
+  if(!ok) queueOp(op);
+  return true;
 }
 
 async function loadData(){
   const [notesData, empData] = await Promise.all([apiGet(NOTES_KEY), apiGet(EMPLOYEE_KEY)]);
   notes = notesData;
   employees = empData.map(r => r.name || r.id).filter(Boolean);
+  employeePins = {};
+  empData.forEach(r => { if(r.pin) employeePins[r.name || r.id] = r.pin; });
   renderEmployeeOptions();
   renderBoard();
 }
@@ -289,42 +335,74 @@ async function saveNotes(){
   return await apiSave(NOTES_KEY, notes);
 }
 async function saveEmployees(){
-  const records = employees.map(name => ({id: name, name: name}));
+  const records = employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}));
   return await apiSave(EMPLOYEE_KEY, records);
 }
 
-function renderEmployeeOptions(){
-  const loginSel = document.getElementById('loginSelect');
-  if(employees.length === 0){
-    loginSel.innerHTML = `<option value="">No employees yet - tap +</option>`;
-  }else{
-    loginSel.innerHTML = employees.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+function initials(name){
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
+}
+
+function loginAs(name){
+  currentEmployee = name;
+  document.getElementById('whoName').textContent = name;
+  document.getElementById('loginGate').classList.add('hidden');
+  notifyIfNeeded();
+}
+
+function attemptLogin(name){
+  const pin = employeePins[name];
+  if(pin){
+    const entered = prompt('Enter the 4-digit PIN for ' + name + ':');
+    if(entered !== pin){ if(entered !== null) alert('Incorrect PIN.'); return; }
   }
+  loginAs(name);
+}
+
+function renderEmployeeOptions(){
+  const grid = document.getElementById('avatarGrid');
+  grid.innerHTML = employees.length
+    ? employees.map(e => `
+        <button class="avatar-tile" onclick="attemptLogin('${e.replace(/'/g, "\\'")}')">
+          <div class="avatar-circle">${escapeHtml(initials(e))}</div>
+          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
+        </button>
+      `).join('')
+    : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
 
 document.getElementById('loginAddBtn').addEventListener('click', async () => {
-  const name = prompt('Enter new employee name:');
+  const name = prompt('Enter your name:');
   if(!name || !name.trim()) return;
   const clean = name.trim();
   if(!employees.includes(clean)){
+    const pinInput = prompt('Set a 4-digit PIN to protect your name (optional - press Cancel to skip):');
+    if(pinInput && /^\d{4}$/.test(pinInput)) employeePins[clean] = pinInput;
     employees.push(clean);
     await saveEmployees();
     renderEmployeeOptions();
+    loginAs(clean);
+  }else{
+    attemptLogin(clean);
   }
-  document.getElementById('loginSelect').value = clean;
-});
-
-document.getElementById('loginContinueBtn').addEventListener('click', () => {
-  const val = document.getElementById('loginSelect').value;
-  if(!val){ alert('Please select or add your name first.'); return; }
-  currentEmployee = val;
-  document.getElementById('whoName').textContent = val;
-  document.getElementById('loginGate').classList.add('hidden');
 });
 
 document.getElementById('switchUserBtn').addEventListener('click', () => {
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+function notifyIfNeeded(){
+  if(!('Notification' in window)) return;
+  const fire = () => {
+    const openCount = notes.filter(n => n.status === 'open').length;
+    if(openCount > 0){
+      new Notification('Medicina Airport 3', {body: openCount + ' handover note(s) still open.'});
+    }
+  };
+  if(Notification.permission === 'granted') fire();
+  else if(Notification.permission !== 'denied') Notification.requestPermission().then(p => { if(p === 'granted') fire(); });
+}
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -524,6 +602,8 @@ function renderBoard(){
 }
 
 loadData();
+updateSyncBadge();
+flushQueue();
 
 // ===== BACKUP & RESTORE =====
 document.getElementById('backupBtn').addEventListener('click', () => {
