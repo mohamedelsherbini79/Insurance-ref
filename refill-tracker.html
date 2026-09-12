@@ -606,40 +606,18 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
   statusEl.textContent = 'Reading images...';
 
   try{
-    const content = [];
-    content.push({
-      type: 'text',
-      text: `You are extracting structured data from pharmacy images for a chronic prescription refill tracker.
-Return ONLY valid JSON, no markdown fences, no extra text, in exactly this shape:
-{"patientName": string or null, "phone": string or null, "dispenseDate": "YYYY-MM-DD" or null, "medications": [{"name": string, "qty": string}]}
-Rules:
-- If a prescription image is provided, read the patient's name and phone number from it, and the date on it if visible.
-- If an invoice/receipt image is provided, read the list of dispensed medication names and quantities from it.
-- If information is not visible or not present, use null for that field (or empty array for medications).
-- Do not guess phone numbers or names that are not clearly visible.`
-    });
-    if(rxBase64){
-      content.push({type:'text', text:'Prescription image:'});
-      content.push({type:'image', source:{type:'base64', media_type: rxMediaType, data: rxBase64}});
-    }
-    if(invBase64){
-      content.push({type:'text', text:'Invoice/receipt image:'});
-      content.push({type:'image', source:{type:'base64', media_type: invMediaType, data: invBase64}});
-    }
+    const images = [];
+    if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64});
+    if(invBase64) images.push({mimeType: invMediaType, data: invBase64});
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(API_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{role:'user', content}]
-      })
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
     });
     const data = await response.json();
-    const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const clean = textBlocks.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    if(!data.success) throw new Error(data.error || 'extraction failed');
+    const parsed = data.data;
 
     if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
     if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
