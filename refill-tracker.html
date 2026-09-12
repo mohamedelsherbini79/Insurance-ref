@@ -259,6 +259,10 @@
         </div>
       </div>
       <div class="field">
+        <label>Emirates ID</label>
+        <input type="text" id="patEmiratesId" placeholder="784-XXXX-XXXXXXX-X" value="784-">
+      </div>
+      <div class="field">
         <label>Medications dispensed</label>
         <div id="medsList"></div>
         <button class="add-med-btn" id="addMedBtn">+ Add medication</button>
@@ -739,6 +743,7 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
 
     if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
     if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
+    if(parsed.emiratesId) document.getElementById('patEmiratesId').value = parsed.emiratesId;
     if(parsed.dispenseDate) document.getElementById('dispenseDate').value = parsed.dispenseDate;
     if(Array.isArray(parsed.medications) && parsed.medications.length){
       clearMedsForm();
@@ -759,6 +764,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   const name = document.getElementById('patName').value.trim();
   const phoneRaw = document.getElementById('patPhone').value.trim();
   const phone = normalizePhone(phoneRaw);
+  const emiratesId = document.getElementById('patEmiratesId').value.trim();
   const dispenseDate = document.getElementById('dispenseDate').value || todayISO();
   const cycleDays = Number(document.getElementById('cycleDays').value) || 30;
   const notes = document.getElementById('patNotes').value.trim();
@@ -776,6 +782,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   if(patient){
     patient.name = name;
     patient.phone = phoneRaw;
+    patient.emiratesId = emiratesId || patient.emiratesId;
     patient.medications = meds;
     patient.lastDispenseDate = dispenseDate;
     patient.cycleDays = cycleDays;
@@ -786,7 +793,8 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   }else{
     patient = {
       id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
-      name, phone: phoneRaw, medications: meds,
+      name, phone: phoneRaw, emiratesId,
+      medications: meds,
       lastDispenseDate: dispenseDate, cycleDays, nextDueDate,
       notes, addedBy: currentEmployee, history: [historyEntry]
     };
@@ -797,6 +805,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   statusEl.classList.remove('error');
   document.getElementById('patName').value = '';
   document.getElementById('patPhone').value = '';
+  document.getElementById('patEmiratesId').value = '784-';
   document.getElementById('patNotes').value = '';
   document.getElementById('dispenseDate').value = todayISO();
   document.getElementById('cycleDays').value = 30;
@@ -856,7 +865,7 @@ function renderPatientCard(p){
       <div class="p-top">
         <div>
           <div class="p-name">${escapeHtml(p.name)}</div>
-          <div class="p-phone">📞 ${escapeHtml(p.phone)}</div>
+          <div class="p-phone">📞 ${escapeHtml(p.phone)}${p.emiratesId ? ` · 🪪 ${escapeHtml(p.emiratesId)}` : ''}</div>
         </div>
         <span class="status-pill ${status}">${statusLabel(status, p)}</span>
       </div>
@@ -958,9 +967,9 @@ function renderStats(){
 // ===== EXPORT / BACKUP / RESTORE =====
 document.getElementById('exportBtn').addEventListener('click', () => {
   if(patients.length === 0){ alert('No patients to export yet'); return; }
-  const headers = ['Patient Name','Phone','Last Dispense Date','Next Due Date','Cycle (days)','Status','Medications','Notes','Added By'];
+  const headers = ['Patient Name','Phone','Emirates ID','Last Dispense Date','Next Due Date','Cycle (days)','Status','Medications','Notes','Added By'];
   const rows = patients.map(p => [
-    p.name, p.phone, displayDate(p.lastDispenseDate), displayDate(p.nextDueDate), p.cycleDays,
+    p.name, p.phone, p.emiratesId || '', displayDate(p.lastDispenseDate), displayDate(p.nextDueDate), p.cycleDays,
     statusLabel(getStatus(p), p), (p.medications||[]).map(m=>m.name+(m.qty?' ('+m.qty+')':'')).join('; '),
     p.notes || '', p.addedBy || ''
   ]);
