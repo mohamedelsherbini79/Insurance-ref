@@ -162,6 +162,7 @@
   }
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:var(--ink);}
+  .hint{font-size:.72rem;color:var(--muted);}
   .row2{display:flex;gap:10px;}
   .row2 .field{flex:1;}
   .submit-btn{
@@ -364,10 +365,17 @@
   <!-- TAB: LOG NEW -->
   <div class="panel active" id="panel-log">
     <div class="card">
-      <div class="field">
-        <label>Missing item name *</label>
-        <input type="text" id="itemName" placeholder="e.g. Panadol Extra 24s">
+      <div class="row2">
+        <div class="field">
+          <label>Item code</label>
+          <input type="text" id="itemCode" placeholder="e.g. 33319971">
+        </div>
+        <div class="field">
+          <label>Missing item name</label>
+          <input type="text" id="itemName" placeholder="e.g. Panadol Extra 24s">
+        </div>
       </div>
+      <div class="hint" style="margin:-6px 0 12px;">Fill in the code, the name, or both — at least one is required.</div>
       <div class="row2">
         <div class="field">
           <label>Quantity needed</label>
@@ -395,7 +403,7 @@
   <div class="panel" id="panel-list">
     <div class="toolbar">
       <select id="filterEmployee"><option value="">All employees</option></select>
-      <input type="text" id="searchItem" placeholder="Search item...">
+      <input type="text" id="searchItem" placeholder="Search by name or code...">
     </div>
     <div id="entriesList"></div>
   </div>
@@ -717,6 +725,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
+  const itemCode = document.getElementById('itemCode').value.trim();
   const itemName = document.getElementById('itemName').value.trim();
   const qty = document.getElementById('itemQty').value.trim();
   const type = document.getElementById('itemType').value;
@@ -724,8 +733,8 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const statusEl = document.getElementById('statusMsg');
   const btn = document.getElementById('submitBtn');
 
-  if(!itemName){
-    statusEl.textContent = 'Please enter the item name first';
+  if(!itemCode && !itemName){
+    statusEl.textContent = 'Enter the item code, the name, or both';
     statusEl.classList.add('error');
     return;
   }
@@ -738,6 +747,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const now = new Date();
   const entry = {
     id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    itemCode: itemCode,
     item: itemName,
     qty: qty || '1',
     type: type,
@@ -751,6 +761,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   entries.unshift(entry);
   statusEl.classList.remove('error');
   statusEl.textContent = '✓ Shortage logged successfully';
+  document.getElementById('itemCode').value = '';
   document.getElementById('itemName').value = '';
   document.getElementById('itemQty').value = '';
   document.getElementById('itemNotes').value = '';
@@ -782,7 +793,11 @@ function renderList(){
 
   let filtered = entries.filter(e => {
     if(filtEmp && e.employee !== filtEmp) return false;
-    if(search && !e.item.toLowerCase().includes(search)) return false;
+    if(search){
+      const inName = (e.item || '').toLowerCase().includes(search);
+      const inCode = (e.itemCode || '').toLowerCase().includes(search);
+      if(!inName && !inCode) return false;
+    }
     return true;
   });
 
@@ -794,7 +809,7 @@ function renderList(){
   container.innerHTML = filtered.map(e => `
     <div class="entry">
       <button class="del" onclick="deleteEntry('${e.id}')">✕</button>
-      <div class="item-name">${escapeHtml(e.item)}</div>
+      <div class="item-name">${escapeHtml(e.item || '(no name)')}${e.itemCode ? ` <span style="color:var(--muted);font-weight:600;font-size:.8rem;">#${escapeHtml(e.itemCode)}</span>` : ''}</div>
       <div class="meta">
         <span>👤 ${escapeHtml(e.employee)}</span>
         <span>📦 ${escapeHtml(e.qty)}</span>
@@ -866,9 +881,9 @@ document.getElementById('exportBtn').addEventListener('click', () => {
     alert('No data to export yet');
     return;
   }
-  const headers = ['Date','Time','Employee','Item Name','Quantity','Order Type','Notes'];
+  const headers = ['Date','Time','Employee','Item Code','Item Name','Quantity','Order Type','Notes'];
   const rows = entries.map(e => [
-    e.dateDisplay, e.timeDisplay, e.employee, e.item, e.qty, e.type, e.notes || ''
+    e.dateDisplay, e.timeDisplay, e.employee, e.itemCode || '', e.item, e.qty, e.type, e.notes || ''
   ]);
   let csv = '\uFEFF' + headers.join(',') + '\n';
   rows.forEach(r => {
