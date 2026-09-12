@@ -32,6 +32,7 @@
   .avatar-tile span{font-size:.72rem;color:var(--ink);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .add-name-btn-wide{width:100%;background:var(--bg);border:1px dashed var(--line);color:var(--purple);padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
   .avatar-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0;}
+  .avatar-del{position:absolute;top:-4px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;border:2px solid #fff;font-size:.65rem;line-height:1;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;}
   #loginGate.hidden{display:none;}
 
   header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:22px 18px 26px;border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(107,31,111,.25);}
@@ -369,6 +370,14 @@ function loginAs(name){
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
 }
+async function deleteEmployee(name){
+  if(!confirm('Remove "' + name + '" from this list?')) return;
+  employees = employees.filter(e => e !== name);
+  delete employeePins[name];
+  renderEmployeeOptions();
+  await apiDeleteOne(EMPLOYEE_KEY, name);
+}
+
 function attemptLogin(name){
   const pin = employeePins[name];
   if(pin){
@@ -381,10 +390,13 @@ function renderEmployeeOptions(){
   const grid = document.getElementById('avatarGrid');
   grid.innerHTML = employees.length
     ? employees.map(e => `
-        <button class="avatar-tile" onclick="attemptLogin('${e.replace(/'/g, "\\'")}')">
-          <div class="avatar-circle">${escapeHtml(initials(e))}</div>
-          <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
-        </button>
+        <div class="avatar-tile" style="position:relative;cursor:default;">
+          <button type="button" class="avatar-del" onclick="deleteEmployee('${e.replace(/'/g, "\\'")}')" title="Remove this name">✕</button>
+          <div onclick="attemptLogin('${e.replace(/'/g, "\\'")}')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div class="avatar-circle">${escapeHtml(initials(e))}</div>
+            <span>${escapeHtml(e)}${employeePins[e] ? ' 🔒' : ''}</span>
+          </div>
+        </div>
       `).join('')
     : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
