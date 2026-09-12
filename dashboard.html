@@ -133,6 +133,7 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
 const API_KEY = 'Medicina-airport3-2026';
 const SITE_PASSWORD = '2026';
+let allData = {};
 
 document.getElementById('pwSubmit').addEventListener('click', checkPw);
 document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkPw(); });
@@ -185,8 +186,6 @@ async function apiGet(sheetName){
   }
   return [];
 }
-
-let allData = {};
 
 async function loadAll(){
   const cached = getCached('dashboard-all');
