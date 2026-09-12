@@ -108,6 +108,9 @@
     opacity:.85;
   }
 
+  .quick-nav{display:flex;gap:8px;overflow-x:auto;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;}
+  .quick-nav a{flex-shrink:0;padding:6px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.76rem;font-weight:700;white-space:nowrap;}
+  .quick-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple);}
   main{padding:26px 18px 0;}
   select, input[type=text], input[type=number], textarea{
     font-family:'Inter',sans-serif;
@@ -340,6 +343,15 @@
     </div>
   </div>
 </header>
+<div class="quick-nav">
+    <a href="hub.html">🏠 Hub</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="shortage-tracker.html" class="active">📦 Shortages</a>
+    <a href="daily-checklist.html">✅ Checklist</a>
+    <a href="handover-notes.html">📝 Handover</a>
+    <a href="customer-orders.html">🛎️ Orders</a>
+    <a href="refill-tracker.html">💊 Refills</a>
+  </div>
 
 <main>
   <div class="tabs">
@@ -448,6 +460,14 @@ async function fetchWithTimeout(url, options, timeoutMs){
     throw e;
   }
 }
+
+// Instant-on-reopen cache: render immediately from last-seen data, refresh in the background
+function getCached(key){
+  try{ return JSON.parse(localStorage.getItem('cache-'+key) || 'null'); }catch(e){ return null; }
+}
+function setCached(key, data){
+  try{ localStorage.setItem('cache-'+key, JSON.stringify(data)); }catch(e){}
+}
 async function apiGet(sheetName){
   // Apps Script occasionally has a transient hiccup on a single request - retry
   // a couple of times before giving up, so a blip doesn't look like missing data.
@@ -544,15 +564,32 @@ async function apiDeleteOne(sheetName, id){
   return true;
 }
 
-async function loadData(){
-  const [entriesData, empData] = await Promise.all([apiGet(STORAGE_KEY), apiGet(EMPLOYEE_KEY)]);
-  entries = entriesData;
+function applyEmployees(empData){
   employees = empData.map(r => r.name || r.id).filter(Boolean);
   employeePins = {};
   empData.forEach(r => { if(r.pin) employeePins[r.name || r.id] = r.pin; });
   renderEmployeeOptions();
+  trySharedLogin();
+}
+
+async function loadData(){
+  // Instant paint from last-seen data (if any), so the screen is never blank while we fetch.
+  const cachedEmp = getCached(EMPLOYEE_KEY);
+  const cachedEntries = getCached(STORAGE_KEY);
+  if(cachedEmp) applyEmployees(cachedEmp);
+  if(cachedEntries){ entries = cachedEntries; renderList(); renderSummary(); }
+
+  // Employees unblock the login screen fast - don't wait on the (usually bigger) entries fetch.
+  apiGet(EMPLOYEE_KEY).then(empData => {
+    applyEmployees(empData);
+    setCached(EMPLOYEE_KEY, empData);
+  });
+
+  const entriesData = await apiGet(STORAGE_KEY);
+  entries = entriesData;
   renderList();
   renderSummary();
+  setCached(STORAGE_KEY, entriesData);
 }
 
 async function saveEntries(){
@@ -571,6 +608,7 @@ function initials(name){
 
 function loginAs(name){
   currentEmployee = name;
+  try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
   notifyIfNeeded();
@@ -621,8 +659,25 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('switchUserBtn').addEventListener('click', () => {
+  try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+let sharedLoginTried = false;
+function trySharedLogin(){
+  if(sharedLoginTried) return;
+  if(!document.getElementById('loginGate') || document.getElementById('loginGate').classList.contains('hidden')) return;
+  let shared;
+  try{ shared = localStorage.getItem('medicina-current-user'); }catch(e){ shared = null; }
+  if(!shared) return;
+  sharedLoginTried = true;
+  if(!employees.includes(shared)){
+    employees.push(shared);
+    renderEmployeeOptions();
+    apiAppend(EMPLOYEE_KEY, {id: shared, name: shared, pin: ''});
+  }
+  loginAs(shared);
+}
 
 function notifyIfNeeded(){
   if(!('Notification' in window)) return;

@@ -41,6 +41,9 @@
   .who-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:6px 12px;font-size:.75rem;white-space:nowrap;text-align:center;}
   .who-badge button{background:none;border:none;color:#fff;text-decoration:underline;font-size:.7rem;cursor:pointer;padding:0;margin-top:2px;display:block;font-family:'Inter',sans-serif;opacity:.85;}
 
+  .quick-nav{display:flex;gap:8px;overflow-x:auto;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;}
+  .quick-nav a{flex-shrink:0;padding:6px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.76rem;font-weight:700;white-space:nowrap;}
+  .quick-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple);}
   main{padding:26px 18px 0;}
   input[type=text], input[type=tel], input[type=number], textarea, select{
     font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;
@@ -128,6 +131,15 @@
     </div>
   </div>
 </header>
+<div class="quick-nav">
+    <a href="hub.html">🏠 Hub</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="shortage-tracker.html">📦 Shortages</a>
+    <a href="daily-checklist.html">✅ Checklist</a>
+    <a href="handover-notes.html">📝 Handover</a>
+    <a href="customer-orders.html" class="active">🛎️ Orders</a>
+    <a href="refill-tracker.html">💊 Refills</a>
+  </div>
 
 <main>
   <div class="tabs">
@@ -244,6 +256,14 @@ async function fetchWithTimeout(url, options, timeoutMs){
     throw e;
   }
 }
+
+// Instant-on-reopen cache: render immediately from last-seen data, refresh in the background
+function getCached(key){
+  try{ return JSON.parse(localStorage.getItem('cache-'+key) || 'null'); }catch(e){ return null; }
+}
+function setCached(key, data){
+  try{ localStorage.setItem('cache-'+key, JSON.stringify(data)); }catch(e){}
+}
 async function sendOp(op){
   try{
     const res = await fetchWithTimeout(API_URL, {
@@ -308,14 +328,29 @@ async function apiSave(sheetName, records){
   }catch(e){ return false; }
 }
 
-async function loadData(){
-  const [ordersData, empData] = await Promise.all([apiGet(ORDERS_KEY), apiGet(EMPLOYEE_KEY)]);
-  orders = ordersData;
+function applyEmployees(empData){
   employees = empData.map(r => r.name || r.id).filter(Boolean);
   employeePins = {};
   empData.forEach(r => { if(r.pin) employeePins[r.name || r.id] = r.pin; });
   renderEmployeeOptions();
+  trySharedLogin();
+}
+
+async function loadData(){
+  const cachedEmp = getCached(EMPLOYEE_KEY);
+  const cachedOrders = getCached(ORDERS_KEY);
+  if(cachedEmp) applyEmployees(cachedEmp);
+  if(cachedOrders){ orders = cachedOrders; renderBoard(); }
+
+  apiGet(EMPLOYEE_KEY).then(empData => {
+    applyEmployees(empData);
+    setCached(EMPLOYEE_KEY, empData);
+  });
+
+  const ordersData = await apiGet(ORDERS_KEY);
+  orders = ordersData;
   renderBoard();
+  setCached(ORDERS_KEY, ordersData);
   updateSyncBadge();
   flushQueue();
 }
@@ -330,6 +365,7 @@ function initials(name){
 }
 function loginAs(name){
   currentEmployee = name;
+  try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
 }
@@ -368,8 +404,25 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
   }
 });
 document.getElementById('switchUserBtn').addEventListener('click', () => {
+  try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+let sharedLoginTried = false;
+function trySharedLogin(){
+  if(sharedLoginTried) return;
+  if(!document.getElementById('loginGate') || document.getElementById('loginGate').classList.contains('hidden')) return;
+  let shared;
+  try{ shared = localStorage.getItem('medicina-current-user'); }catch(e){ shared = null; }
+  if(!shared) return;
+  sharedLoginTried = true;
+  if(!employees.includes(shared)){
+    employees.push(shared);
+    renderEmployeeOptions();
+    apiAppend(EMPLOYEE_KEY, {id: shared, name: shared, pin: ''});
+  }
+  loginAs(shared);
+}
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
