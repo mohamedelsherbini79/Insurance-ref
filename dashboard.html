@@ -67,6 +67,8 @@
 <header>
   <h1>Branch Dashboard</h1>
   <p>Medicina Airport 3 — overview across all tools</p>
+  <button id="refreshNowBtn" style="margin-top:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:20px;padding:8px 16px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">🔄 Refresh now</button>
+  <div id="refreshStatus" style="margin-top:6px;font-size:.72rem;opacity:.85;min-height:14px;"></div>
 </header>
 <div class="quick-nav">
     <a href="hub.html">🏠 Hub</a>
@@ -203,6 +205,19 @@ async function apiGet(sheetName){
   }
   return [];
 }
+
+document.getElementById('refreshNowBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('refreshStatus');
+  const btn = document.getElementById('refreshNowBtn');
+  btn.disabled = true;
+  statusEl.textContent = 'Fetching latest data...';
+  const start = Date.now();
+  await loadAll();
+  const seconds = ((Date.now() - start) / 1000).toFixed(1);
+  statusEl.textContent = `✓ Updated just now (${seconds}s)`;
+  btn.disabled = false;
+  setTimeout(() => { statusEl.textContent = ''; }, 4000);
+});
 
 async function loadAll(){
   const cached = getCached('dashboard-all');
