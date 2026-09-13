@@ -398,15 +398,15 @@ function setCached(key, data){
 }
 async function apiGet(sheetName){
   // Apps Script occasionally has a transient hiccup on a single request - retry
-  // a couple of times before giving up, so a blip doesn't look like missing data.
-  // Each attempt has an 8s hard timeout so a stalled connection fails fast instead of hanging.
-  for(let attempt = 0; attempt < 3; attempt++){
+  // once before giving up, so a blip doesn't look like missing data.
+  // Each attempt has a 4s hard timeout so a stalled connection fails fast instead of hanging.
+  for(let attempt = 0; attempt < 2; attempt++){
     try{
-      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 8000);
+      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 4000);
       const data = await res.json();
       if(data && Array.isArray(data.records)) return data.records;
     }catch(e){}
-    if(attempt < 2) await new Promise(r => setTimeout(r, 700));
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
   return [];
 }
@@ -452,7 +452,7 @@ async function sendOp(op){
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify(Object.assign({key: API_KEY}, op))
-    }, 10000);
+    }, 6000);
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
