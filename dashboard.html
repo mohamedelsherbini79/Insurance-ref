@@ -171,6 +171,9 @@ if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
   loadAll();
 }
 
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 async function fetchWithTimeout(url, options, timeoutMs){
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs || 8000);
