@@ -120,6 +120,23 @@
     </div>
 
     <div class="tool-section">
+      <h2>🔍 Customer Lookup</h2>
+      <p style="font-size:.8rem;color:var(--muted);margin:0 0 10px;">Search a phone number to see everything on record for that customer - shortage/order requests and chronic refill history, in one place.</p>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="tel" id="lookupPhone" placeholder="05XXXXXXXX" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.9rem;font-family:'Inter',sans-serif;">
+        <button onclick="lookupCustomer()" style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer;">Search</button>
+      </div>
+      <div id="lookupResult"></div>
+    </div>
+
+    <div class="tool-section">
+      <h2>📈 Monthly Performance</h2>
+      <p style="font-size:.8rem;color:var(--muted);margin:0 0 10px;">Per-employee activity across all tools: shortages logged, checklist compliance, and orders fulfilled.</p>
+      <div id="perfList"></div>
+      <button class="export-btn" id="exportPerfBtn" style="margin-top:12px;">Export Performance Report (Excel)</button>
+    </div>
+
+    <div class="tool-section">
       <h2>⬇ Combined Report</h2>
       <p style="font-size:.8rem;color:var(--muted);margin:0 0 4px;">Exports every tool's current data into one Excel file, each on its own sheet.</p>
       <button class="export-btn" id="exportAllBtn">Export Combined Report (Excel)</button>
@@ -197,15 +214,17 @@ async function loadAll(){
     renderChecklist(allData.checklist);
     renderNotes(allData.notes);
     renderRefills(allData.patients);
+    renderPerformance();
   }
 
-  const [shortages, checklist, notes, patients] = await Promise.all([
+  const [shortages, checklist, notes, patients, orders] = await Promise.all([
     apiGet('shortage-entries'),
     apiGet('checklist-entries'),
     apiGet('handover-notes'),
-    apiGet('refill-patients')
+    apiGet('refill-patients'),
+    apiGet('customer-orders')
   ]);
-  allData = { shortages, checklist, notes, patients };
+  allData = { shortages, checklist, notes, patients, orders };
   setCached('dashboard-all', allData);
 
   document.getElementById('loadingMsg').style.display = 'none';
@@ -215,7 +234,104 @@ async function loadAll(){
   renderChecklist(checklist);
   renderNotes(notes);
   renderRefills(patients);
+  renderPerformance();
 }
+
+function normPhone(p){ return String(p || '').replace(/[^0-9]/g, ''); }
+
+function lookupCustomer(){
+  const raw = document.getElementById('lookupPhone').value.trim();
+  const phone = normPhone(raw);
+  const resultEl = document.getElementById('lookupResult');
+  if(!phone){ resultEl.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">Enter a phone number to search.</div>'; return; }
+
+  const matchedOrders = (allData.orders || []).filter(o => normPhone(o.phone) === phone);
+  const matchedPatient = (allData.patients || []).find(p => normPhone(p.phone) === phone);
+
+  if(!matchedOrders.length && !matchedPatient){
+    resultEl.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">No records found for this phone number.</div>';
+    return;
+  }
+
+  let html = '';
+  if(matchedPatient){
+    html += `<div style="margin-bottom:14px;">
+      <div style="font-weight:900;margin-bottom:6px;">💊 Chronic Refill Record</div>
+      <div class="row-line"><span>Name</span><span class="val">${escapeHtml(matchedPatient.name)}</span></div>
+      <div class="row-line"><span>Emirates ID</span><span class="val">${escapeHtml(matchedPatient.emiratesId || '-')}</span></div>
+      <div class="row-line"><span>Current medications</span><span class="val">${escapeHtml((matchedPatient.medications||[]).map(m=>m.name).join(', ') || '-')}</span></div>
+      <div class="row-line"><span>Next refill due</span><span class="val">${escapeHtml(matchedPatient.nextDueDate || '-')}</span></div>
+      <div class="row-line"><span>Visits on record</span><span class="val">${(matchedPatient.history||[]).length}</span></div>
+    </div>`;
+  }
+  if(matchedOrders.length){
+    html += `<div><div style="font-weight:900;margin-bottom:6px;">📦 Shortage / Order Requests (${matchedOrders.length})</div>`;
+    matchedOrders.sort((a,b) => (b.dateISO||'').localeCompare(a.dateISO||'')).forEach(o => {
+      html += `<div class="row-line"><span>${escapeHtml(o.item)} (${escapeHtml(o.dateDisplay||'')})</span><span class="val">${o.status === 'done' ? '✓ Fulfilled' : 'Open'}</span></div>`;
+    });
+    html += `</div>`;
+  }
+  resultEl.innerHTML = html;
+}
+
+function renderPerformance(){
+  const stats = {};
+  function bump(name, field){
+    if(!name) return;
+    if(!stats[name]) stats[name] = {shortages:0, checklistPct:[], ordersFulfilled:0};
+    if(field === 'shortages') stats[name].shortages++;
+    if(field === 'ordersFulfilled') stats[name].ordersFulfilled++;
+  }
+  (allData.shortages || []).forEach(e => bump(e.employee, 'shortages'));
+  (allData.checklist || []).forEach(e => {
+    if(!e.employee) return;
+    if(!stats[e.employee]) stats[e.employee] = {shortages:0, checklistPct:[], ordersFulfilled:0};
+    stats[e.employee].checklistPct.push(e.completionPct || 0);
+  });
+  (allData.orders || []).forEach(o => { if(o.status === 'done') bump(o.closedBy, 'ordersFulfilled'); });
+
+  const names = Object.keys(stats).sort();
+  const tbody = document.getElementById('perfList');
+  if(names.length === 0){
+    tbody.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">No activity logged yet.</div>';
+    return;
+  }
+  tbody.innerHTML = names.map(name => {
+    const s = stats[name];
+    const avgChecklist = s.checklistPct.length ? Math.round(s.checklistPct.reduce((a,b)=>a+b,0)/s.checklistPct.length) : null;
+    return `<div class="row-line">
+      <span>${escapeHtml(name)}</span>
+      <span class="val">${s.shortages} shortages · ${avgChecklist !== null ? avgChecklist+'% checklist' : 'no checklist'} · ${s.ordersFulfilled} orders fulfilled</span>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('exportPerfBtn').addEventListener('click', () => {
+  const stats = {};
+  function bump(name, field){
+    if(!name) return;
+    if(!stats[name]) stats[name] = {Shortages:0, ChecklistPct:[], OrdersFulfilled:0};
+    if(field === 'shortages') stats[name].Shortages++;
+    if(field === 'ordersFulfilled') stats[name].OrdersFulfilled++;
+  }
+  (allData.shortages || []).forEach(e => bump(e.employee, 'shortages'));
+  (allData.checklist || []).forEach(e => {
+    if(!e.employee) return;
+    if(!stats[e.employee]) stats[e.employee] = {Shortages:0, ChecklistPct:[], OrdersFulfilled:0};
+    stats[e.employee].ChecklistPct.push(e.completionPct || 0);
+  });
+  (allData.orders || []).forEach(o => { if(o.status === 'done') bump(o.closedBy, 'ordersFulfilled'); });
+
+  const rows = Object.keys(stats).sort().map(name => {
+    const s = stats[name];
+    const avg = s.ChecklistPct.length ? Math.round(s.ChecklistPct.reduce((a,b)=>a+b,0)/s.ChecklistPct.length) : '';
+    return { Employee: name, 'Shortages Logged': s.Shortages, 'Avg Checklist %': avg, 'Orders Fulfilled': s.OrdersFulfilled };
+  });
+  if(rows.length === 0){ alert('No data to export yet'); return; }
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'Performance');
+  XLSX.writeFile(wb, `Medicina_Performance_${new Date().toISOString().slice(0,10)}.xlsx`);
+});
 
 function renderShortages(list){
   const today = new Date().toLocaleDateString('en-GB');
@@ -309,6 +425,13 @@ document.getElementById('exportAllBtn').addEventListener('click', () => {
       'Added By': p.addedBy || ''
     }));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(refillRows), 'Refill Patients');
+
+    const orderRows = (allData.orders || []).map(o => ({
+      Item: o.item, Customer: o.customer, Phone: o.phone, Qty: o.qty,
+      Status: o.status, 'Logged By': o.author, Date: o.dateDisplay,
+      'Closed By': o.closedBy || '', Notes: o.notes || ''
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(orderRows), 'Customer Orders');
 
     const filename = `Medicina_Combined_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
     XLSX.writeFile(wb, filename);
