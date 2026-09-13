@@ -81,6 +81,19 @@
   .tag-closed{color:var(--green-dark);border-color:#d9ecc4;background:#f3f9ec;}
   .order-notes{font-size:.8rem;margin-top:6px;color:var(--ink);}
   .order-actions{display:flex;gap:8px;margin-top:12px;}
+  .updates-list{margin:12px 0 0;padding-inline-start:14px;border-inline-start:2px dashed var(--line);}
+  .update-item{margin-bottom:10px;}
+  .update-item:last-child{margin-bottom:0;}
+  .update-text{font-size:.85rem;line-height:1.5;margin:0 0 4px;white-space:pre-wrap;}
+  .update-meta{font-size:.7rem;color:var(--muted);}
+  .update-meta .author{font-weight:700;color:var(--green-dark);}
+  .reply-form{margin-top:10px;display:none;}
+  .reply-form.active{display:block;}
+  .reply-form textarea{margin-bottom:8px;min-height:56px;font-size:.85rem;}
+  .reply-form .row{display:flex;gap:8px;}
+  .reply-form button{flex:1;padding:9px;border-radius:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;border:none;}
+  .reply-form .send-reply{background:var(--purple);color:#fff;}
+  .reply-form .cancel-reply{background:var(--bg);color:var(--muted);border:1px solid var(--line);}
   .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;color:var(--ink);}
   .action-btn.done-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
   .action-btn.reopen-btn{background:var(--amber);color:#3d2f0a;border-color:var(--amber);}
@@ -524,7 +537,8 @@ document.getElementById('newOrderSubmit').addEventListener('click', async () => 
     item, customer, phone, qty, notes,
     author: currentEmployee,
     dateISO: stamp.iso, dateDisplay: stamp.dateDisplay, timeDisplay: stamp.timeDisplay,
-    status: 'open'
+    status: 'open',
+    updates: []
   };
 
   orders.unshift(order);
@@ -553,6 +567,30 @@ document.getElementById('newOrderSubmit').addEventListener('click', async () => 
   ]);
 });
 
+function toggleOrderReply(orderId){
+  const el = document.getElementById('order-reply-' + orderId);
+  if(el) el.classList.toggle('active');
+}
+
+async function addOrderUpdate(orderId){
+  const textEl = document.getElementById('order-reply-text-' + orderId);
+  const text = textEl.value.trim();
+  if(!text) return;
+  if(!currentEmployee){ alert('Please select your name at login first'); return; }
+  const order = orders.find(o => o.id === orderId);
+  if(!order) return;
+  const stamp = nowStamp();
+  order.updates = order.updates || [];
+  order.updates.push({
+    author: currentEmployee,
+    text: text,
+    dateDisplay: stamp.dateDisplay,
+    timeDisplay: stamp.timeDisplay
+  });
+  renderBoard();
+  await apiUpdateOne(ORDERS_KEY, order);
+}
+
 async function markDone(orderId){
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
   const order = orders.find(o => o.id === orderId);
@@ -576,6 +614,17 @@ async function reopenOrder(orderId){
 
 function renderOrderCard(o){
   const isDone = o.status === 'done';
+  const updates = o.updates || [];
+  const updatesHtml = updates.length ? `
+    <div class="updates-list">
+      ${updates.map(u => `
+        <div class="update-item">
+          <div class="update-text">${escapeHtml(u.text)}</div>
+          <div class="update-meta"><span class="author">${escapeHtml(u.author)}</span> — ${escapeHtml(u.dateDisplay)} ${escapeHtml(u.timeDisplay)}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
   return `
     <div class="order-card ${isDone ? 'done' : ''}">
       <div class="order-item">💊 ${escapeHtml(o.item)}</div>
@@ -588,6 +637,7 @@ function renderOrderCard(o){
       <div style="margin-top:8px;">
         <span class="tag tag-created">🟣 Logged by <strong>${escapeHtml(o.author)}</strong> — ${escapeHtml(o.dateDisplay)} ${escapeHtml(o.timeDisplay)}</span>
       </div>
+      ${updatesHtml}
       ${isDone ? `
         <div style="margin-top:8px;">
           <span class="tag tag-closed">🟢 Fulfilled by <strong>${escapeHtml(o.closedBy || 'Unknown')}</strong> — ${escapeHtml(o.doneDate || '')} ${escapeHtml(o.doneTime || '')}</span>
@@ -597,7 +647,15 @@ function renderOrderCard(o){
         </div>
       ` : `
         <div class="order-actions">
+          <button class="action-btn" onclick="toggleOrderReply('${o.id}')">💬 Add Update</button>
           <button class="action-btn done-btn" onclick="markDone('${o.id}')">✓ Mark Fulfilled</button>
+        </div>
+        <div class="reply-form" id="order-reply-${o.id}">
+          <textarea id="order-reply-text-${o.id}" placeholder="What's been done so far to get this item?"></textarea>
+          <div class="row">
+            <button class="send-reply" onclick="addOrderUpdate('${o.id}')">Send</button>
+            <button class="cancel-reply" onclick="toggleOrderReply('${o.id}')">Cancel</button>
+          </div>
         </div>
       `}
     </div>
