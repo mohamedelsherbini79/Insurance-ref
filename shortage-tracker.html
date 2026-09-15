@@ -590,7 +590,7 @@ async function apiDeleteOne(sheetName, id){
 }
 
 function applyEmployees(empData){
-  employees = empData.map(r => r.name || r.id).filter(Boolean);
+  employees = [...new Set(empData.map(r => r.name || r.id).filter(Boolean))];
   employeePins = {};
   empData.forEach(r => { if(r.pin) employeePins[r.name || r.id] = r.pin; });
   renderEmployeeOptions();
