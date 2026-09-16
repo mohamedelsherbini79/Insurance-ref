@@ -3,32 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Checklist - Medicina Airport 3</title>
+<title>Chronic Refill Tracker - Medicina Airport 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --purple:#6b1f6f;
-    --purple-dark:#4d1650;
-    --green:#8bc34a;
-    --green-dark:#6f9c38;
-    --amber:#e0a72c;
-    --bg:#faf8fb;
-    --card:#ffffff;
-    --ink:#2a1f2d;
-    --muted:#8a7d8e;
-    --line:#e9e0eb;
-    --danger:#c0392b;
-    --radius:14px;
+    --purple:#6b1f6f; --purple-dark:#4d1650; --green:#8bc34a; --green-dark:#6f9c38;
+    --amber:#e0a72c; --bg:#faf8fb; --card:#ffffff; --ink:#2a1f2d; --muted:#8a7d8e;
+    --line:#e9e0eb; --danger:#c0392b; --radius:14px;
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:90px;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:30px;}
 
-  #loginGate{
-    position:fixed;inset:0;
-    background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);
-    display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
-  }
+  #loginGate{position:fixed;inset:0;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;}
   .login-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);}
   .login-card h2{margin:0 0 6px;font-size:1.25rem;font-weight:900;}
   .login-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);}
@@ -58,77 +45,88 @@
   .quick-nav a{flex-shrink:0;padding:6px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.76rem;font-weight:700;white-space:nowrap;}
   .quick-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple);}
   main{padding:26px 18px 0;}
-  select, input[type=text]{font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;}
-  select:focus, input:focus{outline:2px solid var(--green);outline-offset:1px;}
+  select, input[type=text], input[type=tel], input[type=number], input[type=date], textarea{
+    font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;
+  }
+  select:focus, input:focus, textarea:focus{outline:2px solid var(--green);outline-offset:1px;}
 
   .tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;}
-  .tab-btn{flex:1;padding:9px 4px;text-align:center;background:transparent;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;}
+  .tab-btn{flex:1;padding:9px 4px;text-align:center;background:transparent;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;}
   .tab-btn.active{background:var(--purple);color:#fff;}
+  .tab-btn .badge-count{background:var(--danger);color:#fff;border-radius:10px;padding:1px 6px;font-size:.65rem;margin-inline-start:4px;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+  .field .hint{font-size:.72rem;color:var(--muted);margin-top:4px;}
+  .row2{display:flex;gap:10px;}
+  .row2 .field{flex:1;}
 
-  .today-badge{font-size:.8rem;color:var(--muted);margin-bottom:12px;}
-  .check-item{
-    display:flex;align-items:flex-start;gap:12px;
-    padding:12px 4px;border-bottom:1px solid var(--line);
-  }
-  .check-item:last-child{border-bottom:none;}
-  .check-item input[type=checkbox]{
-    width:22px;height:22px;accent-color:var(--green);margin-top:1px;flex-shrink:0;cursor:pointer;
-  }
-  .check-item label{font-size:.9rem;font-weight:500;cursor:pointer;line-height:1.4;}
-  .progress-wrap{margin-bottom:14px;}
-  .progress-track{background:var(--bg);border:1px solid var(--line);border-radius:8px;height:12px;overflow:hidden;}
-  .progress-fill{background:linear-gradient(90deg,var(--purple),var(--green));height:100%;border-radius:8px;transition:width .2s;}
-  .progress-label{font-size:.78rem;color:var(--muted);margin-top:6px;text-align:center;}
+  .upload-box{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;margin-bottom:10px;position:relative;}
+  .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .upload-box .up-label{font-size:.85rem;color:var(--muted);font-weight:700;}
+  .upload-box img{max-width:100%;max-height:140px;border-radius:8px;margin-top:8px;}
+
+  .extract-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.92rem;cursor:pointer;margin-bottom:8px;}
+  .extract-btn:disabled{opacity:.6;}
+  .extract-status{text-align:center;font-size:.8rem;color:var(--purple);font-weight:700;min-height:16px;margin-bottom:10px;}
+  .extract-status.error{color:var(--danger);}
+
+  .med-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+  .med-row input{flex:1;}
+  .med-row .qty-input{max-width:80px;}
+  .med-row .rm-btn{background:none;border:none;color:var(--danger);font-size:1.1rem;cursor:pointer;padding:4px 8px;}
+  .add-med-btn{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 14px;font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--purple);margin-bottom:14px;}
 
   .submit-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 4px 10px rgba(139,195,74,.35);}
   .submit-btn:disabled{opacity:.6;}
   .status-msg{text-align:center;font-size:.8rem;margin-top:10px;min-height:16px;color:var(--green-dark);font-weight:700;}
   .status-msg.error{color:var(--danger);}
 
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center;}
-  .stat .num{font-size:1.6rem;font-weight:900;color:var(--purple);}
-  .stat .lbl{font-size:.72rem;color:var(--muted);margin-top:2px;}
-  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .toolbar{display:flex;gap:8px;margin-bottom:12px;}
+  .toolbar select, .toolbar input{flex:1;font-size:.85rem;padding:9px 10px;}
 
-  .emp-bar{margin-bottom:10px;}
-  .emp-bar .top{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;margin-bottom:4px;}
-  .emp-bar .track{background:var(--bg);border-radius:8px;height:10px;overflow:hidden;border:1px solid var(--line);}
-  .emp-bar .fill{height:100%;border-radius:8px;}
-  .emp-bar .fill.good{background:linear-gradient(90deg,var(--green-dark),var(--green));}
-  .emp-bar .fill.warn{background:linear-gradient(90deg,var(--amber),#f0c96b);}
-  .emp-bar .fill.bad{background:linear-gradient(90deg,var(--danger),#e0685c);}
+  .patient-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;border-right:4px solid var(--purple);}
+  .patient-card.due-soon{border-right-color:var(--amber);}
+  .patient-card.overdue{border-right-color:var(--danger);}
+  .patient-card.ok{border-right-color:var(--green);}
+  .p-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .p-name{font-weight:900;font-size:.98rem;}
+  .p-phone{font-size:.78rem;color:var(--muted);}
+  .status-pill{font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+  .status-pill.ok{background:#eef6e4;color:var(--green-dark);}
+  .status-pill.due-soon{background:#fbf1dd;color:#8a6410;}
+  .status-pill.overdue{background:#fbe6e3;color:var(--danger);}
+  .p-meds{font-size:.82rem;margin:6px 0;color:var(--ink);}
+  .p-meta{font-size:.75rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .p-meta span{background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--line);}
+  details.history summary{cursor:pointer;font-size:.75rem;color:var(--purple);font-weight:700;margin-top:8px;}
+  .hist-entry{font-size:.75rem;color:var(--muted);padding:4px 0;border-bottom:1px dashed var(--line);}
 
-  .day-row{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);font-size:.82rem;}
-  .day-row:last-child{border-bottom:none;}
-  .day-row .pct{font-weight:900;}
-  .day-row .pct.good{color:var(--green-dark);}
-  .day-row .pct.warn{color:var(--amber);}
-  .day-row .pct.bad{color:var(--danger);}
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
-  .section-title{font-size:.95rem;font-weight:900;margin:0 0 10px;}
-  .month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-  .month-nav button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;}
-  .month-nav .month-label{font-weight:900;font-size:1rem;}
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center;}
+  .stat .num{font-size:1.5rem;font-weight:900;color:var(--purple);}
+  .stat .lbl{font-size:.68rem;color:var(--muted);margin-top:2px;}
 
-  .fixed-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:10px;box-shadow:0 -4px 14px rgba(0,0,0,.06);}
-  .export-btn{flex:1;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
+  .fixed-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 -4px 14px rgba(0,0,0,.06);}
+  .export-btn{flex:1;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+  body{padding-bottom:70px;}
+  .section-title{font-size:.95rem;font-weight:900;margin:0 0 10px;}
 
   @media (min-width: 860px){
     body{padding-bottom:0;}
     header{border-radius:0 0 26px 26px;padding:28px 40px 34px;}
     header h1{font-size:1.7rem;}
-    main{max-width:960px;margin:0 auto;padding:32px 24px 100px;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
-    .tabs{grid-column:1 / -1;max-width:420px;}
-    #panel-today{grid-column:1;}
-    #panel-report{grid-column:1 / -1;}
-    .summary-grid{grid-template-columns:1fr 1fr 1fr;max-width:600px;}
+    main{max-width:960px;margin:0 auto;padding:32px 24px 30px;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
+    .tabs{grid-column:1 / -1;max-width:520px;}
+    #panel-add{grid-column:1;}
+    #panel-patients, #panel-due{grid-column:1 / -1;}
+    .summary-grid{max-width:600px;}
     .fixed-footer{position:static;max-width:960px;margin:0 auto;border-top:none;box-shadow:none;padding:0 24px 32px;}
-    .export-btn{max-width:260px;margin-inline-start:auto;}
     .card{padding:20px 22px;}
   }
 </style>
@@ -170,7 +168,7 @@
 <div id="loginGate">
   <div class="login-card">
     <h2>Welcome</h2>
-    <p>Select your name to complete today's checklist. You only need to do this once per session.</p>
+    <p>Select your name to log a dispensed prescription. You only need to do this once per session.</p>
     <div class="avatar-grid" id="avatarGrid"></div>
     <button class="add-name-btn-wide" id="loginAddBtn">+ Add your name</button>
   </div>
@@ -179,7 +177,7 @@
 <header>
   <div class="top-row">
     <div>
-      <h1>Daily Checklist</h1>
+      <h1>Chronic Refill Tracker</h1>
       <p>Medicina Airport 3</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -206,65 +204,134 @@
     <a href="hub.html">🏠 Hub</a>
     <a href="dashboard.html">📊 Dashboard</a>
     <a href="shortage-tracker.html">📦 Shortages</a>
-    <a href="daily-checklist.html" class="active">✅ Checklist</a>
+    <a href="daily-checklist.html">✅ Checklist</a>
     <a href="handover-notes.html">📝 Handover</a>
     <a href="customer-orders.html">🛎️ Orders</a>
-    <a href="refill-tracker.html">💊 Refills</a>
+    <a href="refill-tracker.html" class="active">💊 Refills</a>
     <a href="near-expiry.html">⏳ Near Expiry</a>
   </div>
 
 <main>
   <div class="tabs">
-    <button class="tab-btn active" data-tab="today">Today</button>
-    <button class="tab-btn" data-tab="report">Monthly Report</button>
+    <button class="tab-btn active" data-tab="add">New Record</button>
+    <button class="tab-btn" data-tab="patients">Patients</button>
+    <button class="tab-btn" data-tab="due">Due Soon <span class="badge-count" id="dueCount" style="display:none;">0</span></button>
+    <button class="tab-btn" data-tab="stats">Stats</button>
   </div>
 
-  <!-- TAB: TODAY -->
-  <div class="panel active" id="panel-today">
-    <div class="card" id="adminItemsCard" style="display:none;">
-      <div class="section-title">⚙️ Manage checklist items (admin only)</div>
-      <div id="adminItemsList" style="margin-bottom:12px;"></div>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="newItemText" placeholder="New checklist item..." style="flex:1;">
-        <button id="addItemBtn" style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;">Add</button>
-      </div>
-    </div>
+  <!-- TAB: ADD -->
+  <div class="panel active" id="panel-add">
     <div class="card">
-      <div class="today-badge" id="todayLabel">Today</div>
-      <div id="checklistItems">⏳ Loading...</div>
-      <div class="progress-wrap">
-        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-        <div class="progress-label" id="progressLabel">0 of 5 completed</div>
+      <div class="section-title">1. Upload images</div>
+      <div class="field">
+        <label>Prescription image (name, phone, date)</label>
+        <div class="upload-box">
+          <input type="file" accept="image/*" id="rxFile">
+          <div class="up-label" id="rxLabel">📄 Tap to upload prescription photo</div>
+          <img id="rxPreview" style="display:none;">
+        </div>
       </div>
-      <button class="submit-btn" id="submitBtn">Submit Today's Checklist</button>
+      <div class="field">
+        <label>Invoice / receipt image (medications)</label>
+        <div class="upload-box">
+          <input type="file" accept="image/*" id="invFile">
+          <div class="up-label" id="invLabel">🧾 Tap to upload invoice photo</div>
+          <img id="invPreview" style="display:none;">
+        </div>
+      </div>
+      <button class="extract-btn" id="extractBtn">🔍 Extract with AI</button>
+      <div class="extract-status" id="extractStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">2. Review & confirm</div>
+      <div class="field">
+        <label>Patient name *</label>
+        <input type="text" id="patName" placeholder="e.g. Ahmed Al Mansoori">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Phone number *</label>
+          <input type="tel" id="patPhone" placeholder="05XXXXXXXX">
+        </div>
+        <div class="field">
+          <label>Dispense date *</label>
+          <input type="date" id="dispenseDate">
+        </div>
+      </div>
+      <div class="field">
+        <label>Emirates ID</label>
+        <input type="text" id="patEmiratesId" placeholder="784-XXXX-XXXXXXX-X" value="784-">
+      </div>
+      <div class="field">
+        <label>Medications dispensed</label>
+        <div id="medsList"></div>
+        <button class="add-med-btn" id="addMedBtn">+ Add medication</button>
+      </div>
+      <div class="field">
+        <label>Refill cycle</label>
+        <select id="cycleDays">
+          <option value="30">30 days</option>
+          <option value="60">60 days</option>
+          <option value="90">90 days</option>
+        </select>
+        <div class="hint">Reminder shows automatically: 3 days before for 30-day cycles, 5 days before for 60-day, 7 days before for 90-day.</div>
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea id="patNotes" rows="2"></textarea>
+      </div>
+      <button class="submit-btn" id="saveBtn">💾 Save Record</button>
       <div class="status-msg" id="statusMsg"></div>
     </div>
   </div>
 
-  <!-- TAB: REPORT -->
-  <div class="panel" id="panel-report">
-    <div class="month-nav">
-      <button id="prevMonth">‹ Prev</button>
-      <div class="month-label" id="monthLabel"></div>
-      <button id="nextMonth">Next ›</button>
+  <!-- TAB: PATIENTS -->
+  <div class="panel" id="panel-patients">
+    <div class="summary-grid">
+      <div class="stat"><div class="num" id="totalPatients">0</div><div class="lbl">Total patients</div></div>
+      <div class="stat"><div class="num" id="dueSoonCount">0</div><div class="lbl">Due in 3 days</div></div>
+      <div class="stat"><div class="num" id="overdueCount">0</div><div class="lbl">Overdue</div></div>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="searchPatient" placeholder="Search by name or phone...">
+    </div>
+    <div id="patientsList">⏳ Loading...</div>
+  </div>
+
+  <!-- TAB: DUE SOON -->
+  <div class="panel" id="panel-due">
+    <div id="dueList"></div>
+  </div>
+
+  <!-- TAB: STATS -->
+  <div class="panel" id="panel-stats">
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-title">Filter by period</div>
+      <div class="row2">
+        <div class="field">
+          <label>From</label>
+          <input type="date" id="statsFrom">
+        </div>
+        <div class="field">
+          <label>To</label>
+          <input type="date" id="statsTo">
+        </div>
+      </div>
     </div>
     <div class="summary-grid">
-      <div class="stat"><div class="num" id="teamPct">0%</div><div class="lbl">Team compliance</div></div>
-      <div class="stat"><div class="num" id="daysLogged">0</div><div class="lbl">Days logged</div></div>
+      <div class="stat"><div class="num" id="statsTotalDispenses">0</div><div class="lbl">Refills logged in period</div></div>
+      <div class="stat"><div class="num" id="statsNewPatients">0</div><div class="lbl">New patients in period</div></div>
     </div>
     <div class="card">
-      <div class="section-title">Compliance per employee</div>
-      <div id="empReport"></div>
-    </div>
-    <div class="card">
-      <div class="section-title">Daily log</div>
-      <div id="dayLog"></div>
+      <div class="section-title">Refills logged per employee (in period)</div>
+      <div id="statsEmpSummary"></div>
     </div>
   </div>
 </main>
 
-<div class="fixed-footer" id="footerActions" style="flex-wrap:wrap;display:none;">
-  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export Monthly Report (CSV)</button>
+<div class="fixed-footer" id="footerActions" style="display:none;">
+  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export Patients (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;">
@@ -272,34 +339,40 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
-const ENTRIES_KEY = 'checklist-entries';
-const EMPLOYEE_KEY = 'checklist-employees';
-const ITEMS_KEY = 'checklist-items';
-const DEFAULT_CHECKLIST_ITEMS = [
-  "Promotions reviewed and displayed correctly",
-  "Shortage tracker reviewed (new entries checked)",
-  "Recurring zero-stock items followed up",
-  "Escalation emails checked for replies (ceiling / AC / pending requests)",
-  "Store appearance checked (fridges, testers, shelves)"
-];
-let CHECKLIST_ITEMS = DEFAULT_CHECKLIST_ITEMS.slice();
-
-let entries = [];
+const PATIENTS_KEY = 'refill-patients';
+const EMPLOYEE_KEY = 'refill-employees';
+let patients = [];
 let employees = [];
 let employeePins = {};
 let currentEmployee = '';
-let viewMonth = new Date().getMonth();
-let viewYear = new Date().getFullYear();
+let rxBase64 = null, rxMediaType = null;
+let invBase64 = null, invMediaType = null;
+let medIdCounter = 0;
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function todayKey(){
+function todayISO(){
   const d = new Date();
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-function dateKeyOf(d){
+function addDays(isoDate, days){
+  const d = new Date(isoDate + 'T00:00:00');
+  d.setDate(d.getDate() + Number(days));
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function daysBetween(isoA, isoB){
+  const a = new Date(isoA + 'T00:00:00');
+  const b = new Date(isoB + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+function displayDate(iso){
+  if(!iso) return '-';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-GB');
+}
+function normalizePhone(p){
+  return String(p || '').replace(/[^0-9]/g, '');
 }
 
 const API_KEY = 'Medicina-airport3-2026';
@@ -430,40 +503,27 @@ function applyEmployees(empData){
 
 async function loadData(){
   const cachedEmp = getCached(EMPLOYEE_KEY);
-  const cachedEntries = getCached(ENTRIES_KEY);
-  const cachedItems = getCached(ITEMS_KEY);
-  if(cachedItems && cachedItems.length){ CHECKLIST_ITEMS = cachedItems.map(r => r.text || r.id); }
+  const cachedPatients = getCached(PATIENTS_KEY);
   if(cachedEmp) applyEmployees(cachedEmp);
-  if(cachedEntries){ entries = cachedEntries; buildChecklist(); renderReport(); }
+  if(cachedPatients){ patients = cachedPatients; renderPatients(); renderDue(); }
+
+  document.getElementById('dispenseDate').value = todayISO();
+  if(document.getElementById('medsList').children.length === 0) addMedRow();
 
   apiGet(EMPLOYEE_KEY).then(empData => {
     applyEmployees(empData);
     setCached(EMPLOYEE_KEY, empData);
   });
 
-  apiGet(ITEMS_KEY).then(async itemsData => {
-    if(itemsData.length === 0){
-      // First run: seed the sheet with the default items so everyone starts from the same list
-      for(const text of DEFAULT_CHECKLIST_ITEMS){
-        await apiAppend(ITEMS_KEY, {id: text, text: text});
-      }
-      itemsData = DEFAULT_CHECKLIST_ITEMS.map(text => ({id: text, text: text}));
-    }
-    CHECKLIST_ITEMS = itemsData.map(r => r.text || r.id);
-    setCached(ITEMS_KEY, itemsData);
-    buildChecklist();
-    renderAdminItems();
-  });
-
-  const entriesData = await apiGet(ENTRIES_KEY);
-  entries = entriesData;
-  buildChecklist();
-  renderReport();
-  setCached(ENTRIES_KEY, entriesData);
+  const patientsData = await apiGet(PATIENTS_KEY);
+  patients = patientsData;
+  renderPatients();
+  renderDue();
+  setCached(PATIENTS_KEY, patientsData);
 }
 
-async function saveEntries(){
-  return await apiSave(ENTRIES_KEY, entries);
+async function savePatients(){
+  return await apiSave(PATIENTS_KEY, patients);
 }
 async function saveEmployees(){
   const records = employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}));
@@ -484,10 +544,8 @@ function loginAs(name){
   document.getElementById('adminPanelBtn').style.display = isAdmin() ? 'block' : 'none';
   const footerEl = document.getElementById('footerActions');
   if(footerEl) footerEl.style.display = isAdmin() ? 'flex' : 'none';
-  document.getElementById('adminItemsCard').style.display = isAdmin() ? 'block' : 'none';
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
-  buildChecklist();
   notifyIfNeeded();
 }
 
@@ -528,7 +586,6 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
     attemptLogin(clean);
   }
 });
-
 document.getElementById('switchUserBtn').addEventListener('click', () => {
   try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
@@ -571,38 +628,6 @@ async function setEmployeePin(name){
   renderEmployeeOptions();
   await apiUpdateOne(EMPLOYEE_KEY, {id: name, name: name, pin: employeePins[name] || ''});
 }
-
-function renderAdminItems(){
-  const list = document.getElementById('adminItemsList');
-  list.innerHTML = CHECKLIST_ITEMS.map(text => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:.82rem;">
-      <span>${escapeHtml(text)}</span>
-      <button onclick="deleteChecklistItem('${text.replace(/'/g, "\\'")}')" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:4px 9px;font-size:.7rem;cursor:pointer;">✕</button>
-    </div>
-  `).join('');
-}
-document.getElementById('addItemBtn').addEventListener('click', async () => {
-  if(!isAdmin()) return;
-  const input = document.getElementById('newItemText');
-  const text = input.value.trim();
-  if(!text) return;
-  if(CHECKLIST_ITEMS.includes(text)){ alert('This item already exists.'); return; }
-  CHECKLIST_ITEMS.push(text);
-  input.value = '';
-  renderAdminItems();
-  buildChecklist();
-  setCached(ITEMS_KEY, CHECKLIST_ITEMS.map(t => ({id: t, text: t})));
-  await apiAppend(ITEMS_KEY, {id: text, text: text});
-});
-async function deleteChecklistItem(text){
-  if(!isAdmin()) return;
-  if(!confirm('Remove this checklist item for everyone?')) return;
-  CHECKLIST_ITEMS = CHECKLIST_ITEMS.filter(t => t !== text);
-  renderAdminItems();
-  buildChecklist();
-  setCached(ITEMS_KEY, CHECKLIST_ITEMS.map(t => ({id: t, text: t})));
-  await apiDeleteOne(ITEMS_KEY, text);
-}
 async function deleteEmployee(name){
   if(!isAdmin()) return;
   if(!confirm('Remove "' + name + '" from this list?')) return;
@@ -635,14 +660,15 @@ function trySharedLogin(){
 function notifyIfNeeded(){
   if(!('Notification' in window)) return;
   const fire = () => {
-    const done = entries.some(e => e.employee === currentEmployee && e.dateKey === todayKey());
-    if(!done){
-      new Notification('Medicina Airport 3', {body: "You haven't submitted today's checklist yet."});
+    const dueCount = patients.filter(p => ['due-soon','overdue'].includes(getStatus(p))).length;
+    if(dueCount > 0){
+      new Notification('Medicina Airport 3', {body: dueCount + ' patient(s) due for refill soon.'});
     }
   };
   if(Notification.permission === 'granted') fire();
   else if(Notification.permission !== 'denied') Notification.requestPermission().then(p => { if(p === 'granted') fire(); });
 }
+
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -650,218 +676,350 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-    if(btn.dataset.tab === 'report') renderReport();
+    if(btn.dataset.tab === 'patients') renderPatients();
+    if(btn.dataset.tab === 'due') renderDue();
+    if(btn.dataset.tab === 'stats') renderStats();
   });
 });
 
-function buildChecklist(){
-  const todayStr = new Date().toLocaleDateString('en-GB', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-  document.getElementById('todayLabel').textContent = todayStr;
-
-  const existing = currentEmployee ? entries.find(e => e.employee === currentEmployee && e.dateKey === todayKey()) : null;
-
-  const container = document.getElementById('checklistItems');
-  container.innerHTML = CHECKLIST_ITEMS.map((item, i) => `
-    <div class="check-item">
-      <input type="checkbox" id="chk-${i}" ${existing && existing.checked[i] ? 'checked' : ''}>
-      <label for="chk-${i}">${escapeHtml(item)}</label>
-    </div>
-  `).join('');
-
-  container.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', updateProgress));
-  updateProgress();
-
-  if(existing){
-    document.getElementById('submitBtn').textContent = 'Update Today\'s Checklist';
-  }else{
-    document.getElementById('submitBtn').textContent = 'Submit Today\'s Checklist';
-  }
+// ===== IMAGE UPLOAD =====
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
 }
 
-function updateProgress(){
-  const boxes = document.querySelectorAll('#checklistItems input[type=checkbox]');
-  const checked = Array.from(boxes).filter(b => b.checked).length;
-  const pct = boxes.length ? Math.round(checked/boxes.length*100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = `${checked} of ${boxes.length} completed`;
+document.getElementById('rxFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  rxMediaType = file.type || 'image/jpeg';
+  rxBase64 = await fileToBase64(file);
+  document.getElementById('rxLabel').textContent = '✓ ' + file.name;
+  const img = document.getElementById('rxPreview');
+  img.src = 'data:' + rxMediaType + ';base64,' + rxBase64;
+  img.style.display = 'block';
+});
+document.getElementById('invFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  invMediaType = file.type || 'image/jpeg';
+  invBase64 = await fileToBase64(file);
+  document.getElementById('invLabel').textContent = '✓ ' + file.name;
+  const img = document.getElementById('invPreview');
+  img.src = 'data:' + invMediaType + ';base64,' + invBase64;
+  img.style.display = 'block';
+});
+
+// ===== MEDICATION ROWS =====
+function addMedRow(name, qty){
+  medIdCounter++;
+  const id = 'med-' + medIdCounter;
+  const div = document.createElement('div');
+  div.className = 'med-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Medication name" class="med-name" value="${escapeHtml(name || '')}">
+    <input type="text" placeholder="Qty" class="qty-input med-qty" value="${escapeHtml(qty || '')}">
+    <button class="rm-btn" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('medsList').appendChild(div);
+}
+document.getElementById('addMedBtn').addEventListener('click', () => addMedRow());
+
+function getMedsFromForm(){
+  return Array.from(document.querySelectorAll('.med-row')).map(row => ({
+    name: row.querySelector('.med-name').value.trim(),
+    qty: row.querySelector('.med-qty').value.trim()
+  })).filter(m => m.name);
+}
+function clearMedsForm(){
+  document.getElementById('medsList').innerHTML = '';
 }
 
-document.getElementById('submitBtn').addEventListener('click', async () => {
-  const statusEl = document.getElementById('statusMsg');
-  const btn = document.getElementById('submitBtn');
-  if(!currentEmployee){
-    statusEl.textContent = 'Please select your name at login first';
+// ===== AI EXTRACTION =====
+document.getElementById('extractBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('extractStatus');
+  const btn = document.getElementById('extractBtn');
+  if(!rxBase64 && !invBase64){
+    statusEl.textContent = 'Upload at least one image first';
     statusEl.classList.add('error');
     return;
   }
-  const boxes = document.querySelectorAll('#checklistItems input[type=checkbox]');
-  const checkedArr = Array.from(boxes).map(b => b.checked);
-  const completedCount = checkedArr.filter(Boolean).length;
-
-  const now = new Date();
-  const dKey = todayKey();
-  const newEntry = {
-    id: dKey + '-' + currentEmployee,
-    employee: currentEmployee,
-    dateKey: dKey,
-    dateDisplay: now.toLocaleDateString('en-GB'),
-    checked: checkedArr,
-    completedCount: completedCount,
-    totalCount: checkedArr.length,
-    completionPct: Math.round(completedCount/checkedArr.length*100),
-    timeDisplay: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
-  };
-
-  const previousEntry = entries.find(e => e.employee === currentEmployee && e.dateKey === dKey) || null;
-  entries = entries.filter(e => !(e.employee === currentEmployee && e.dateKey === dKey));
-  entries.push(newEntry);
-
+  btn.disabled = true;
   statusEl.classList.remove('error');
-  statusEl.textContent = '✓ Checklist saved for today';
-  document.getElementById('submitBtn').textContent = 'Update Today\'s Checklist';
-  setTimeout(() => { statusEl.textContent=''; statusEl.classList.remove('error'); }, 2500);
+  statusEl.textContent = 'Reading images...';
 
-  const ok = await apiUpdateOne(ENTRIES_KEY, newEntry);
+  try{
+    const images = [];
+    if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64});
+    if(invBase64) images.push({mimeType: invMediaType, data: invBase64});
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
+    });
+    const data = await response.json();
+    if(!data.success) throw new Error(data.error || 'extraction failed');
+    const parsed = data.data;
+
+    if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
+    if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
+    if(parsed.emiratesId) document.getElementById('patEmiratesId').value = parsed.emiratesId;
+    if(parsed.dispenseDate) document.getElementById('dispenseDate').value = parsed.dispenseDate;
+    if(Array.isArray(parsed.medications) && parsed.medications.length){
+      clearMedsForm();
+      parsed.medications.forEach(m => addMedRow(m.name, m.qty));
+    }
+    statusEl.textContent = '✓ Extracted — please review the fields below before saving';
+  }catch(err){
+    console.error('Extract with AI failed:', err);
+    statusEl.textContent = 'Could not read the image(s): ' + (err.message || err) + '. Please fill the fields manually below.';
+    statusEl.classList.add('error');
+  }
+  btn.disabled = false;
+});
+
+// ===== SAVE RECORD =====
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('statusMsg');
+  const name = document.getElementById('patName').value.trim();
+  const phoneRaw = document.getElementById('patPhone').value.trim();
+  const phone = normalizePhone(phoneRaw);
+  const emiratesId = document.getElementById('patEmiratesId').value.trim();
+  const dispenseDate = document.getElementById('dispenseDate').value || todayISO();
+  const cycleDays = Number(document.getElementById('cycleDays').value) || 30;
+  const notes = document.getElementById('patNotes').value.trim();
+  const meds = getMedsFromForm();
+
+  if(!currentEmployee){ statusEl.textContent='Please select your name at login first'; statusEl.classList.add('error'); return; }
+  if(!name || !phone){ statusEl.textContent='Patient name and phone number are required'; statusEl.classList.add('error'); return; }
+
+  const nextDueDate = addDays(dispenseDate, cycleDays);
+  let patient = patients.find(p => normalizePhone(p.phone) === phone);
+  const isNewPatient = !patient;
+  const snapshot = patient ? JSON.parse(JSON.stringify(patient)) : null;
+  const historyEntry = {date: dispenseDate, medications: meds, addedBy: currentEmployee};
+
+  if(patient){
+    patient.name = name;
+    patient.phone = phoneRaw;
+    patient.emiratesId = emiratesId || patient.emiratesId;
+    patient.medications = meds;
+    patient.lastDispenseDate = dispenseDate;
+    patient.cycleDays = cycleDays;
+    patient.nextDueDate = nextDueDate;
+    patient.notes = notes || patient.notes;
+    patient.history = patient.history || [];
+    patient.history.push(historyEntry);
+  }else{
+    patient = {
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      name, phone: phoneRaw, emiratesId,
+      medications: meds,
+      lastDispenseDate: dispenseDate, cycleDays, nextDueDate,
+      notes, addedBy: currentEmployee, history: [historyEntry]
+    };
+    patients.push(patient);
+  }
+
+  statusEl.textContent = '✓ Record saved. Next refill due ' + displayDate(nextDueDate);
+  statusEl.classList.remove('error');
+  document.getElementById('patName').value = '';
+  document.getElementById('patPhone').value = '';
+  document.getElementById('patEmiratesId').value = '784-';
+  document.getElementById('patNotes').value = '';
+  document.getElementById('dispenseDate').value = todayISO();
+  document.getElementById('cycleDays').value = 30;
+  clearMedsForm(); addMedRow();
+  rxBase64 = null; invBase64 = null;
+  document.getElementById('rxLabel').textContent = '📄 Tap to upload prescription photo';
+  document.getElementById('invLabel').textContent = '🧾 Tap to upload invoice photo';
+  document.getElementById('rxPreview').style.display='none';
+  document.getElementById('invPreview').style.display='none';
+  document.getElementById('rxFile').value='';
+  document.getElementById('invFile').value='';
+  document.getElementById('extractStatus').textContent='';
+  renderPatients(); renderDue();
+  setTimeout(() => { statusEl.textContent=''; statusEl.classList.remove('error'); }, 4000);
+
+  const ok = await apiUpdateOne(PATIENTS_KEY, patient);
   if(!ok){
-    entries = entries.filter(e => e.id !== newEntry.id);
-    if(previousEntry) entries.push(previousEntry);
-    alert('Could not save the checklist. Please check your connection and try again.');
+    if(isNewPatient){
+      patients = patients.filter(p => p.id !== patient.id);
+    }else{
+      const idx = patients.findIndex(p => p.id === patient.id);
+      if(idx !== -1) patients[idx] = snapshot;
+    }
+    renderPatients(); renderDue();
+    alert('Could not save this record. Please check your connection and try again.');
   }
 });
 
-// ===== REPORT =====
-document.getElementById('prevMonth').addEventListener('click', () => {
-  viewMonth--; if(viewMonth < 0){ viewMonth = 11; viewYear--; }
-  renderReport();
-});
-document.getElementById('nextMonth').addEventListener('click', () => {
-  viewMonth++; if(viewMonth > 11){ viewMonth = 0; viewYear++; }
-  renderReport();
-});
-
-function pctClass(pct){
-  if(pct >= 80) return 'good';
-  if(pct >= 50) return 'warn';
-  return 'bad';
+// ===== STATUS CALC =====
+function reminderWindow(cycleDays){
+  if(Number(cycleDays) === 90) return 7;
+  if(Number(cycleDays) === 60) return 5;
+  return 3; // 30-day cycle (and any other/default)
+}
+function getStatus(patient){
+  const diff = daysBetween(todayISO(), patient.nextDueDate);
+  const window = reminderWindow(patient.cycleDays);
+  if(diff < 0) return 'overdue';
+  if(diff <= window) return 'due-soon';
+  return 'ok';
+}
+function statusLabel(status, patient){
+  const diff = daysBetween(todayISO(), patient.nextDueDate);
+  if(status === 'overdue') return `Overdue by ${Math.abs(diff)} day(s)`;
+  if(status === 'due-soon') return diff === 0 ? 'Due today' : `Due in ${diff} day(s)`;
+  return `Due in ${diff} days`;
 }
 
-function renderReport(){
-  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  document.getElementById('monthLabel').textContent = monthNames[viewMonth] + ' ' + viewYear;
-
-  const monthEntries = entries.filter(e => {
-    const [y,m] = e.dateKey.split('-').map(Number);
-    return y === viewYear && (m-1) === viewMonth;
-  });
-
-  const daysLogged = new Set(monthEntries.map(e => e.dateKey)).size;
-  document.getElementById('daysLogged').textContent = daysLogged;
-
-  const teamPct = monthEntries.length
-    ? Math.round(monthEntries.reduce((s,e) => s + e.completionPct, 0) / monthEntries.length)
-    : 0;
-  document.getElementById('teamPct').textContent = teamPct + '%';
-
-  // Per employee
-  const empMap = {};
-  monthEntries.forEach(e => {
-    if(!empMap[e.employee]) empMap[e.employee] = [];
-    empMap[e.employee].push(e.completionPct);
-  });
-  const empReport = document.getElementById('empReport');
-  const empEntries = Object.entries(empMap).map(([name, arr]) => [name, Math.round(arr.reduce((a,b)=>a+b,0)/arr.length), arr.length]);
-  empEntries.sort((a,b) => b[1]-a[1]);
-
-  if(empEntries.length === 0){
-    empReport.innerHTML = `<div class="empty-state"><div class="big">📊</div>No checklist data for this month</div>`;
-  }else{
-    empReport.innerHTML = empEntries.map(([name, pct, days]) => `
-      <div class="emp-bar">
-        <div class="top"><span>${escapeHtml(name)} (${days} days)</span><span>${pct}%</span></div>
-        <div class="track"><div class="fill ${pctClass(pct)}" style="width:${pct}%"></div></div>
+function renderPatientCard(p){
+  const status = getStatus(p);
+  const medsStr = (p.medications || []).map(m => m.name + (m.qty ? ' ('+m.qty+')' : '')).join(', ') || 'No medications listed';
+  const histHtml = (p.history || []).slice().reverse().map(h => `
+    <div class="hist-entry">${escapeHtml(displayDate(h.date))} — ${escapeHtml((h.medications||[]).map(m=>m.name).join(', ') || '-')} <span style="opacity:.7;">by ${escapeHtml(h.addedBy||'')}</span></div>
+  `).join('');
+  return `
+    <div class="patient-card ${status}">
+      <div class="p-top">
+        <div>
+          <div class="p-name">${escapeHtml(p.name)}</div>
+          <div class="p-phone">📞 ${escapeHtml(p.phone)}${p.emiratesId ? ` · 🪪 ${escapeHtml(p.emiratesId)}` : ''}</div>
+        </div>
+        <span class="status-pill ${status}">${statusLabel(status, p)}</span>
       </div>
-    `).join('');
-  }
-
-  // Daily log
-  const dayMap = {};
-  monthEntries.forEach(e => {
-    if(!dayMap[e.dateKey]) dayMap[e.dateKey] = [];
-    dayMap[e.dateKey].push(e);
-  });
-  const dayLog = document.getElementById('dayLog');
-  const sortedDays = Object.keys(dayMap).sort().reverse();
-  if(sortedDays.length === 0){
-    dayLog.innerHTML = `<div class="empty-state"><div class="big">🗓</div>No entries yet</div>`;
-  }else{
-    dayLog.innerHTML = sortedDays.map(dKey => {
-      const dayEntries = dayMap[dKey];
-      const dayPct = Math.round(dayEntries.reduce((s,e)=>s+e.completionPct,0)/dayEntries.length);
-      const names = dayEntries.map(e => e.employee).join(', ');
-      return `<div class="day-row"><span>${escapeHtml(dayEntries[0].dateDisplay)} — ${escapeHtml(names)}</span><span class="pct ${pctClass(dayPct)}">${dayPct}%</span></div>`;
-    }).join('');
-  }
-
-  window._currentMonthEntries = monthEntries;
+      <div class="p-meds">💊 ${escapeHtml(medsStr)}</div>
+      <div class="p-meta">
+        <span>Last dispensed: ${escapeHtml(displayDate(p.lastDispenseDate))}</span>
+        <span>Next due: ${escapeHtml(displayDate(p.nextDueDate))}</span>
+        <span>Cycle: ${escapeHtml(String(p.cycleDays))}d</span>
+      </div>
+      ${p.notes ? `<div class="p-meta"><span>📝 ${escapeHtml(p.notes)}</span></div>` : ''}
+      ${histHtml ? `<details class="history"><summary>View history (${p.history.length})</summary>${histHtml}</details>` : ''}
+    </div>
+  `;
 }
 
+function renderPatients(){
+  const search = document.getElementById('searchPatient').value.trim().toLowerCase();
+  let list = patients.filter(p => !search || p.name.toLowerCase().includes(search) || normalizePhone(p.phone).includes(search));
+  list = list.slice().sort((a,b) => a.nextDueDate.localeCompare(b.nextDueDate));
+
+  document.getElementById('totalPatients').textContent = patients.length;
+  document.getElementById('dueSoonCount').textContent = patients.filter(p => getStatus(p) === 'due-soon').length;
+  document.getElementById('overdueCount').textContent = patients.filter(p => getStatus(p) === 'overdue').length;
+
+  const container = document.getElementById('patientsList');
+  container.innerHTML = list.length
+    ? list.map(renderPatientCard).join('')
+    : `<div class="empty-state"><div class="big">👥</div>No patients yet</div>`;
+}
+document.getElementById('searchPatient').addEventListener('input', renderPatients);
+
+function renderDue(){
+  const dueList = patients.filter(p => ['due-soon','overdue'].includes(getStatus(p)))
+    .sort((a,b) => a.nextDueDate.localeCompare(b.nextDueDate));
+  const container = document.getElementById('dueList');
+  container.innerHTML = dueList.length
+    ? dueList.map(renderPatientCard).join('')
+    : `<div class="empty-state"><div class="big">✅</div>No refills due in the next 3 days</div>`;
+
+  const badge = document.getElementById('dueCount');
+  if(dueList.length){ badge.style.display='inline-block'; badge.textContent = dueList.length; }
+  else{ badge.style.display='none'; }
+}
+
+// ===== STATS =====
+function initStatsDates(){
+  const fromEl = document.getElementById('statsFrom');
+  const toEl = document.getElementById('statsTo');
+  if(!fromEl.value){
+    const now = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    fromEl.value = firstOfMonth.getFullYear()+'-'+String(firstOfMonth.getMonth()+1).padStart(2,'0')+'-01';
+  }
+  if(!toEl.value){
+    toEl.value = todayISO();
+  }
+}
+document.getElementById('statsFrom').addEventListener('change', renderStats);
+document.getElementById('statsTo').addEventListener('change', renderStats);
+
+function renderStats(){
+  initStatsDates();
+  const fromVal = document.getElementById('statsFrom').value;
+  const toVal = document.getElementById('statsTo').value;
+  const inRange = (d) => d && d >= fromVal && d <= toVal;
+
+  let totalDispenses = 0;
+  let newPatients = 0;
+  const counts = {};
+
+  patients.forEach(p => {
+    const hist = p.history || [];
+    if(hist.length && inRange(hist[0].date)) newPatients++;
+    hist.forEach(h => {
+      if(inRange(h.date)){
+        totalDispenses++;
+        const who = h.addedBy || 'Unknown';
+        counts[who] = (counts[who] || 0) + 1;
+      }
+    });
+  });
+
+  document.getElementById('statsTotalDispenses').textContent = totalDispenses;
+  document.getElementById('statsNewPatients').textContent = newPatients;
+
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  const max = sorted.length ? sorted[0][1] : 1;
+  const container = document.getElementById('statsEmpSummary');
+  container.innerHTML = sorted.length
+    ? sorted.map(([name, count]) => `
+        <div class="emp-bar">
+          <div class="top"><span>${escapeHtml(name)}</span><span>${count}</span></div>
+          <div class="track"><div class="fill" style="width:${(count/max*100).toFixed(0)}%;background:linear-gradient(90deg,var(--purple),var(--green));"></div></div>
+        </div>
+      `).join('')
+    : `<div class="empty-state"><div class="big">📊</div>No data in this period</div>`;
+}
+
+// ===== EXPORT / BACKUP / RESTORE =====
 document.getElementById('exportBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
-  const monthEntries = window._currentMonthEntries || [];
-  if(monthEntries.length === 0){
-    alert('No data to export for this month');
-    return;
-  }
-  const headers = ['Date','Employee','Completed','Total','Completion %', ...CHECKLIST_ITEMS];
-  const rows = monthEntries.slice().sort((a,b) => a.dateKey.localeCompare(b.dateKey)).map(e => [
-    e.dateDisplay, e.employee, e.completedCount, e.totalCount, e.completionPct + '%',
-    ...e.checked.map(c => c ? 'Yes' : 'No')
+  if(patients.length === 0){ alert('No patients to export yet'); return; }
+  const headers = ['Patient Name','Phone','Emirates ID','Last Dispense Date','Next Due Date','Cycle (days)','Status','Medications','Notes','Added By'];
+  const rows = patients.map(p => [
+    p.name, p.phone, p.emiratesId || '', displayDate(p.lastDispenseDate), displayDate(p.nextDueDate), p.cycleDays,
+    statusLabel(getStatus(p), p), (p.medications||[]).map(m=>m.name+(m.qty?' ('+m.qty+')':'')).join('; '),
+    p.notes || '', p.addedBy || ''
   ]);
   let csv = '\uFEFF' + headers.join(',') + '\n';
-  rows.forEach(r => {
-    csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',') + '\n';
-  });
+  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',') + '\n'; });
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  a.download = `checklist_report_${monthNames[viewMonth]}_${viewYear}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url; a.download = `refill-patients_${todayISO()}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
 
-loadData();
-updateSyncBadge();
-flushQueue();
-
-// ===== BACKUP & RESTORE =====
 document.getElementById('backupBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
-  const backup = {
-    tool: 'daily-checklist',
-    exportedAt: new Date().toISOString(),
-    [ENTRIES_KEY]: entries,
-    [EMPLOYEE_KEY]: employees
-  };
+  const backup = {tool:'refill-tracker', exportedAt: new Date().toISOString(), [PATIENTS_KEY]: patients, [EMPLOYEE_KEY]: employees};
   const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `daily-checklist-backup_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url; a.download = `refill-tracker-backup_${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
-
-document.getElementById('restoreBtn').addEventListener('click', () => {
-  if(!isAdmin()) return;
-  document.getElementById('restoreInput').click();
-});
-
+document.getElementById('restoreBtn').addEventListener('click', () => { if(!isAdmin()) return; document.getElementById('restoreInput').click(); });
 document.getElementById('restoreInput').addEventListener('change', async (e) => {
   if(!isAdmin()) return;
   const file = e.target.files[0];
@@ -869,30 +1027,21 @@ document.getElementById('restoreInput').addEventListener('change', async (e) => 
   try{
     const text = await file.text();
     const data = JSON.parse(text);
-    if(!data[ENTRIES_KEY] && !data[EMPLOYEE_KEY]){
-      alert('This file does not look like a valid Daily Checklist backup.');
-      return;
-    }
-    const count = (data[ENTRIES_KEY] || []).length;
-    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will contain ${count} checklist entries and will REPLACE all current data.`)) return;
-
-    entries = data[ENTRIES_KEY] || [];
+    if(!data[PATIENTS_KEY] && !data[EMPLOYEE_KEY]){ alert('This file does not look like a valid Refill Tracker backup.'); return; }
+    const count = (data[PATIENTS_KEY] || []).length;
+    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will contain ${count} patients and will REPLACE all current data.`)) return;
+    patients = data[PATIENTS_KEY] || [];
     employees = data[EMPLOYEE_KEY] || [];
-    const ok1 = await saveEntries();
-    const ok2 = await saveEmployees();
-    if(ok1 && ok2){
-      alert('✓ Backup restored successfully.');
-      renderEmployeeOptions();
-      buildChecklist();
-      renderReport();
-    }else{
-      alert('Something went wrong while restoring. Please try again.');
-    }
-  }catch(err){
-    alert('Could not read this file. Make sure it is a valid backup JSON file.');
-  }
+    const ok1 = await savePatients(); const ok2 = await saveEmployees();
+    if(ok1 && ok2){ alert('✓ Backup restored successfully.'); renderEmployeeOptions(); renderPatients(); renderDue(); }
+    else{ alert('Something went wrong while restoring. Please try again.'); }
+  }catch(err){ alert('Could not read this file. Make sure it is a valid backup JSON file.'); }
   e.target.value = '';
 });
+
+loadData();
+updateSyncBadge();
+flushQueue();
 </script>
 
 <script>

@@ -3,28 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Orders - Medicina Airport 3</title>
+<title>Handover Notes - Medicina Airport 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --purple:#6b1f6f; --purple-dark:#4d1650; --green:#8bc34a; --green-dark:#6f9c38;
-    --amber:#e0a72c; --bg:#faf8fb; --card:#ffffff; --ink:#2a1f2d; --muted:#8a7d8e;
-    --line:#e9e0eb; --danger:#c0392b; --radius:14px;
+    --purple:#6b1f6f;
+    --purple-dark:#4d1650;
+    --green:#8bc34a;
+    --green-dark:#6f9c38;
+    --amber:#e0a72c;
+    --bg:#faf8fb;
+    --card:#ffffff;
+    --ink:#2a1f2d;
+    --muted:#8a7d8e;
+    --line:#e9e0eb;
+    --danger:#c0392b;
+    --radius:14px;
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:30px;}
 
-  #pwGate{position:fixed;inset:0;background:linear-gradient(135deg,#6b1f6f 0%,#4d1650 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;font-family:'Inter',sans-serif;}
-  .pw-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;}
-  .pw-card input{width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;}
-  .pw-card button{width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;}
-  #pwError{color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;}
-
-  #loginGate{position:fixed;inset:0;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);display:flex;align-items:center;justify-content:center;z-index:998;padding:20px;}
+  #loginGate{
+    position:fixed;inset:0;
+    background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);
+    display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
+  }
   .login-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);}
   .login-card h2{margin:0 0 6px;font-size:1.25rem;font-weight:900;}
   .login-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);}
+  .login-card label{display:block;font-size:.8rem;font-weight:700;margin-bottom:8px;}
   .avatar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;margin:6px 0 18px;}
   .avatar-tile{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:6px 2px;border-radius:12px;font-family:'Inter',sans-serif;}
   .avatar-tile:active{background:var(--bg);}
@@ -33,6 +41,10 @@
   .add-name-btn-wide{width:100%;background:var(--bg);border:1px dashed var(--line);color:var(--purple);padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
   .avatar-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0;}
   .avatar-del{position:absolute;top:-4px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;border:2px solid #fff;font-size:.65rem;line-height:1;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;}
+  .login-row{display:flex;gap:8px;margin-bottom:14px;}
+  .login-row select{flex:1;}
+  .add-emp-btn{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:44px;font-size:1.2rem;cursor:pointer;color:var(--purple);}
+  .continue-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 4px 10px rgba(139,195,74,.35);}
   #loginGate.hidden{display:none;}
 
   header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:22px 18px 26px;border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(107,31,111,.25);}
@@ -46,47 +58,54 @@
   .quick-nav a{flex-shrink:0;padding:6px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.76rem;font-weight:700;white-space:nowrap;}
   .quick-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple);}
   main{padding:26px 18px 0;}
-  input[type=text], input[type=tel], input[type=number], textarea, select{
-    font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;
-  }
-  input:focus, textarea:focus{outline:2px solid var(--green);outline-offset:1px;}
+  textarea, select, input[type=text]{font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;}
+  textarea:focus, select:focus, input:focus{outline:2px solid var(--green);outline-offset:1px;}
 
   .tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;}
   .tab-btn{flex:1;padding:9px 4px;text-align:center;background:transparent;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;}
   .tab-btn.active{background:var(--purple);color:#fff;}
-  .tab-btn .badge-count{background:var(--danger);color:#fff;border-radius:10px;padding:1px 6px;font-size:.65rem;margin-inline-start:4px;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
-  .new-order-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
-  .field{margin-bottom:12px;}
-  .field label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px;}
-  .row2{display:flex;gap:10px;}
-  .row2 .field{flex:1;}
+  .new-note-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
+
+  .new-note-form textarea{margin-bottom:10px;min-height:70px;}
   .submit-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;}
   .cancel-btn{width:100%;background:none;border:none;color:var(--muted);padding:8px;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer;margin-top:4px;}
   .status-msg{text-align:center;font-size:.8rem;margin-top:8px;min-height:14px;color:var(--green-dark);font-weight:700;}
   .status-msg.error{color:var(--danger);}
-  .hint{font-size:.72rem;color:var(--muted);margin-top:4px;}
 
-  .order-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--purple);}
-  .order-card.done{border-right-color:var(--green);opacity:.85;}
-  .order-item{font-weight:900;font-size:.98rem;margin:0 0 6px;}
-  .order-meta{font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
-  .order-meta span{background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--line);}
-  .tag{display:inline-block;font-size:.72rem;padding:4px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--line);}
+  .note-thread{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--purple);}
+  .note-thread.done{border-right-color:var(--green);opacity:.85;}
+  .note-main{margin-bottom:6px;}
+  .note-text{font-size:.92rem;font-weight:500;line-height:1.5;margin:0 0 6px;white-space:pre-wrap;}
+  .note-meta{font-size:.72rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
+  .note-meta .author{font-weight:700;color:var(--purple);}
+  .tag{
+    display:inline-block;
+    font-size:.72rem;
+    padding:4px 10px;
+    border-radius:20px;
+    background:var(--bg);
+    border:1px solid var(--line);
+  }
   .tag-created{color:var(--purple-dark);border-color:#e3d0e5;}
   .tag-closed{color:var(--green-dark);border-color:#d9ecc4;background:#f3f9ec;}
-  .order-notes{font-size:.8rem;margin-top:6px;color:var(--ink);}
-  .order-actions{display:flex;gap:8px;margin-top:12px;}
+
   .updates-list{margin:12px 0 0;padding-inline-start:14px;border-inline-start:2px dashed var(--line);}
   .update-item{margin-bottom:10px;}
   .update-item:last-child{margin-bottom:0;}
   .update-text{font-size:.85rem;line-height:1.5;margin:0 0 4px;white-space:pre-wrap;}
   .update-meta{font-size:.7rem;color:var(--muted);}
   .update-meta .author{font-weight:700;color:var(--green-dark);}
+
+  .thread-actions{display:flex;gap:8px;margin-top:12px;}
+  .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;color:var(--ink);}
+  .action-btn.done-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
+  .action-btn.reopen-btn{background:var(--amber);color:#3d2f0a;border-color:var(--amber);}
+
   .reply-form{margin-top:10px;display:none;}
   .reply-form.active{display:block;}
   .reply-form textarea{margin-bottom:8px;min-height:56px;font-size:.85rem;}
@@ -94,9 +113,6 @@
   .reply-form button{flex:1;padding:9px;border-radius:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;border:none;}
   .reply-form .send-reply{background:var(--purple);color:#fff;}
   .reply-form .cancel-reply{background:var(--bg);color:var(--muted);border:1px solid var(--line);}
-  .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;color:var(--ink);}
-  .action-btn.done-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
-  .action-btn.reopen-btn{background:var(--amber);color:#3d2f0a;border-color:var(--amber);}
 
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
@@ -110,21 +126,42 @@
 </head>
 <body>
 
-<div id="pwGate">
-  <div class="pw-card">
+<div id="pwGate" style="position:fixed;inset:0;background:linear-gradient(135deg,#6b1f6f 0%,#4d1650 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;font-family:'Inter',sans-serif;">
+  <div style="background:#fff;border-radius:18px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;">
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
-    <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;">Medicina Airport 3</h2>
-    <p style="margin:0 0 18px;font-size:.82rem;color:var(--muted);">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password">
-    <button id="pwSubmit">Enter</button>
-    <div id="pwError"></div>
+    <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;color:#2a1f2d;">Medicina Airport 3</h2>
+    <p style="margin:0 0 18px;font-size:.82rem;color:#8a7d8e;">Enter the branch password to continue</p>
+    <input type="password" id="pwInput" placeholder="Password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
+    <button id="pwSubmit" style="width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;">Enter</button>
+    <div id="pwError" style="color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;"></div>
   </div>
 </div>
+<script>
+(function(){
+  const SITE_PASSWORD = '2026';
+  const gate = document.getElementById('pwGate');
+  if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
+    gate.style.display = 'none';
+  }
+  document.getElementById('pwSubmit').addEventListener('click', check);
+  document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') check(); });
+  function check(){
+    const val = document.getElementById('pwInput').value;
+    if(val === SITE_PASSWORD){
+      sessionStorage.setItem('medicina-branch-auth', 'ok');
+      gate.style.display = 'none';
+    }else{
+      document.getElementById('pwError').textContent = 'Incorrect password, try again.';
+    }
+  }
+})();
+</script>
+
 
 <div id="loginGate">
   <div class="login-card">
     <h2>Welcome</h2>
-    <p>Select your name to log a customer order. You only need to do this once per session.</p>
+    <p>Select your name to read and leave handover notes. You only need to do this once per session.</p>
     <div class="avatar-grid" id="avatarGrid"></div>
     <button class="add-name-btn-wide" id="loginAddBtn">+ Add your name</button>
   </div>
@@ -133,7 +170,7 @@
 <header>
   <div class="top-row">
     <div>
-      <h1>Customer Orders</h1>
+      <h1>Handover Notes</h1>
       <p>Medicina Airport 3</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -161,50 +198,28 @@
     <a href="dashboard.html">📊 Dashboard</a>
     <a href="shortage-tracker.html">📦 Shortages</a>
     <a href="daily-checklist.html">✅ Checklist</a>
-    <a href="handover-notes.html">📝 Handover</a>
-    <a href="customer-orders.html" class="active">🛎️ Orders</a>
+    <a href="handover-notes.html" class="active">📝 Handover</a>
+    <a href="customer-orders.html">🛎️ Orders</a>
     <a href="refill-tracker.html">💊 Refills</a>
     <a href="near-expiry.html">⏳ Near Expiry</a>
   </div>
 
 <main>
   <div class="tabs">
-    <button class="tab-btn active" data-tab="open">Open Orders <span class="badge-count" id="openCount" style="display:none;">0</span></button>
+    <button class="tab-btn active" data-tab="active">Open Notes</button>
     <button class="tab-btn" data-tab="completed">Completed</button>
   </div>
 
-  <!-- TAB: OPEN -->
-  <div class="panel active" id="panel-open">
-    <button class="new-order-btn" id="newOrderToggle">+ New Customer Order</button>
-    <div class="card" id="newOrderForm" style="display:none;">
-      <div class="field">
-        <label>Item name *</label>
-        <input type="text" id="orderItem" placeholder="e.g. Panadol Extra 24s">
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Customer name *</label>
-          <input type="text" id="orderCustomer" placeholder="Customer name">
-        </div>
-        <div class="field">
-          <label>Quantity</label>
-          <input type="number" id="orderQty" min="1" value="1">
-        </div>
-      </div>
-      <div class="field">
-        <label>Phone number *</label>
-        <input type="tel" id="orderPhone" placeholder="05XXXXXXXX">
-      </div>
-      <div class="field">
-        <label>Notes (optional)</label>
-        <textarea id="orderNotes" rows="2"></textarea>
-      </div>
-      <div class="hint">This item will also be added to the Shortage Tracker automatically.</div>
-      <button class="submit-btn" id="newOrderSubmit" style="margin-top:10px;">Log Customer Order</button>
-      <button class="cancel-btn" id="newOrderCancel">Cancel</button>
-      <div class="status-msg" id="newOrderStatus"></div>
+  <!-- TAB: ACTIVE -->
+  <div class="panel active" id="panel-active">
+    <button class="new-note-btn" id="newNoteToggle">+ Leave a New Note</button>
+    <div class="card new-note-form" id="newNoteForm" style="display:none;">
+      <textarea id="newNoteText" placeholder="Write your note for the next shift / colleague..."></textarea>
+      <button class="submit-btn" id="newNoteSubmit">Post Note</button>
+      <button class="cancel-btn" id="newNoteCancel">Cancel</button>
+      <div class="status-msg" id="newNoteStatus"></div>
     </div>
-    <div id="openList">⏳ Loading...</div>
+    <div id="activeList">⏳ Loading...</div>
   </div>
 
   <!-- TAB: COMPLETED -->
@@ -214,7 +229,6 @@
 </main>
 
 <div class="fixed-footer" id="footerActions" style="position:static;display:none;gap:10px;flex-wrap:wrap;max-width:760px;margin:0 auto;padding:0 18px 30px;">
-  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">Export to Excel (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;">
@@ -222,31 +236,12 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
-const API_KEY = 'Medicina-airport3-2026';
-const SITE_PASSWORD = '2026';
-const ORDERS_KEY = 'customer-orders';
-const SHORTAGE_KEY = 'shortage-entries';
-const EMPLOYEE_KEY = 'customer-orders-employees';
-
-let orders = [];
+const NOTES_KEY = 'handover-notes';
+const EMPLOYEE_KEY = 'handover-employees';
+let notes = [];
 let employees = [];
 let employeePins = {};
 let currentEmployee = '';
-
-document.getElementById('pwSubmit').addEventListener('click', checkPw);
-document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkPw(); });
-function checkPw(){
-  const val = document.getElementById('pwInput').value;
-  if(val === SITE_PASSWORD){
-    sessionStorage.setItem('medicina-branch-auth', 'ok');
-    document.getElementById('pwGate').style.display = 'none';
-  }else{
-    document.getElementById('pwError').textContent = 'Incorrect password, try again.';
-  }
-}
-if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
-  document.getElementById('pwGate').style.display = 'none';
-}
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -260,23 +255,8 @@ function nowStamp(){
   };
 }
 
-// ===== OFFLINE QUEUE =====
-const QUEUE_KEY = 'medicina-pending-sync';
-function getQueue(){
-  try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
-}
-function setQueue(q){
-  try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){}
-  updateSyncBadge();
-}
-function queueOp(op){ const q = getQueue(); q.push(op); setQueue(q); }
-function updateSyncBadge(){
-  const el = document.getElementById('syncBadge');
-  if(!el) return;
-  const n = getQueue().length;
-  if(n > 0){ el.style.display = 'inline-block'; el.textContent = '⏳ ' + n + ' pending sync'; }
-  else{ el.style.display = 'none'; }
-}
+const API_KEY = 'Medicina-airport3-2026';
+
 async function fetchWithTimeout(url, options, timeoutMs){
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs || 8000);
@@ -296,6 +276,56 @@ function getCached(key){
 }
 function setCached(key, data){
   try{ localStorage.setItem('cache-'+key, JSON.stringify(data)); }catch(e){}
+}
+async function apiGet(sheetName){
+  // Apps Script occasionally has a transient hiccup on a single request - retry
+  // once before giving up, so a blip doesn't look like missing data.
+  // Each attempt has a 4s hard timeout so a stalled connection fails fast instead of hanging.
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 4000);
+      const data = await res.json();
+      if(data && Array.isArray(data.records)) return data.records;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  return [];
+}
+async function apiSave(sheetName, records){
+  try{
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, records: records, key: API_KEY})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
+// ===== OFFLINE QUEUE: nothing is ever lost, even if the connection drops =====
+const QUEUE_KEY = 'medicina-pending-sync';
+function getQueue(){
+  try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
+}
+function setQueue(q){
+  try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){}
+  updateSyncBadge();
+}
+function queueOp(op){
+  const q = getQueue();
+  q.push(op);
+  setQueue(q);
+}
+function updateSyncBadge(){
+  const el = document.getElementById('syncBadge');
+  if(!el) return;
+  const n = getQueue().length;
+  if(n > 0){
+    el.style.display = 'inline-block';
+    el.textContent = '\u23f3 ' + n + ' pending sync';
+  }else{
+    el.style.display = 'none';
+  }
 }
 async function sendOp(op){
   try{
@@ -321,20 +351,6 @@ async function flushQueue(){
 window.addEventListener('online', flushQueue);
 setInterval(flushQueue, 30000);
 
-async function apiGet(sheetName){
-  // Apps Script occasionally has a transient hiccup on a single request - retry
-  // once before giving up, so a blip doesn't look like missing data.
-  // Each attempt has a 4s hard timeout so a stalled connection fails fast instead of hanging.
-  for(let attempt = 0; attempt < 2; attempt++){
-    try{
-      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 4000);
-      const data = await res.json();
-      if(data && Array.isArray(data.records)) return data.records;
-    }catch(e){}
-    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
-  }
-  return [];
-}
 async function apiAppend(sheetName, record){
   const op = {sheet: sheetName, action: 'append', record: record};
   if(!navigator.onLine){ queueOp(op); return true; }
@@ -349,16 +365,12 @@ async function apiUpdateOne(sheetName, record){
   if(!ok) queueOp(op);
   return true;
 }
-async function apiSave(sheetName, records){
-  try{
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({sheet: sheetName, records: records, key: API_KEY})
-    });
-    const data = await res.json();
-    return !!data.success;
-  }catch(e){ return false; }
+async function apiDeleteOne(sheetName, id){
+  const op = {sheet: sheetName, action: 'deleteOne', id: id};
+  if(!navigator.onLine){ queueOp(op); return true; }
+  const ok = await sendOp(op);
+  if(!ok) queueOp(op);
+  return true;
 }
 
 function applyEmployees(empData){
@@ -371,21 +383,23 @@ function applyEmployees(empData){
 
 async function loadData(){
   const cachedEmp = getCached(EMPLOYEE_KEY);
-  const cachedOrders = getCached(ORDERS_KEY);
+  const cachedNotes = getCached(NOTES_KEY);
   if(cachedEmp) applyEmployees(cachedEmp);
-  if(cachedOrders){ orders = cachedOrders; renderBoard(); }
+  if(cachedNotes){ notes = cachedNotes; renderBoard(); }
 
   apiGet(EMPLOYEE_KEY).then(empData => {
     applyEmployees(empData);
     setCached(EMPLOYEE_KEY, empData);
   });
 
-  const ordersData = await apiGet(ORDERS_KEY);
-  orders = ordersData;
+  const notesData = await apiGet(NOTES_KEY);
+  notes = notesData;
   renderBoard();
-  setCached(ORDERS_KEY, ordersData);
-  updateSyncBadge();
-  flushQueue();
+  setCached(NOTES_KEY, notesData);
+}
+
+async function saveNotes(){
+  return await apiSave(NOTES_KEY, notes);
 }
 async function saveEmployees(){
   const records = employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}));
@@ -396,6 +410,7 @@ function initials(name){
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
+
 const ADMIN_NAME = 'Mohamed Elsherbini';
 function isAdmin(){ return currentEmployee === ADMIN_NAME; }
 
@@ -407,7 +422,9 @@ function loginAs(name){
   if(footerEl) footerEl.style.display = isAdmin() ? 'flex' : 'none';
   document.getElementById('whoName').textContent = name;
   document.getElementById('loginGate').classList.add('hidden');
+  notifyIfNeeded();
 }
+
 function attemptLogin(name){
   const pin = employeePins[name];
   if(pin){
@@ -416,6 +433,7 @@ function attemptLogin(name){
   }
   loginAs(name);
 }
+
 function renderEmployeeOptions(){
   const grid = document.getElementById('avatarGrid');
   grid.innerHTML = employees.length
@@ -427,6 +445,7 @@ function renderEmployeeOptions(){
       `).join('')
     : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
+
 document.getElementById('loginAddBtn').addEventListener('click', async () => {
   const name = prompt('Enter your name:');
   if(!name || !name.trim()) return;
@@ -437,11 +456,13 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
     employees.push(clean);
     renderEmployeeOptions();
     loginAs(clean);
+    // Append-only: never overwrites names other people may have added on their own devices
     await apiAppend(EMPLOYEE_KEY, {id: clean, name: clean, pin: employeePins[clean] || ''});
   }else{
     attemptLogin(clean);
   }
 });
+
 document.getElementById('switchUserBtn').addEventListener('click', () => {
   try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
@@ -513,6 +534,18 @@ function trySharedLogin(){
   attemptLogin(shared);
 }
 
+function notifyIfNeeded(){
+  if(!('Notification' in window)) return;
+  const fire = () => {
+    const openCount = notes.filter(n => n.status === 'open').length;
+    if(openCount > 0){
+      new Notification('Medicina Airport 3', {body: openCount + ' handover note(s) still open.'});
+    }
+  };
+  if(Notification.permission === 'granted') fire();
+  else if(Notification.permission !== 'denied') Notification.requestPermission().then(p => { if(p === 'granted') fire(); });
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -523,112 +556,130 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-document.getElementById('newOrderToggle').addEventListener('click', () => {
-  const form = document.getElementById('newOrderForm');
+document.getElementById('newNoteToggle').addEventListener('click', () => {
+  const form = document.getElementById('newNoteForm');
   form.style.display = form.style.display === 'none' ? 'block' : 'none';
 });
-document.getElementById('newOrderCancel').addEventListener('click', () => {
-  document.getElementById('newOrderForm').style.display = 'none';
+document.getElementById('newNoteCancel').addEventListener('click', () => {
+  document.getElementById('newNoteForm').style.display = 'none';
+  document.getElementById('newNoteText').value = '';
 });
 
-document.getElementById('newOrderSubmit').addEventListener('click', async () => {
-  const item = document.getElementById('orderItem').value.trim();
-  const customer = document.getElementById('orderCustomer').value.trim();
-  const phone = document.getElementById('orderPhone').value.trim();
-  const qty = document.getElementById('orderQty').value.trim() || '1';
-  const notes = document.getElementById('orderNotes').value.trim();
-  const statusEl = document.getElementById('newOrderStatus');
-
-  if(!currentEmployee){ statusEl.textContent = 'Please select your name at login first'; statusEl.classList.add('error'); return; }
-  if(!item || !customer || !phone){ statusEl.textContent = 'Item, customer name and phone are required'; statusEl.classList.add('error'); return; }
-
+document.getElementById('newNoteSubmit').addEventListener('click', async () => {
+  const text = document.getElementById('newNoteText').value.trim();
+  const statusEl = document.getElementById('newNoteStatus');
+  if(!currentEmployee){
+    statusEl.textContent = 'Please select your name at login first';
+    statusEl.classList.add('error');
+    return;
+  }
+  if(!text){
+    statusEl.textContent = 'Write a note first';
+    statusEl.classList.add('error');
+    return;
+  }
   const stamp = nowStamp();
-  const order = {
+  const note = {
     id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
-    item, customer, phone, qty, notes,
     author: currentEmployee,
-    dateISO: stamp.iso, dateDisplay: stamp.dateDisplay, timeDisplay: stamp.timeDisplay,
+    text: text,
+    dateISO: stamp.iso,
+    dateDisplay: stamp.dateDisplay,
+    timeDisplay: stamp.timeDisplay,
     status: 'open',
     updates: []
   };
-
-  orders.unshift(order);
-  document.getElementById('orderItem').value = '';
-  document.getElementById('orderCustomer').value = '';
-  document.getElementById('orderPhone').value = '';
-  document.getElementById('orderQty').value = '1';
-  document.getElementById('orderNotes').value = '';
-  document.getElementById('newOrderForm').style.display = 'none';
+  notes.unshift(note);
+  document.getElementById('newNoteText').value = '';
+  document.getElementById('newNoteForm').style.display = 'none';
   statusEl.textContent = '';
   statusEl.classList.remove('error');
   renderBoard();
 
-  // Auto-add to Shortage Tracker
-  const shortageEntry = {
-    id: order.id + '-shortage',
-    item: item, qty: qty, type: 'Customer Order',
-    notes: `Customer order: ${customer}, ${phone}${notes ? ' — ' + notes : ''}`,
-    employee: currentEmployee,
-    dateISO: stamp.iso, dateDisplay: stamp.dateDisplay, timeDisplay: stamp.timeDisplay
-  };
-
-  await Promise.all([
-    apiAppend(ORDERS_KEY, order),
-    apiAppend(SHORTAGE_KEY, shortageEntry)
-  ]);
+  const ok = await apiAppend(NOTES_KEY, note);
+  if(!ok){
+    notes.shift();
+    renderBoard();
+    alert('Could not save this note. Please check your connection and try again.');
+  }
 });
 
-function toggleOrderReply(orderId){
-  const el = document.getElementById('order-reply-' + orderId);
+function toggleReplyForm(noteId){
+  const el = document.getElementById('reply-form-' + noteId);
   if(el) el.classList.toggle('active');
 }
 
-async function addOrderUpdate(orderId){
-  const textEl = document.getElementById('order-reply-text-' + orderId);
+async function addUpdate(noteId){
+  const textEl = document.getElementById('reply-text-' + noteId);
   const text = textEl.value.trim();
   if(!text) return;
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
-  const order = orders.find(o => o.id === orderId);
-  if(!order) return;
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
   const stamp = nowStamp();
-  order.updates = order.updates || [];
-  order.updates.push({
+  const previousStatus = note.status;
+  const newUpdate = {
     author: currentEmployee,
     text: text,
     dateDisplay: stamp.dateDisplay,
     timeDisplay: stamp.timeDisplay
-  });
+  };
+  note.updates.push(newUpdate);
+  // an update on an open thread keeps it open; if it was somehow done, adding a new update reopens it
+  note.status = 'open';
   renderBoard();
-  await apiUpdateOne(ORDERS_KEY, order);
+
+  const ok = await apiUpdateOne(NOTES_KEY, note);
+  if(!ok){
+    note.updates.pop();
+    note.status = previousStatus;
+    renderBoard();
+    alert('Could not save this update. Please check your connection and try again.');
+  }
 }
 
-async function markDone(orderId){
+async function markDone(noteId){
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
-  const order = orders.find(o => o.id === orderId);
-  if(!order) return;
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
   const stamp = nowStamp();
-  order.status = 'done';
-  order.doneDate = stamp.dateDisplay;
-  order.doneTime = stamp.timeDisplay;
-  order.closedBy = currentEmployee;
+  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
+  note.status = 'done';
+  note.doneDate = stamp.dateDisplay;
+  note.doneTime = stamp.timeDisplay;
+  note.closedBy = currentEmployee;
   renderBoard();
-  await apiUpdateOne(ORDERS_KEY, order);
-}
-async function reopenOrder(orderId){
-  const order = orders.find(o => o.id === orderId);
-  if(!order) return;
-  order.status = 'open';
-  order.closedBy = null; order.doneDate = null; order.doneTime = null;
-  renderBoard();
-  await apiUpdateOne(ORDERS_KEY, order);
+
+  const ok = await apiUpdateOne(NOTES_KEY, note);
+  if(!ok){
+    Object.assign(note, prev);
+    renderBoard();
+    alert('Could not save this change. Please check your connection and try again.');
+  }
 }
 
-function renderOrderCard(o){
-  const isDone = o.status === 'done';
-  const updates = o.updates || [];
-  const updatesHtml = updates.length ? `
+async function reopenNote(noteId){
+  const note = notes.find(n => n.id === noteId);
+  if(!note) return;
+  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
+  note.status = 'open';
+  note.closedBy = null;
+  note.doneDate = null;
+  note.doneTime = null;
+  renderBoard();
+
+  const ok = await apiUpdateOne(NOTES_KEY, note);
+  if(!ok){
+    Object.assign(note, prev);
+    renderBoard();
+    alert('Could not save this change. Please check your connection and try again.');
+  }
+}
+
+function renderNoteCard(note){
+  const updatesHtml = note.updates.length ? `
     <div class="updates-list">
-      ${updates.map(u => `
+      ${note.updates.map(u => `
         <div class="update-item">
           <div class="update-text">${escapeHtml(u.text)}</div>
           <div class="update-meta"><span class="author">${escapeHtml(u.author)}</span> — ${escapeHtml(u.dateDisplay)} ${escapeHtml(u.timeDisplay)}</div>
@@ -636,36 +687,35 @@ function renderOrderCard(o){
       `).join('')}
     </div>
   ` : '';
+
+  const isDone = note.status === 'done';
+
   return `
-    <div class="order-card ${isDone ? 'done' : ''}">
-      <div class="order-item">💊 ${escapeHtml(o.item)}</div>
-      <div class="order-meta">
-        <span>👤 ${escapeHtml(o.customer)}</span>
-        <span>📞 ${escapeHtml(o.phone)}</span>
-        <span>📦 Qty: ${escapeHtml(o.qty)}</span>
-      </div>
-      ${o.notes ? `<div class="order-notes">📝 ${escapeHtml(o.notes)}</div>` : ''}
-      <div style="margin-top:8px;">
-        <span class="tag tag-created">🟣 Logged by <strong>${escapeHtml(o.author)}</strong> — ${escapeHtml(o.dateDisplay)} ${escapeHtml(o.timeDisplay)}</span>
+    <div class="note-thread ${isDone ? 'done' : ''}">
+      <div class="note-main">
+        <div class="note-text">${escapeHtml(note.text)}</div>
+        <div class="note-meta">
+          <span class="tag tag-created">🟣 Created by <strong>${escapeHtml(note.author)}</strong> — ${escapeHtml(note.dateDisplay)} ${escapeHtml(note.timeDisplay)}</span>
+        </div>
       </div>
       ${updatesHtml}
       ${isDone ? `
-        <div style="margin-top:8px;">
-          <span class="tag tag-closed">🟢 Fulfilled by <strong>${escapeHtml(o.closedBy || 'Unknown')}</strong> — ${escapeHtml(o.doneDate || '')} ${escapeHtml(o.doneTime || '')}</span>
+        <div class="note-meta" style="margin-top:10px;">
+          <span class="tag tag-closed">🟢 Closed by <strong>${escapeHtml(note.closedBy || 'Unknown')}</strong> — ${escapeHtml(note.doneDate || '')} ${escapeHtml(note.doneTime || '')}</span>
         </div>
-        <div class="order-actions">
-          <button class="action-btn reopen-btn" onclick="reopenOrder('${o.id}')">↺ Reopen</button>
+        <div class="thread-actions">
+          <button class="action-btn reopen-btn" onclick="reopenNote('${note.id}')">↺ Reopen</button>
         </div>
       ` : `
-        <div class="order-actions">
-          <button class="action-btn" onclick="toggleOrderReply('${o.id}')">💬 Add Update</button>
-          <button class="action-btn done-btn" onclick="markDone('${o.id}')">✓ Mark Fulfilled</button>
+        <div class="thread-actions">
+          <button class="action-btn" onclick="toggleReplyForm('${note.id}')">💬 Add Update</button>
+          <button class="action-btn done-btn" onclick="markDone('${note.id}')">✓ Mark Done</button>
         </div>
-        <div class="reply-form" id="order-reply-${o.id}">
-          <textarea id="order-reply-text-${o.id}" placeholder="What's been done so far to get this item?"></textarea>
+        <div class="reply-form" id="reply-form-${note.id}">
+          <textarea id="reply-text-${note.id}" placeholder="Add an update to this note..."></textarea>
           <div class="row">
-            <button class="send-reply" onclick="addOrderUpdate('${o.id}')">Send</button>
-            <button class="cancel-reply" onclick="toggleOrderReply('${o.id}')">Cancel</button>
+            <button class="send-reply" onclick="addUpdate('${note.id}')">Send</button>
+            <button class="cancel-reply" onclick="toggleReplyForm('${note.id}')">Cancel</button>
           </div>
         </div>
       `}
@@ -674,55 +724,46 @@ function renderOrderCard(o){
 }
 
 function renderBoard(){
-  const openOrders = orders.filter(o => o.status === 'open').sort((a,b) => b.dateISO.localeCompare(a.dateISO));
-  const completedOrders = orders.filter(o => o.status === 'done').sort((a,b) => b.dateISO.localeCompare(a.dateISO));
+  const activeNotes = notes.filter(n => n.status === 'open')
+    .sort((a,b) => {
+      const aLast = a.updates.length ? a.updates[a.updates.length-1].dateDisplay + a.updates[a.updates.length-1].timeDisplay : a.dateDisplay + a.timeDisplay;
+      const bLast = b.updates.length ? b.updates[b.updates.length-1].dateDisplay + b.updates[b.updates.length-1].timeDisplay : b.dateDisplay + b.timeDisplay;
+      return b.dateISO.localeCompare(a.dateISO);
+    });
+  const completedNotes = notes.filter(n => n.status === 'done').sort((a,b) => b.dateISO.localeCompare(a.dateISO));
 
-  document.getElementById('openList').innerHTML = openOrders.length
-    ? openOrders.map(renderOrderCard).join('')
-    : `<div class="empty-state"><div class="big">📋</div>No open customer orders</div>`;
+  const activeList = document.getElementById('activeList');
+  activeList.innerHTML = activeNotes.length
+    ? activeNotes.map(renderNoteCard).join('')
+    : `<div class="empty-state"><div class="big">📝</div>No open notes right now</div>`;
 
-  document.getElementById('completedList').innerHTML = completedOrders.length
-    ? completedOrders.map(renderOrderCard).join('')
-    : `<div class="empty-state"><div class="big">✅</div>No fulfilled orders yet</div>`;
-
-  const badge = document.getElementById('openCount');
-  if(openOrders.length){ badge.style.display = 'inline-block'; badge.textContent = openOrders.length; }
-  else{ badge.style.display = 'none'; }
+  const completedList = document.getElementById('completedList');
+  completedList.innerHTML = completedNotes.length
+    ? completedNotes.map(renderNoteCard).join('')
+    : `<div class="empty-state"><div class="big">✅</div>No completed notes yet</div>`;
 }
 
-// ===== EXPORT / BACKUP / RESTORE (admin only) =====
-document.getElementById('exportBtn').addEventListener('click', () => {
-  if(!isAdmin()) return;
-  if(orders.length === 0){ alert('No orders to export yet'); return; }
-  const headers = ['Date','Time','Item','Customer','Phone','Qty','Status','Logged By','Fulfilled By','Fulfilled Date','Notes','Updates'];
-  const rows = orders.map(o => [
-    o.dateDisplay || '', o.timeDisplay || '', o.item, o.customer, o.phone, o.qty,
-    o.status === 'done' ? 'Fulfilled' : 'Open',
-    o.author || '', o.closedBy || '', o.doneDate || '', o.notes || '',
-    (o.updates || []).map(u => `${u.author}: ${u.text}`).join(' | ')
-  ]);
-  let csv = '\uFEFF' + headers.join(',') + '\n';
-  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',') + '\n'; });
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const n = new Date();
-  a.href = url;
-  a.download = `customer-orders_${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}.csv`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
+loadData();
+updateSyncBadge();
+flushQueue();
 
+// ===== BACKUP & RESTORE =====
 document.getElementById('backupBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
-  const backup = {tool:'customer-orders', exportedAt: new Date().toISOString(), [ORDERS_KEY]: orders, [EMPLOYEE_KEY]: employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}))};
+  const backup = {
+    tool: 'handover-notes',
+    exportedAt: new Date().toISOString(),
+    [NOTES_KEY]: notes,
+    [EMPLOYEE_KEY]: employees
+  };
   const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const n = new Date();
   a.href = url;
-  a.download = `customer-orders-backup_${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}.json`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  a.download = `handover-notes-backup_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
 
@@ -730,6 +771,7 @@ document.getElementById('restoreBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
   document.getElementById('restoreInput').click();
 });
+
 document.getElementById('restoreInput').addEventListener('change', async (e) => {
   if(!isAdmin()) return;
   const file = e.target.files[0];
@@ -737,18 +779,29 @@ document.getElementById('restoreInput').addEventListener('change', async (e) => 
   try{
     const text = await file.text();
     const data = JSON.parse(text);
-    if(!data[ORDERS_KEY]){ alert('This file does not look like a valid Customer Orders backup.'); return; }
-    const count = (data[ORDERS_KEY] || []).length;
-    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis contains ${count} orders and will REPLACE all current orders.`)) return;
-    orders = data[ORDERS_KEY] || [];
-    const ok = await apiSave(ORDERS_KEY, orders);
-    if(ok){ alert('✓ Backup restored successfully.'); renderBoard(); }
-    else{ alert('Something went wrong while restoring. Please try again.'); }
-  }catch(err){ alert('Could not read this file. Make sure it is a valid backup JSON file.'); }
+    if(!data[NOTES_KEY] && !data[EMPLOYEE_KEY]){
+      alert('This file does not look like a valid Handover Notes backup.');
+      return;
+    }
+    const count = (data[NOTES_KEY] || []).length;
+    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will contain ${count} notes and will REPLACE all current data.`)) return;
+
+    notes = data[NOTES_KEY] || [];
+    employees = data[EMPLOYEE_KEY] || [];
+    const ok1 = await saveNotes();
+    const ok2 = await saveEmployees();
+    if(ok1 && ok2){
+      alert('✓ Backup restored successfully.');
+      renderEmployeeOptions();
+      renderBoard();
+    }else{
+      alert('Something went wrong while restoring. Please try again.');
+    }
+  }catch(err){
+    alert('Could not read this file. Make sure it is a valid backup JSON file.');
+  }
   e.target.value = '';
 });
-
-loadData();
 </script>
 
 <script>
