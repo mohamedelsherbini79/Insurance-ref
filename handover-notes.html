@@ -131,7 +131,7 @@
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
     <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;color:#2a1f2d;">Medicina Airport 3</h2>
     <p style="margin:0 0 18px;font-size:.82rem;color:#8a7d8e;">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
+    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
     <button id="pwSubmit" style="width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;">Enter</button>
     <div id="pwError" style="color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;"></div>
   </div>
@@ -214,7 +214,7 @@
   <div class="panel active" id="panel-active">
     <button class="new-note-btn" id="newNoteToggle">+ Leave a New Note</button>
     <div class="card new-note-form" id="newNoteForm" style="display:none;">
-      <textarea id="newNoteText" placeholder="Write your note for the next shift / colleague..."></textarea>
+      <textarea id="newNoteText" placeholder="Write your note for the next shift / colleague..." aria-label="Write your note for the next shift / colleague..."></textarea>
       <button class="submit-btn" id="newNoteSubmit">Post Note</button>
       <button class="cancel-btn" id="newNoteCancel">Cancel</button>
       <div class="status-msg" id="newNoteStatus"></div>
@@ -231,7 +231,7 @@
 <div class="fixed-footer" id="footerActions" style="position:static;display:none;gap:10px;flex-wrap:wrap;max-width:760px;margin:0 auto;padding:0 18px 30px;">
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">⬆ Restore</button>
-  <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+  <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 
 <script>
@@ -290,6 +290,22 @@ async function apiGet(sheetName){
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
   return [];
+}
+// Fetches several sheets in ONE request instead of one request per sheet - cuts the
+// number of round-trips to Apps Script (and therefore load time) roughly in half.
+async function apiGetMulti(sheetNames){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
+      const data = await res.json();
+      if(data && data.multi && data.data) return data.data;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  // Fall back to individual requests if the combined call ever fails, so nothing breaks.
+  const out = {};
+  await Promise.all(sheetNames.map(async name => { out[name] = await apiGet(name); }));
+  return out;
 }
 async function apiSave(sheetName, records){
   try{
@@ -387,15 +403,12 @@ async function loadData(){
   if(cachedEmp) applyEmployees(cachedEmp);
   if(cachedNotes){ notes = cachedNotes; renderBoard(); }
 
-  apiGet(EMPLOYEE_KEY).then(empData => {
-    applyEmployees(empData);
-    setCached(EMPLOYEE_KEY, empData);
-  });
-
-  const notesData = await apiGet(NOTES_KEY);
-  notes = notesData;
+  const multi = await apiGetMulti([EMPLOYEE_KEY, NOTES_KEY]);
+  applyEmployees(multi[EMPLOYEE_KEY] || []);
+  setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
+  notes = multi[NOTES_KEY] || [];
   renderBoard();
-  setCached(NOTES_KEY, notesData);
+  setCached(NOTES_KEY, notes);
 }
 
 async function saveNotes(){
@@ -712,7 +725,7 @@ function renderNoteCard(note){
           <button class="action-btn done-btn" onclick="markDone('${note.id}')">✓ Mark Done</button>
         </div>
         <div class="reply-form" id="reply-form-${note.id}">
-          <textarea id="reply-text-${note.id}" placeholder="Add an update to this note..."></textarea>
+          <textarea id="reply-text-${note.id}" placeholder="Add an update to this note..." aria-label="Add an update to this note..."></textarea>
           <div class="row">
             <button class="send-reply" onclick="addUpdate('${note.id}')">Send</button>
             <button class="cancel-reply" onclick="toggleReplyForm('${note.id}')">Cancel</button>

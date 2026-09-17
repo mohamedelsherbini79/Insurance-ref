@@ -294,7 +294,7 @@
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
     <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;color:#2a1f2d;">Medicina Airport 3</h2>
     <p style="margin:0 0 18px;font-size:.82rem;color:#8a7d8e;">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
+    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
     <button id="pwSubmit" style="width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;">Enter</button>
     <div id="pwError" style="color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;"></div>
   </div>
@@ -379,22 +379,22 @@
     <div class="card">
       <div class="row2">
         <div class="field">
-          <label>Item code</label>
+          <label for="itemCode">Item code</label>
           <input type="text" id="itemCode" placeholder="e.g. 33319971">
         </div>
         <div class="field">
-          <label>Missing item name</label>
+          <label for="itemName">Missing item name</label>
           <input type="text" id="itemName" placeholder="e.g. Panadol Extra 24s">
         </div>
       </div>
       <div class="hint" style="margin:-6px 0 12px;">Fill in the code, the name, or both — at least one is required.</div>
       <div class="row2">
         <div class="field">
-          <label>Quantity needed</label>
+          <label for="itemQty">Quantity needed</label>
           <input type="number" id="itemQty" min="1" placeholder="1">
         </div>
         <div class="field">
-          <label>Order type</label>
+          <label for="itemType">Order type</label>
           <select id="itemType">
             <option value="Cash">Cash</option>
             <option value="Insurance">Insurance</option>
@@ -403,7 +403,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Notes (customer details, alternative, etc.)</label>
+        <label for="itemNotes">Notes (customer details, alternative, etc.)</label>
         <textarea id="itemNotes" rows="2" placeholder="Optional"></textarea>
       </div>
       <button class="submit-btn" id="submitBtn">Log Shortage</button>
@@ -415,7 +415,7 @@
   <div class="panel" id="panel-list">
     <div class="toolbar">
       <select id="filterEmployee"><option value="">All employees</option></select>
-      <input type="text" id="searchItem" placeholder="Search by name or code...">
+      <input type="text" id="searchItem" placeholder="Search by name or code..." aria-label="Search by name or code...">
     </div>
     <div id="entriesList">⏳ Loading...</div>
   </div>
@@ -426,11 +426,11 @@
       <div class="section-title">Filter by period</div>
       <div class="row2">
         <div class="field">
-          <label>From</label>
+          <label for="statsFrom">From</label>
           <input type="date" id="statsFrom">
         </div>
         <div class="field">
-          <label>To</label>
+          <label for="statsTo">To</label>
           <input type="date" id="statsTo">
         </div>
       </div>
@@ -456,7 +456,7 @@
   <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export to Excel (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
-  <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+  <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 
 <script>
@@ -507,6 +507,22 @@ async function apiGet(sheetName){
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
   return [];
+}
+// Fetches several sheets in ONE request instead of one request per sheet - cuts the
+// number of round-trips to Apps Script (and therefore load time) roughly in half.
+async function apiGetMulti(sheetNames){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
+      const data = await res.json();
+      if(data && data.multi && data.data) return data.data;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  // Fall back to individual requests if the combined call ever fails, so nothing breaks.
+  const out = {};
+  await Promise.all(sheetNames.map(async name => { out[name] = await apiGet(name); }));
+  return out;
 }
 async function apiSave(sheetName, records){
   try{
@@ -605,17 +621,14 @@ async function loadData(){
   if(cachedEmp) applyEmployees(cachedEmp);
   if(cachedEntries){ entries = cachedEntries; renderList(); renderSummary(); }
 
-  // Employees unblock the login screen fast - don't wait on the (usually bigger) entries fetch.
-  apiGet(EMPLOYEE_KEY).then(empData => {
-    applyEmployees(empData);
-    setCached(EMPLOYEE_KEY, empData);
-  });
-
-  const entriesData = await apiGet(STORAGE_KEY);
-  entries = entriesData;
+  // One combined request instead of two separate ones - fewer round-trips to Apps Script.
+  const multi = await apiGetMulti([EMPLOYEE_KEY, STORAGE_KEY]);
+  applyEmployees(multi[EMPLOYEE_KEY] || []);
+  setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
+  entries = multi[STORAGE_KEY] || [];
   renderList();
   renderSummary();
-  setCached(STORAGE_KEY, entriesData);
+  setCached(STORAGE_KEY, entries);
 }
 
 async function saveEntries(){

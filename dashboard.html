@@ -58,7 +58,7 @@
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
     <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;">Medicina Airport 3</h2>
     <p style="margin:0 0 18px;font-size:.82rem;color:var(--muted);">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password">
+    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password">
     <button id="pwSubmit">Enter</button>
     <div id="pwError"></div>
   </div>
@@ -126,7 +126,7 @@
       <h2>🔍 Customer Lookup</h2>
       <p style="font-size:.8rem;color:var(--muted);margin:0 0 10px;">Search a phone number to see everything on record for that customer - shortage/order requests and chronic refill history, in one place.</p>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input type="tel" id="lookupPhone" placeholder="05XXXXXXXX" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.9rem;font-family:'Inter',sans-serif;">
+        <input type="tel" id="lookupPhone" placeholder="05XXXXXXXX" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.9rem;font-family:'Inter',sans-serif;" aria-label="05XXXXXXXX">
         <button onclick="lookupCustomer()" style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer;">Search</button>
       </div>
       <div id="lookupResult"></div>
@@ -250,13 +250,12 @@ async function loadAll(){
     renderPerformance();
   }
 
-  const [shortages, checklist, notes, patients, orders] = await Promise.all([
-    apiGet('shortage-entries'),
-    apiGet('checklist-entries'),
-    apiGet('handover-notes'),
-    apiGet('refill-patients'),
-    apiGet('customer-orders')
-  ]);
+  const multi = await apiGetMulti(['shortage-entries','checklist-entries','handover-notes','refill-patients','customer-orders']);
+  const shortages = multi['shortage-entries'] || [];
+  const checklist = multi['checklist-entries'] || [];
+  const notes = multi['handover-notes'] || [];
+  const patients = multi['refill-patients'] || [];
+  const orders = multi['customer-orders'] || [];
   allData = { shortages, checklist, notes, patients, orders };
   setCached('dashboard-all', allData);
 

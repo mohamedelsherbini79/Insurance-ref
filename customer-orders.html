@@ -115,7 +115,7 @@
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
     <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;">Medicina Airport 3</h2>
     <p style="margin:0 0 18px;font-size:.82rem;color:var(--muted);">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password">
+    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password">
     <button id="pwSubmit">Enter</button>
     <div id="pwError"></div>
   </div>
@@ -178,25 +178,25 @@
     <button class="new-order-btn" id="newOrderToggle">+ New Customer Order</button>
     <div class="card" id="newOrderForm" style="display:none;">
       <div class="field">
-        <label>Item name *</label>
+        <label for="orderItem">Item name *</label>
         <input type="text" id="orderItem" placeholder="e.g. Panadol Extra 24s">
       </div>
       <div class="row2">
         <div class="field">
-          <label>Customer name *</label>
+          <label for="orderCustomer">Customer name *</label>
           <input type="text" id="orderCustomer" placeholder="Customer name">
         </div>
         <div class="field">
-          <label>Quantity</label>
+          <label for="orderQty">Quantity</label>
           <input type="number" id="orderQty" min="1" value="1">
         </div>
       </div>
       <div class="field">
-        <label>Phone number *</label>
+        <label for="orderPhone">Phone number *</label>
         <input type="tel" id="orderPhone" placeholder="05XXXXXXXX">
       </div>
       <div class="field">
-        <label>Notes (optional)</label>
+        <label for="orderNotes">Notes (optional)</label>
         <textarea id="orderNotes" rows="2"></textarea>
       </div>
       <div class="hint">This item will also be added to the Shortage Tracker automatically.</div>
@@ -217,7 +217,7 @@
   <button class="export-btn" id="exportBtn" style="flex:1 1 100%;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">Export to Excel (CSV)</button>
   <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">💾 Backup</button>
   <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">⬆ Restore</button>
-  <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+  <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 
 <script>
@@ -335,6 +335,22 @@ async function apiGet(sheetName){
   }
   return [];
 }
+// Fetches several sheets in ONE request instead of one request per sheet - cuts the
+// number of round-trips to Apps Script (and therefore load time) roughly in half.
+async function apiGetMulti(sheetNames){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
+      const data = await res.json();
+      if(data && data.multi && data.data) return data.data;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  // Fall back to individual requests if the combined call ever fails, so nothing breaks.
+  const out = {};
+  await Promise.all(sheetNames.map(async name => { out[name] = await apiGet(name); }));
+  return out;
+}
 async function apiAppend(sheetName, record){
   const op = {sheet: sheetName, action: 'append', record: record};
   if(!navigator.onLine){ queueOp(op); return true; }
@@ -375,15 +391,12 @@ async function loadData(){
   if(cachedEmp) applyEmployees(cachedEmp);
   if(cachedOrders){ orders = cachedOrders; renderBoard(); }
 
-  apiGet(EMPLOYEE_KEY).then(empData => {
-    applyEmployees(empData);
-    setCached(EMPLOYEE_KEY, empData);
-  });
-
-  const ordersData = await apiGet(ORDERS_KEY);
-  orders = ordersData;
+  const multi = await apiGetMulti([EMPLOYEE_KEY, ORDERS_KEY]);
+  applyEmployees(multi[EMPLOYEE_KEY] || []);
+  setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
+  orders = multi[ORDERS_KEY] || [];
   renderBoard();
-  setCached(ORDERS_KEY, ordersData);
+  setCached(ORDERS_KEY, orders);
   updateSyncBadge();
   flushQueue();
 }
@@ -662,7 +675,7 @@ function renderOrderCard(o){
           <button class="action-btn done-btn" onclick="markDone('${o.id}')">✓ Mark Fulfilled</button>
         </div>
         <div class="reply-form" id="order-reply-${o.id}">
-          <textarea id="order-reply-text-${o.id}" placeholder="What's been done so far to get this item?"></textarea>
+          <textarea id="order-reply-text-${o.id}" placeholder="What's been done so far to get this item?" aria-label="What's been done so far to get this item?"></textarea>
           <div class="row">
             <button class="send-reply" onclick="addOrderUpdate('${o.id}')">Send</button>
             <button class="cancel-reply" onclick="toggleOrderReply('${o.id}')">Cancel</button>
