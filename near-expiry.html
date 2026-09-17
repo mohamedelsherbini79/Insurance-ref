@@ -350,7 +350,7 @@ async function apiGet(sheetName){
     }catch(e){}
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
-  return [];
+  return null; // null = fetch genuinely failed; [] would wrongly look like "confirmed empty"
 }
 async function apiGetMulti(sheetNames){
   for(let attempt = 0; attempt < 2; attempt++){
@@ -362,8 +362,13 @@ async function apiGetMulti(sheetNames){
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
   const out = {};
-  await Promise.all(sheetNames.map(async name => { out[name] = await apiGet(name); }));
-  return out;
+  let anyFailed = false;
+  await Promise.all(sheetNames.map(async name => {
+    const r = await apiGet(name);
+    if(r === null) anyFailed = true;
+    out[name] = r || [];
+  }));
+  return anyFailed ? null : out; // if even one sheet truly failed, treat the whole batch as failed
 }
 async function apiAppend(sheetName, record){
   const op = {sheet: sheetName, action: 'append', record: record};
@@ -419,6 +424,10 @@ async function loadData(){
   if(cachedFocus){ focusItems = cachedFocus; renderFocus(); }
 
   const multi = await apiGetMulti([EMPLOYEE_KEY, ITEMS_KEY, FOCUS_KEY]);
+  if(multi === null){
+    updateSyncBadge();
+    return;
+  }
   applyEmployees(multi[EMPLOYEE_KEY] || []);
   setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
   items = multi[ITEMS_KEY] || [];

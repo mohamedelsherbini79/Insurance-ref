@@ -506,7 +506,7 @@ async function apiGet(sheetName){
     }catch(e){}
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
-  return [];
+  return null; // null = fetch genuinely failed; [] would wrongly look like "confirmed empty"
 }
 // Fetches several sheets in ONE request instead of one request per sheet - cuts the
 // number of round-trips to Apps Script (and therefore load time) roughly in half.
@@ -521,8 +521,13 @@ async function apiGetMulti(sheetNames){
   }
   // Fall back to individual requests if the combined call ever fails, so nothing breaks.
   const out = {};
-  await Promise.all(sheetNames.map(async name => { out[name] = await apiGet(name); }));
-  return out;
+  let anyFailed = false;
+  await Promise.all(sheetNames.map(async name => {
+    const r = await apiGet(name);
+    if(r === null) anyFailed = true;
+    out[name] = r || [];
+  }));
+  return anyFailed ? null : out; // if even one sheet truly failed, treat the whole batch as failed
 }
 async function apiSave(sheetName, records){
   try{
@@ -623,6 +628,12 @@ async function loadData(){
 
   // One combined request instead of two separate ones - fewer round-trips to Apps Script.
   const multi = await apiGetMulti([EMPLOYEE_KEY, STORAGE_KEY]);
+  if(multi === null){
+    // Total fetch failure: keep whatever was already on screen (cache or previous state)
+    // instead of wiping it with an empty result.
+    updateSyncBadge();
+    return;
+  }
   applyEmployees(multi[EMPLOYEE_KEY] || []);
   setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
   entries = multi[STORAGE_KEY] || [];

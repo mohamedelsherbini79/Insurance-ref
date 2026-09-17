@@ -162,14 +162,14 @@ function checkPw(){
   if(val === SITE_PASSWORD){
     sessionStorage.setItem('medicina-branch-auth', 'ok');
     document.getElementById('pwGate').style.display = 'none';
-    loadAll();
+    loadAll().catch(() => {});
   }else{
     document.getElementById('pwError').textContent = 'Incorrect password, try again.';
   }
 }
 if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
   document.getElementById('pwGate').style.display = 'none';
-  loadAll();
+  loadAll().catch(() => {});
 }
 
 function escapeHtml(s){
@@ -213,7 +213,25 @@ async function apiGet(sheetName){
     }catch(e){}
     if(attempt < 1) await new Promise(r => setTimeout(r, 300));
   }
-  return [];
+  return null; // null = fetch genuinely failed; [] would wrongly look like "confirmed empty"
+}
+async function apiGetMulti(sheetNames){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
+      const data = await res.json();
+      if(data && data.multi && data.data) return data.data;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  const out = {};
+  let anyFailed = false;
+  await Promise.all(sheetNames.map(async name => {
+    const r = await apiGet(name);
+    if(r === null) anyFailed = true;
+    out[name] = r || [];
+  }));
+  return anyFailed ? null : out;
 }
 
 document.getElementById('refreshNowBtn').addEventListener('click', async () => {
@@ -251,6 +269,12 @@ async function loadAll(){
   }
 
   const multi = await apiGetMulti(['shortage-entries','checklist-entries','handover-notes','refill-patients','customer-orders']);
+  if(multi === null){
+    if(!cached){
+      document.getElementById('loadingMsg').textContent = 'Could not load data. Check your connection and tap Refresh now.';
+    }
+    throw new Error('Could not reach the server - showing last-known data');
+  }
   const shortages = multi['shortage-entries'] || [];
   const checklist = multi['checklist-entries'] || [];
   const notes = multi['handover-notes'] || [];
