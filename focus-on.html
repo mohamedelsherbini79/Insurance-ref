@@ -72,8 +72,12 @@
 
   .item-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--amber);position:relative;}
   .focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .focus-form-card{max-width:480px;}
   .focus-grid .item-card{margin-bottom:0;border-right:none;border-top:4px solid var(--green-dark);}
   @media (max-width:520px){ .focus-grid{grid-template-columns:1fr;} }
+  @media (min-width:700px) and (max-width:999px){ .focus-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (min-width:1000px) and (max-width:1299px){ .focus-grid{grid-template-columns:repeat(4,1fr);} }
+  @media (min-width:1300px){ .focus-grid{grid-template-columns:repeat(6,1fr);} }
   .focus-progress-track{background:var(--bg);border:1px solid var(--line);border-radius:8px;height:10px;overflow:hidden;margin:8px 0;}
   .focus-progress-fill{background:linear-gradient(90deg,var(--purple),var(--green));height:100%;}
   .focus-sell-row{display:flex;gap:6px;margin-top:10px;}
@@ -104,8 +108,9 @@
   @media (min-width: 860px){
     header{border-radius:0 0 26px 26px;padding:28px 40px 34px;}
     header h1{font-size:1.7rem;}
-    main{max-width:760px;margin:0 auto;padding:32px 24px 60px;}
+    main{max-width:1500px;margin:0 auto;padding:32px 24px 60px;}
     body{padding-bottom:0;}
+    .new-btn{max-width:340px;}
   }
 </style>
 </head>
@@ -171,7 +176,7 @@
 </div>
 
 <main>
-  <div class="card" id="newFocusForm" style="display:none;">
+  <div class="card focus-form-card" id="newFocusForm" style="display:none;">
       <div class="row2">
         <div class="field">
           <label for="fCode">Item code</label>
@@ -610,7 +615,7 @@ function renderFocusCard(f){
   const log = (f.salesLog || []);
   const logHtml = log.length ? `
     <div class="sales-log">
-      ${log.slice().reverse().slice(0,5).map(s => `<div class="sales-log-item">− ${escapeHtml(String(s.amount))}${unit} by <strong>${escapeHtml(s.by)}</strong> — ${escapeHtml(s.dateDisplay)} ${escapeHtml(s.timeDisplay)}</div>`).join('')}
+      ${log.slice().reverse().slice(0,3).map(s => `<div class="sales-log-item">− ${escapeHtml(String(s.amount))}${unit} by <strong>${escapeHtml(s.by)}</strong> — ${escapeHtml(s.dateDisplay)} ${escapeHtml(s.timeDisplay)}</div>`).join('')}
     </div>
   ` : '';
   const actionHtml = done
