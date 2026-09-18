@@ -3,36 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Handover Notes - Medicina Airport 3</title>
+<title>Focus On - Medicina Airport 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --purple:#6b1f6f;
-    --purple-dark:#4d1650;
-    --green:#8bc34a;
-    --green-dark:#6f9c38;
-    --amber:#e0a72c;
-    --bg:#faf8fb;
-    --card:#ffffff;
-    --ink:#2a1f2d;
-    --muted:#8a7d8e;
-    --line:#e9e0eb;
-    --danger:#c0392b;
-    --radius:14px;
+    --purple:#6b1f6f; --purple-dark:#4d1650; --green:#8bc34a; --green-dark:#6f9c38;
+    --amber:#e0a72c; --bg:#faf8fb; --card:#ffffff; --ink:#2a1f2d; --muted:#8a7d8e;
+    --line:#e9e0eb; --danger:#c0392b; --radius:14px;
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:30px;}
 
-  #loginGate{
-    position:fixed;inset:0;
-    background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);
-    display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
-  }
+  #pwGate{position:fixed;inset:0;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;font-family:'Inter',sans-serif;}
+  .pw-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;}
+  .pw-card input{width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  .pw-card button{width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;}
+  #pwError{color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;}
+
+  #loginGate{position:fixed;inset:0;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);display:flex;align-items:center;justify-content:center;z-index:998;padding:20px;}
   .login-card{background:#fff;border-radius:18px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);}
   .login-card h2{margin:0 0 6px;font-size:1.25rem;font-weight:900;}
   .login-card p{margin:0 0 20px;font-size:.85rem;color:var(--muted);}
-  .login-card label{display:block;font-size:.8rem;font-weight:700;margin-bottom:8px;}
   .avatar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;margin:6px 0 18px;}
   .avatar-tile{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:6px 2px;border-radius:12px;font-family:'Inter',sans-serif;}
   .avatar-tile:active{background:var(--bg);}
@@ -40,11 +32,6 @@
   .avatar-tile span{font-size:.72rem;color:var(--ink);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .add-name-btn-wide{width:100%;background:var(--bg);border:1px dashed var(--line);color:var(--purple);padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
   .avatar-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0;}
-  .avatar-del{position:absolute;top:-4px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;border:2px solid #fff;font-size:.65rem;line-height:1;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;}
-  .login-row{display:flex;gap:8px;margin-bottom:14px;}
-  .login-row select{flex:1;}
-  .add-emp-btn{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:44px;font-size:1.2rem;cursor:pointer;color:var(--purple);}
-  .continue-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 4px 10px rgba(139,195,74,.35);}
   #loginGate.hidden{display:none;}
 
   header{background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);color:#fff;padding:22px 18px 26px;border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(107,31,111,.25);}
@@ -57,112 +44,88 @@
   .quick-nav{display:flex;gap:8px;overflow-x:auto;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;}
   .quick-nav a{flex-shrink:0;padding:6px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.76rem;font-weight:700;white-space:nowrap;}
   .quick-nav a.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+
   main{padding:26px 18px 0;}
-  textarea, select, input[type=text]{font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;}
-  textarea:focus, select:focus, input:focus{outline:2px solid var(--green);outline-offset:1px;}
+  input[type=text], input[type=number], input[type=date], textarea, select{
+    font-family:'Inter',sans-serif;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:.95rem;background:#fff;color:var(--ink);width:100%;resize:vertical;
+  }
+  input:focus, textarea:focus{outline:2px solid var(--green);outline-offset:1px;}
 
   .tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;}
   .tab-btn{flex:1;padding:9px 4px;text-align:center;background:transparent;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;}
   .tab-btn.active{background:var(--purple);color:#fff;}
-  .badge-count{background:var(--amber);color:#3d2f0a;border-radius:10px;padding:1px 6px;font-size:.65rem;margin-inline-start:4px;}
+  .tab-btn .badge-count{background:var(--amber);color:#3d2f0a;border-radius:10px;padding:1px 6px;font-size:.65rem;margin-inline-start:4px;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
-  .new-note-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
-
-  .new-note-form textarea{margin-bottom:10px;min-height:70px;}
+  .new-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px;}
+  .row2{display:flex;gap:10px;}
+  .row2 .field{flex:1;}
   .submit-btn{width:100%;background:var(--green);color:#2a3d12;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;}
   .cancel-btn{width:100%;background:none;border:none;color:var(--muted);padding:8px;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer;margin-top:4px;}
   .status-msg{text-align:center;font-size:.8rem;margin-top:8px;min-height:14px;color:var(--green-dark);font-weight:700;}
   .status-msg.error{color:var(--danger);}
 
-  .note-thread{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--purple);}
-  .note-thread.done{border-right-color:var(--green);opacity:.85;}
-  .note-main{margin-bottom:6px;}
-  .note-text{font-size:.92rem;font-weight:500;line-height:1.5;margin:0 0 6px;white-space:pre-wrap;}
-  .note-meta{font-size:.72rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
-  .note-meta .author{font-weight:700;color:var(--purple);}
-  .tag{
-    display:inline-block;
-    font-size:.72rem;
-    padding:4px 10px;
-    border-radius:20px;
-    background:var(--bg);
-    border:1px solid var(--line);
-  }
+  .item-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--amber);position:relative;}
+  .focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .focus-grid .item-card{margin-bottom:0;border-right:none;border-top:4px solid var(--green-dark);}
+  @media (max-width:520px){ .focus-grid{grid-template-columns:1fr;} }
+  .focus-progress-track{background:var(--bg);border:1px solid var(--line);border-radius:8px;height:10px;overflow:hidden;margin:8px 0;}
+  .focus-progress-fill{background:linear-gradient(90deg,var(--purple),var(--green));height:100%;}
+  .focus-sell-row{display:flex;gap:6px;margin-top:10px;}
+  .focus-sell-row input{flex:1;padding:8px 10px;font-size:.85rem;}
+  .item-card.soldout{border-right-color:var(--muted);opacity:.8;}
+  .item-name{font-weight:900;font-size:.98rem;margin:0 0 6px;padding-inline-end:24px;}
+  .item-meta{font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+  .item-meta span{background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--line);}
+  .item-meta .qty-left{font-weight:900;color:var(--purple);}
+  .item-notes{font-size:.8rem;margin-top:6px;color:var(--ink);}
+  .del-x{position:absolute;top:12px;inset-inline-end:12px;background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:2px 6px;}
+  .item-actions{display:flex;gap:8px;margin-top:12px;}
+  .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--ink);}
+  .action-btn.sell-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
+  .action-btn.sell-btn:disabled{background:var(--line);color:var(--muted);border-color:var(--line);cursor:not-allowed;}
+  .sales-log{margin-top:10px;padding-inline-start:14px;border-inline-start:2px dashed var(--line);}
+  .sales-log-item{font-size:.72rem;color:var(--muted);padding:3px 0;}
+  .tag{display:inline-block;font-size:.72rem;padding:4px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--line);margin-top:6px;}
   .tag-created{color:var(--purple-dark);border-color:#e3d0e5;}
-  .tag-closed{color:var(--green-dark);border-color:#d9ecc4;background:#f3f9ec;}
-
-  .updates-list{margin:12px 0 0;padding-inline-start:14px;border-inline-start:2px dashed var(--line);}
-  .update-item{margin-bottom:10px;}
-  .update-item:last-child{margin-bottom:0;}
-  .update-text{font-size:.85rem;line-height:1.5;margin:0 0 4px;white-space:pre-wrap;}
-  .update-meta{font-size:.7rem;color:var(--muted);}
-  .update-meta .author{font-weight:700;color:var(--green-dark);}
-
-  .thread-actions{display:flex;gap:8px;margin-top:12px;}
-  .action-btn{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;color:var(--ink);}
-  .action-btn.done-btn{background:var(--green);color:#2a3d12;border-color:var(--green);}
-  .action-btn.reopen-btn{background:var(--amber);color:#3d2f0a;border-color:var(--amber);}
-
-  .reply-form{margin-top:10px;display:none;}
-  .reply-form.active{display:block;}
-  .reply-form textarea{margin-bottom:8px;min-height:56px;font-size:.85rem;}
-  .reply-form .row{display:flex;gap:8px;}
-  .reply-form button{flex:1;padding:9px;border-radius:9px;font-family:'Inter',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;border:none;}
-  .reply-form .send-reply{background:var(--purple);color:#fff;}
-  .reply-form .cancel-reply{background:var(--bg);color:var(--muted);border:1px solid var(--line);}
 
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
+
+  .fixed-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 -4px 14px rgba(0,0,0,.06);}
+  .export-btn{flex:1;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+  body{padding-bottom:70px;}
 
   @media (min-width: 860px){
     header{border-radius:0 0 26px 26px;padding:28px 40px 34px;}
     header h1{font-size:1.7rem;}
     main{max-width:760px;margin:0 auto;padding:32px 24px 60px;}
+    body{padding-bottom:0;}
   }
 </style>
 </head>
 <body>
 
-<div id="pwGate" style="position:fixed;inset:0;background:linear-gradient(135deg,#6b1f6f 0%,#4d1650 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;font-family:'Inter',sans-serif;">
-  <div style="background:#fff;border-radius:18px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;">
+<div id="pwGate">
+  <div class="pw-card">
     <div style="font-size:1.8rem;margin-bottom:10px;">🔐</div>
-    <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;color:#2a1f2d;">Medicina Airport 3</h2>
-    <p style="margin:0 0 18px;font-size:.82rem;color:#8a7d8e;">Enter the branch password to continue</p>
-    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password" style="width:100%;border:1px solid #e9e0eb;border-radius:10px;padding:11px 12px;font-size:.95rem;margin-bottom:12px;box-sizing:border-box;font-family:'Inter',sans-serif;">
-    <button id="pwSubmit" style="width:100%;background:#8bc34a;color:#2a3d12;border:none;padding:12px;border-radius:10px;font-weight:900;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;">Enter</button>
-    <div id="pwError" style="color:#c0392b;font-size:.78rem;margin-top:10px;min-height:14px;"></div>
+    <h2 style="margin:0 0 6px;font-size:1.15rem;font-weight:900;">Medicina Airport 3</h2>
+    <p style="margin:0 0 18px;font-size:.82rem;color:var(--muted);">Enter the branch password to continue</p>
+    <input type="password" id="pwInput" placeholder="Password" aria-label="Branch password">
+    <button id="pwSubmit">Enter</button>
+    <div id="pwError"></div>
   </div>
 </div>
-<script>
-(function(){
-  const SITE_PASSWORD = '2026';
-  const gate = document.getElementById('pwGate');
-  if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
-    gate.style.display = 'none';
-  }
-  document.getElementById('pwSubmit').addEventListener('click', check);
-  document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') check(); });
-  function check(){
-    const val = document.getElementById('pwInput').value;
-    if(val === SITE_PASSWORD){
-      sessionStorage.setItem('medicina-branch-auth', 'ok');
-      gate.style.display = 'none';
-    }else{
-      document.getElementById('pwError').textContent = 'Incorrect password, try again.';
-    }
-  }
-})();
-</script>
-
 
 <div id="loginGate">
   <div class="login-card">
     <h2>Welcome</h2>
-    <p>Select your name to read and leave handover notes. You only need to do this once per session.</p>
+    <p>Select your name to log or sell focus items. You only need to do this once per session.</p>
     <div class="avatar-grid" id="avatarGrid"></div>
     <button class="add-name-btn-wide" id="loginAddBtn">+ Add your name</button>
   </div>
@@ -171,7 +134,7 @@
 <header>
   <div class="top-row">
     <div>
-      <h1>Handover Notes</h1>
+      <h1>Focus On</h1>
       <p>Medicina Airport 3</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -185,6 +148,18 @@
   </div>
 </header>
 
+<div class="quick-nav">
+    <a href="hub.html">🏠 Hub</a>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="shortage-tracker.html">📦 Shortages</a>
+    <a href="daily-checklist.html">✅ Checklist</a>
+    <a href="handover-notes.html">📝 Handover</a>
+    <a href="customer-orders.html">🛎️ Orders</a>
+    <a href="refill-tracker.html">💊 Refills</a>
+    <a href="near-expiry.html">⏳ Near Expiry</a>
+    <a href="focus-on.html" class="active">🎯 Focus On</a>
+  </div>
+
 <div id="adminPanel" style="display:none;position:fixed;inset:0;background:rgba(45,20,48,.55);z-index:997;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:18px;padding:24px;max-width:380px;width:100%;max-height:80vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -194,56 +169,76 @@
     <div id="adminEmployeeList"></div>
   </div>
 </div>
-<div class="quick-nav">
-    <a href="hub.html">🏠 Hub</a>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="shortage-tracker.html">📦 Shortages</a>
-    <a href="daily-checklist.html">✅ Checklist</a>
-    <a href="handover-notes.html" class="active">📝 Handover</a>
-    <a href="customer-orders.html">🛎️ Orders</a>
-    <a href="refill-tracker.html">💊 Refills</a>
-    <a href="near-expiry.html">⏳ Near Expiry</a>
-    <a href="focus-on.html">🎯 Focus On</a>
-  </div>
 
 <main>
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="active">Open Notes <span class="badge-count" id="openCount" style="display:none;">0</span></button>
-    <button class="tab-btn" data-tab="completed">Completed</button>
-  </div>
-
-  <!-- TAB: ACTIVE -->
-  <div class="panel active" id="panel-active">
-    <button class="new-note-btn" id="newNoteToggle">+ Leave a New Note</button>
-    <div class="card new-note-form" id="newNoteForm" style="display:none;">
-      <textarea id="newNoteText" placeholder="Write your note for the next shift / colleague..." aria-label="Write your note for the next shift / colleague..."></textarea>
-      <button class="submit-btn" id="newNoteSubmit">Post Note</button>
-      <button class="cancel-btn" id="newNoteCancel">Cancel</button>
-      <div class="status-msg" id="newNoteStatus"></div>
+  <div class="card" id="newFocusForm" style="display:none;">
+      <div class="row2">
+        <div class="field">
+          <label for="fCode">Item code</label>
+          <input type="text" id="fCode" placeholder="e.g. 33319971">
+        </div>
+        <div class="field">
+          <label for="fName">Item / brand name *</label>
+          <input type="text" id="fName" placeholder="e.g. Grandel">
+        </div>
+      </div>
+      <div class="field">
+        <label for="fTargetType">Target type</label>
+        <select id="fTargetType">
+          <option value="qty">Quantity (units to sell)</option>
+          <option value="value">Value (AED to sell — any product under this brand counts)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fTargetAmount" id="fTargetAmountLabel">Target quantity *</label>
+        <input type="number" id="fTargetAmount" min="1" placeholder="e.g. 20">
+      </div>
+      <div class="field">
+        <label for="fNotes">Why focus on it? (optional)</label>
+        <textarea id="fNotes" rows="2" placeholder="e.g. Push before expiry, overstock, promotion..."></textarea>
+      </div>
+      <button class="submit-btn" id="newFocusSubmit">Add to Focus List</button>
+      <button class="cancel-btn" id="newFocusCancel">Cancel</button>
+      <div class="status-msg" id="newFocusStatus"></div>
     </div>
-    <div id="activeList">⏳ Loading...</div>
-  </div>
-
-  <!-- TAB: COMPLETED -->
-  <div class="panel" id="panel-completed">
-    <div id="completedList">⏳ Loading...</div>
-  </div>
+  <button class="new-btn" id="newFocusToggle" style="margin-bottom:16px;">+ Add Focus Item</button>
+  <div id="focusList" class="focus-grid"></div>
 </main>
 
-<div class="fixed-footer" id="footerActions" style="position:static;display:none;gap:10px;flex-wrap:wrap;max-width:760px;margin:0 auto;padding:0 18px 30px;">
-  <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">💾 Backup</button>
-  <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">⬆ Restore</button>
+<div class="fixed-footer" id="footerActions" style="display:none;">
+  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export to Excel (CSV)</button>
+  <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
+  <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbw7Zw9rGQHs_he8mW0N6z7gtUGS5UmeaQoXelicpX9tvs2OTdUwsQYGdjljo4ZelaneUw/exec';
-const NOTES_KEY = 'handover-notes';
+const API_KEY = 'Medicina-airport3-2026';
+const SITE_PASSWORD = '2026';
+const ADMIN_NAME = 'Mohamed Elsherbini';
+const FOCUS_KEY = 'near-expiry-focus';
 const EMPLOYEE_KEY = 'shared-employees';
-let notes = [];
+
+let focusItems = [];
 let employees = [];
 let employeePins = {};
 let currentEmployee = '';
+
+document.getElementById('pwSubmit').addEventListener('click', checkPw);
+document.getElementById('pwInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkPw(); });
+function checkPw(){
+  const val = document.getElementById('pwInput').value;
+  if(val === SITE_PASSWORD){
+    sessionStorage.setItem('medicina-branch-auth', 'ok');
+    document.getElementById('pwGate').style.display = 'none';
+  }else{
+    document.getElementById('pwError').textContent = 'Incorrect password, try again.';
+  }
+}
+if(sessionStorage.getItem('medicina-branch-auth') === 'ok'){
+  document.getElementById('pwGate').style.display = 'none';
+}
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -256,9 +251,25 @@ function nowStamp(){
     timeDisplay: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
   };
 }
+function isAdmin(){ return currentEmployee === ADMIN_NAME; }
 
-const API_KEY = 'Medicina-airport3-2026';
-
+// ===== OFFLINE QUEUE =====
+const QUEUE_KEY = 'medicina-pending-sync';
+function getQueue(){
+  try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
+}
+function setQueue(q){
+  try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){}
+  updateSyncBadge();
+}
+function queueOp(op){ const q = getQueue(); q.push(op); setQueue(q); }
+function updateSyncBadge(){
+  const el = document.getElementById('syncBadge');
+  if(!el) return;
+  const n = getQueue().length;
+  if(n > 0){ el.style.display = 'inline-block'; el.textContent = '⏳ ' + n + ' pending sync'; }
+  else{ el.style.display = 'none'; }
+}
 async function fetchWithTimeout(url, options, timeoutMs){
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs || 8000);
@@ -272,84 +283,14 @@ async function fetchWithTimeout(url, options, timeoutMs){
   }
 }
 
-// Instant-on-reopen cache: render immediately from last-seen data, refresh in the background
+// Instant-on-reopen cache
 function getCached(key){
   try{ return JSON.parse(localStorage.getItem('cache-'+key) || 'null'); }catch(e){ return null; }
 }
 function setCached(key, data){
   try{ localStorage.setItem('cache-'+key, JSON.stringify(data)); }catch(e){}
 }
-async function apiGet(sheetName){
-  // Apps Script occasionally has a transient hiccup on a single request - retry
-  // once before giving up, so a blip doesn't look like missing data.
-  // Each attempt has a 4s hard timeout so a stalled connection fails fast instead of hanging.
-  for(let attempt = 0; attempt < 2; attempt++){
-    try{
-      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 4000);
-      const data = await res.json();
-      if(data && Array.isArray(data.records)) return data.records;
-    }catch(e){}
-    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
-  }
-  return null; // null = fetch genuinely failed; [] would wrongly look like "confirmed empty"
-}
-// Fetches several sheets in ONE request instead of one request per sheet - cuts the
-// number of round-trips to Apps Script (and therefore load time) roughly in half.
-async function apiGetMulti(sheetNames){
-  for(let attempt = 0; attempt < 2; attempt++){
-    try{
-      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
-      const data = await res.json();
-      if(data && data.multi && data.data) return data.data;
-    }catch(e){}
-    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
-  }
-  // Fall back to individual requests if the combined call ever fails, so nothing breaks.
-  const out = {};
-  let anyFailed = false;
-  await Promise.all(sheetNames.map(async name => {
-    const r = await apiGet(name);
-    if(r === null) anyFailed = true;
-    out[name] = r || [];
-  }));
-  return anyFailed ? null : out; // if even one sheet truly failed, treat the whole batch as failed
-}
-async function apiSave(sheetName, records){
-  try{
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({sheet: sheetName, records: records, key: API_KEY})
-    });
-    const data = await res.json();
-    return !!data.success;
-  }catch(e){ return false; }
-}
-// ===== OFFLINE QUEUE: nothing is ever lost, even if the connection drops =====
-const QUEUE_KEY = 'medicina-pending-sync';
-function getQueue(){
-  try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
-}
-function setQueue(q){
-  try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){}
-  updateSyncBadge();
-}
-function queueOp(op){
-  const q = getQueue();
-  q.push(op);
-  setQueue(q);
-}
-function updateSyncBadge(){
-  const el = document.getElementById('syncBadge');
-  if(!el) return;
-  const n = getQueue().length;
-  if(n > 0){
-    el.style.display = 'inline-block';
-    el.textContent = '\u23f3 ' + n + ' pending sync';
-  }else{
-    el.style.display = 'none';
-  }
-}
+
 async function sendOp(op){
   try{
     const res = await fetchWithTimeout(API_URL, {
@@ -374,6 +315,35 @@ async function flushQueue(){
 window.addEventListener('online', flushQueue);
 setInterval(flushQueue, 30000);
 
+async function apiGet(sheetName){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheet=${encodeURIComponent(sheetName)}&key=${encodeURIComponent(API_KEY)}`, {}, 4000);
+      const data = await res.json();
+      if(data && Array.isArray(data.records)) return data.records;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  return null; // null = fetch genuinely failed; [] would wrongly look like "confirmed empty"
+}
+async function apiGetMulti(sheetNames){
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const res = await fetchWithTimeout(`${API_URL}?sheets=${encodeURIComponent(sheetNames.join(','))}&key=${encodeURIComponent(API_KEY)}`, {}, 5000);
+      const data = await res.json();
+      if(data && data.multi && data.data) return data.data;
+    }catch(e){}
+    if(attempt < 1) await new Promise(r => setTimeout(r, 300));
+  }
+  const out = {};
+  let anyFailed = false;
+  await Promise.all(sheetNames.map(async name => {
+    const r = await apiGet(name);
+    if(r === null) anyFailed = true;
+    out[name] = r || [];
+  }));
+  return anyFailed ? null : out; // if even one sheet truly failed, treat the whole batch as failed
+}
 async function apiAppend(sheetName, record){
   const op = {sheet: sheetName, action: 'append', record: record};
   if(!navigator.onLine){ queueOp(op); return true; }
@@ -395,6 +365,17 @@ async function apiDeleteOne(sheetName, id){
   if(!ok) queueOp(op);
   return true;
 }
+async function apiSave(sheetName, records){
+  try{
+    const res = await fetchWithTimeout(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({sheet: sheetName, records: records, key: API_KEY})
+    }, 6000);
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 
 function applyEmployees(empData){
   employees = [...new Set(empData.map(r => r.name || r.id).filter(Boolean))];
@@ -403,52 +384,44 @@ function applyEmployees(empData){
   renderEmployeeOptions();
   trySharedLogin();
 }
+async function saveEmployees(){
+  const records = employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}));
+  return await apiSave(EMPLOYEE_KEY, records);
+}
 
 async function loadData(){
   const cachedEmp = getCached(EMPLOYEE_KEY);
-  const cachedNotes = getCached(NOTES_KEY);
+  const cachedFocus = getCached(FOCUS_KEY);
   if(cachedEmp) applyEmployees(cachedEmp);
-  if(cachedNotes){ notes = cachedNotes; renderBoard(); }
+  if(cachedFocus){ focusItems = cachedFocus; renderFocus(); }
 
-  const multi = await apiGetMulti([EMPLOYEE_KEY, NOTES_KEY]);
+  const multi = await apiGetMulti([EMPLOYEE_KEY, FOCUS_KEY]);
   if(multi === null){
     updateSyncBadge();
     return;
   }
   applyEmployees(multi[EMPLOYEE_KEY] || []);
   setCached(EMPLOYEE_KEY, multi[EMPLOYEE_KEY] || []);
-  notes = multi[NOTES_KEY] || [];
-  renderBoard();
-  setCached(NOTES_KEY, notes);
-}
-
-async function saveNotes(){
-  return await apiSave(NOTES_KEY, notes);
-}
-async function saveEmployees(){
-  const records = employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}));
-  return await apiSave(EMPLOYEE_KEY, records);
+  focusItems = multi[FOCUS_KEY] || [];
+  renderFocus();
+  setCached(FOCUS_KEY, focusItems);
+  updateSyncBadge();
+  flushQueue();
 }
 
 function initials(name){
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
-
-const ADMIN_NAME = 'Mohamed Elsherbini';
-function isAdmin(){ return currentEmployee === ADMIN_NAME; }
-
 function loginAs(name){
   currentEmployee = name;
   try{ localStorage.setItem('medicina-current-user', name); }catch(e){}
+  document.getElementById('whoName').textContent = name;
+  document.getElementById('loginGate').classList.add('hidden');
   document.getElementById('adminPanelBtn').style.display = isAdmin() ? 'block' : 'none';
   const footerEl = document.getElementById('footerActions');
   if(footerEl) footerEl.style.display = isAdmin() ? 'flex' : 'none';
-  document.getElementById('whoName').textContent = name;
-  document.getElementById('loginGate').classList.add('hidden');
-  notifyIfNeeded();
 }
-
 function attemptLogin(name){
   const pin = employeePins[name];
   if(pin){
@@ -457,7 +430,6 @@ function attemptLogin(name){
   }
   loginAs(name);
 }
-
 function renderEmployeeOptions(){
   const grid = document.getElementById('avatarGrid');
   grid.innerHTML = employees.length
@@ -469,7 +441,6 @@ function renderEmployeeOptions(){
       `).join('')
     : `<div class="avatar-empty">No names added yet - tap below</div>`;
 }
-
 document.getElementById('loginAddBtn').addEventListener('click', async () => {
   const name = prompt('Enter your name:');
   if(!name || !name.trim()) return;
@@ -480,17 +451,32 @@ document.getElementById('loginAddBtn').addEventListener('click', async () => {
     employees.push(clean);
     renderEmployeeOptions();
     loginAs(clean);
-    // Append-only: never overwrites names other people may have added on their own devices
     await apiAppend(EMPLOYEE_KEY, {id: clean, name: clean, pin: employeePins[clean] || ''});
   }else{
     attemptLogin(clean);
   }
 });
-
 document.getElementById('switchUserBtn').addEventListener('click', () => {
   try{ localStorage.removeItem('medicina-current-user'); }catch(e){}
   document.getElementById('loginGate').classList.remove('hidden');
 });
+
+let sharedLoginTried = false;
+function trySharedLogin(){
+  if(sharedLoginTried) return;
+  if(!document.getElementById('loginGate') || document.getElementById('loginGate').classList.contains('hidden')) return;
+  let shared;
+  try{ shared = localStorage.getItem('medicina-current-user'); }catch(e){ shared = null; }
+  if(!shared) return;
+  sharedLoginTried = true;
+  if(!employees.includes(shared)){
+    if(shared === ADMIN_NAME) return;
+    employees.push(shared);
+    renderEmployeeOptions();
+    apiAppend(EMPLOYEE_KEY, {id: shared, name: shared, pin: ''});
+  }
+  attemptLogin(shared);
+}
 
 document.getElementById('adminPanelBtn').addEventListener('click', () => {
   renderAdminPanel();
@@ -517,14 +503,9 @@ async function setEmployeePin(name){
   if(!isAdmin()) return;
   const input = prompt('Set a 4-digit PIN for ' + name + ' (leave empty to remove the PIN):', employeePins[name] || '');
   if(input === null) return;
-  if(input === ''){
-    delete employeePins[name];
-  }else if(/^\d{4}$/.test(input)){
-    employeePins[name] = input;
-  }else{
-    alert('PIN must be exactly 4 digits.');
-    return;
-  }
+  if(input === ''){ delete employeePins[name]; }
+  else if(/^\d{4}$/.test(input)){ employeePins[name] = input; }
+  else{ alert('PIN must be exactly 4 digits.'); return; }
   renderAdminPanel();
   renderEmployeeOptions();
   await apiUpdateOne(EMPLOYEE_KEY, {id: name, name: name, pin: employeePins[name] || ''});
@@ -539,267 +520,164 @@ async function deleteEmployee(name){
   await apiDeleteOne(EMPLOYEE_KEY, name);
 }
 
-let sharedLoginTried = false;
-function trySharedLogin(){
-  if(sharedLoginTried) return;
-  if(!document.getElementById('loginGate') || document.getElementById('loginGate').classList.contains('hidden')) return;
-  let shared;
-  try{ shared = localStorage.getItem('medicina-current-user'); }catch(e){ shared = null; }
-  if(!shared) return;
-  sharedLoginTried = true;
-  if(!employees.includes(shared)){
-    // Never auto-create the admin account from a cross-tool session: that would hand out
-    // admin access with a blank PIN. The admin adds themselves (and their PIN) explicitly.
-    if(shared === ADMIN_NAME) return;
-    employees.push(shared);
-    renderEmployeeOptions();
-    apiAppend(EMPLOYEE_KEY, {id: shared, name: shared, pin: ''});
-  }
-  attemptLogin(shared);
-}
-
-function notifyIfNeeded(){
-  if(!('Notification' in window)) return;
-  const fire = () => {
-    const openCount = notes.filter(n => n.status === 'open').length;
-    if(openCount > 0){
-      new Notification('Medicina Airport 3', {body: openCount + ' handover note(s) still open.'});
-    }
-  };
-  if(Notification.permission === 'granted') fire();
-  else if(Notification.permission !== 'denied') Notification.requestPermission().then(p => { if(p === 'granted') fire(); });
-}
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-    renderBoard();
-  });
-});
-
-document.getElementById('newNoteToggle').addEventListener('click', () => {
-  const form = document.getElementById('newNoteForm');
+// ===== FOCUS ON LIST =====
+document.getElementById('newFocusToggle').addEventListener('click', () => {
+  const form = document.getElementById('newFocusForm');
   form.style.display = form.style.display === 'none' ? 'block' : 'none';
 });
-document.getElementById('newNoteCancel').addEventListener('click', () => {
-  document.getElementById('newNoteForm').style.display = 'none';
-  document.getElementById('newNoteText').value = '';
+document.getElementById('newFocusCancel').addEventListener('click', () => {
+  document.getElementById('newFocusForm').style.display = 'none';
 });
+document.getElementById('fTargetType').addEventListener('change', (e) => {
+  const label = document.getElementById('fTargetAmountLabel');
+  const input = document.getElementById('fTargetAmount');
+  if(e.target.value === 'value'){
+    label.textContent = 'Target value (AED) *';
+    input.placeholder = 'e.g. 1000';
+  }else{
+    label.textContent = 'Target quantity *';
+    input.placeholder = 'e.g. 20';
+  }
+});
+document.getElementById('newFocusSubmit').addEventListener('click', async () => {
+  const code = document.getElementById('fCode').value.trim();
+  const name = document.getElementById('fName').value.trim();
+  const targetType = document.getElementById('fTargetType').value;
+  const targetAmount = Number(document.getElementById('fTargetAmount').value) || 0;
+  const notes = document.getElementById('fNotes').value.trim();
+  const statusEl = document.getElementById('newFocusStatus');
 
-document.getElementById('newNoteSubmit').addEventListener('click', async () => {
-  const text = document.getElementById('newNoteText').value.trim();
-  const statusEl = document.getElementById('newNoteStatus');
-  if(!currentEmployee){
-    statusEl.textContent = 'Please select your name at login first';
-    statusEl.classList.add('error');
-    return;
-  }
-  if(!text){
-    statusEl.textContent = 'Write a note first';
-    statusEl.classList.add('error');
-    return;
-  }
+  if(!currentEmployee){ statusEl.textContent = 'Please select your name at login first'; statusEl.classList.add('error'); return; }
+  if(!name){ statusEl.textContent = 'Item / brand name is required'; statusEl.classList.add('error'); return; }
+  if(targetAmount <= 0){ statusEl.textContent = 'Enter a target greater than 0'; statusEl.classList.add('error'); return; }
+
   const stamp = nowStamp();
-  const note = {
+  const fItem = {
     id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
-    author: currentEmployee,
-    text: text,
-    dateISO: stamp.iso,
-    dateDisplay: stamp.dateDisplay,
-    timeDisplay: stamp.timeDisplay,
-    status: 'open',
-    updates: []
+    itemCode: code, itemName: name, notes,
+    targetType, targetAmount, remaining: targetAmount,
+    addedBy: currentEmployee, dateISO: stamp.iso, dateDisplay: stamp.dateDisplay,
+    salesLog: []
   };
-  notes.unshift(note);
-  document.getElementById('newNoteText').value = '';
-  document.getElementById('newNoteForm').style.display = 'none';
-  statusEl.textContent = '';
-  statusEl.classList.remove('error');
-  renderBoard();
-
-  const ok = await apiAppend(NOTES_KEY, note);
-  if(!ok){
-    notes.shift();
-    renderBoard();
-    alert('Could not save this note. Please check your connection and try again.');
-  }
+  focusItems.unshift(fItem);
+  document.getElementById('fCode').value = '';
+  document.getElementById('fName').value = '';
+  document.getElementById('fTargetAmount').value = '';
+  document.getElementById('fNotes').value = '';
+  document.getElementById('newFocusForm').style.display = 'none';
+  statusEl.textContent = ''; statusEl.classList.remove('error');
+  renderFocus();
+  await apiAppend(FOCUS_KEY, fItem);
 });
-
-function toggleReplyForm(noteId){
-  const el = document.getElementById('reply-form-' + noteId);
-  if(el) el.classList.toggle('active');
+async function deleteFocusItem(id){
+  if(!confirm('Remove this item from the Focus On list?')) return;
+  focusItems = focusItems.filter(f => f.id !== id);
+  renderFocus();
+  await apiDeleteOne(FOCUS_KEY, id);
 }
-
-async function addUpdate(noteId){
-  const textEl = document.getElementById('reply-text-' + noteId);
-  const text = textEl.value.trim();
-  if(!text) return;
+async function focusSellOne(id){
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
-  const note = notes.find(n => n.id === noteId);
-  if(!note) return;
+  const f = focusItems.find(x => x.id === id);
+  if(!f || f.remaining <= 0) return;
   const stamp = nowStamp();
-  const previousStatus = note.status;
-  const newUpdate = {
-    author: currentEmployee,
-    text: text,
-    dateDisplay: stamp.dateDisplay,
-    timeDisplay: stamp.timeDisplay
-  };
-  note.updates.push(newUpdate);
-  // an update on an open thread keeps it open; if it was somehow done, adding a new update reopens it
-  note.status = 'open';
-  renderBoard();
-
-  const ok = await apiUpdateOne(NOTES_KEY, note);
-  if(!ok){
-    note.updates.pop();
-    note.status = previousStatus;
-    renderBoard();
-    alert('Could not save this update. Please check your connection and try again.');
-  }
+  f.remaining = Math.max(0, f.remaining - 1);
+  f.salesLog = f.salesLog || [];
+  f.salesLog.push({by: currentEmployee, amount: 1, dateDisplay: stamp.dateDisplay, timeDisplay: stamp.timeDisplay});
+  renderFocus();
+  await apiUpdateOne(FOCUS_KEY, f);
 }
-
-async function markDone(noteId){
+async function focusLogValue(id){
   if(!currentEmployee){ alert('Please select your name at login first'); return; }
-  const note = notes.find(n => n.id === noteId);
-  if(!note) return;
+  const f = focusItems.find(x => x.id === id);
+  if(!f || f.remaining <= 0) return;
+  const input = document.getElementById('focus-value-' + id);
+  const amount = Number(input.value);
+  if(!amount || amount <= 0){ alert('Enter a valid AED amount sold.'); return; }
   const stamp = nowStamp();
-  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
-  note.status = 'done';
-  note.doneDate = stamp.dateDisplay;
-  note.doneTime = stamp.timeDisplay;
-  note.closedBy = currentEmployee;
-  renderBoard();
-
-  const ok = await apiUpdateOne(NOTES_KEY, note);
-  if(!ok){
-    Object.assign(note, prev);
-    renderBoard();
-    alert('Could not save this change. Please check your connection and try again.');
-  }
+  f.remaining = Math.max(0, f.remaining - amount);
+  f.salesLog = f.salesLog || [];
+  f.salesLog.push({by: currentEmployee, amount: amount, dateDisplay: stamp.dateDisplay, timeDisplay: stamp.timeDisplay});
+  input.value = '';
+  renderFocus();
+  await apiUpdateOne(FOCUS_KEY, f);
 }
-
-async function reopenNote(noteId){
-  const note = notes.find(n => n.id === noteId);
-  if(!note) return;
-  const prev = {status: note.status, doneDate: note.doneDate, doneTime: note.doneTime, closedBy: note.closedBy};
-  note.status = 'open';
-  note.closedBy = null;
-  note.doneDate = null;
-  note.doneTime = null;
-  renderBoard();
-
-  const ok = await apiUpdateOne(NOTES_KEY, note);
-  if(!ok){
-    Object.assign(note, prev);
-    renderBoard();
-    alert('Could not save this change. Please check your connection and try again.');
-  }
-}
-
-function renderNoteCard(note){
-  const updatesHtml = note.updates.length ? `
-    <div class="updates-list">
-      ${note.updates.map(u => `
-        <div class="update-item">
-          <div class="update-text">${escapeHtml(u.text)}</div>
-          <div class="update-meta"><span class="author">${escapeHtml(u.author)}</span> — ${escapeHtml(u.dateDisplay)} ${escapeHtml(u.timeDisplay)}</div>
-        </div>
-      `).join('')}
+function renderFocusCard(f){
+  const targetAmount = f.targetAmount || 0;
+  const remaining = f.remaining !== undefined ? f.remaining : targetAmount;
+  const done = remaining <= 0;
+  const pct = targetAmount > 0 ? Math.min(100, Math.round((targetAmount - remaining) / targetAmount * 100)) : 0;
+  const unit = f.targetType === 'value' ? ' AED' : '';
+  const log = (f.salesLog || []);
+  const logHtml = log.length ? `
+    <div class="sales-log">
+      ${log.slice().reverse().slice(0,5).map(s => `<div class="sales-log-item">− ${escapeHtml(String(s.amount))}${unit} by <strong>${escapeHtml(s.by)}</strong> — ${escapeHtml(s.dateDisplay)} ${escapeHtml(s.timeDisplay)}</div>`).join('')}
     </div>
   ` : '';
-
-  const isDone = note.status === 'done';
+  const actionHtml = done
+    ? `<div class="item-actions"><button class="action-btn sell-btn" disabled>✓ Target reached</button></div>`
+    : f.targetType === 'value'
+      ? `<div class="focus-sell-row">
+           <input type="number" id="focus-value-${f.id}" min="1" placeholder="AED sold...">
+           <button class="action-btn sell-btn" style="flex:0 0 auto;padding:8px 14px;" onclick="focusLogValue('${f.id}')">Log sale</button>
+         </div>`
+      : `<div class="item-actions"><button class="action-btn sell-btn" onclick="focusSellOne('${f.id}')">− Sell one</button></div>`;
 
   return `
-    <div class="note-thread ${isDone ? 'done' : ''}">
-      <div class="note-main">
-        <div class="note-text">${escapeHtml(note.text)}</div>
-        <div class="note-meta">
-          <span class="tag tag-created">🟣 Created by <strong>${escapeHtml(note.author)}</strong> — ${escapeHtml(note.dateDisplay)} ${escapeHtml(note.timeDisplay)}</span>
-        </div>
-      </div>
-      ${updatesHtml}
-      ${isDone ? `
-        <div class="note-meta" style="margin-top:10px;">
-          <span class="tag tag-closed">🟢 Closed by <strong>${escapeHtml(note.closedBy || 'Unknown')}</strong> — ${escapeHtml(note.doneDate || '')} ${escapeHtml(note.doneTime || '')}</span>
-        </div>
-        <div class="thread-actions">
-          <button class="action-btn reopen-btn" onclick="reopenNote('${note.id}')">↺ Reopen</button>
-        </div>
-      ` : `
-        <div class="thread-actions">
-          <button class="action-btn" onclick="toggleReplyForm('${note.id}')">💬 Add Update</button>
-          <button class="action-btn done-btn" onclick="markDone('${note.id}')">✓ Mark Done</button>
-        </div>
-        <div class="reply-form" id="reply-form-${note.id}">
-          <textarea id="reply-text-${note.id}" placeholder="Add an update to this note..." aria-label="Add an update to this note..."></textarea>
-          <div class="row">
-            <button class="send-reply" onclick="addUpdate('${note.id}')">Send</button>
-            <button class="cancel-reply" onclick="toggleReplyForm('${note.id}')">Cancel</button>
-          </div>
-        </div>
-      `}
+    <div class="item-card ${done ? 'soldout' : ''}">
+      <button class="del-x" onclick="deleteFocusItem('${f.id}')">✕</button>
+      <div class="item-name">🎯 ${escapeHtml(f.itemName)}${f.itemCode ? ` <span style="color:var(--muted);font-weight:600;font-size:.8rem;">#${escapeHtml(f.itemCode)}</span>` : ''}</div>
+      <div class="item-meta"><span class="qty-left">${escapeHtml(String(remaining))}${unit} of ${escapeHtml(String(targetAmount))}${unit} left</span></div>
+      <div class="focus-progress-track"><div class="focus-progress-fill" style="width:${pct}%"></div></div>
+      ${f.notes ? `<div class="item-notes">📝 ${escapeHtml(f.notes)}</div>` : ''}
+      <div class="tag tag-created">🟣 Added by <strong>${escapeHtml(f.addedBy)}</strong> — ${escapeHtml(f.dateDisplay)}</div>
+      ${logHtml}
+      ${actionHtml}
     </div>
   `;
 }
-
-function renderBoard(){
-  const activeNotes = notes.filter(n => n.status === 'open')
-    .sort((a,b) => {
-      const aLast = a.updates.length ? a.updates[a.updates.length-1].dateDisplay + a.updates[a.updates.length-1].timeDisplay : a.dateDisplay + a.timeDisplay;
-      const bLast = b.updates.length ? b.updates[b.updates.length-1].dateDisplay + b.updates[b.updates.length-1].timeDisplay : b.dateDisplay + b.timeDisplay;
-      return b.dateISO.localeCompare(a.dateISO);
-    });
-  const completedNotes = notes.filter(n => n.status === 'done').sort((a,b) => b.dateISO.localeCompare(a.dateISO));
-
-  const activeList = document.getElementById('activeList');
-  activeList.innerHTML = activeNotes.length
-    ? activeNotes.map(renderNoteCard).join('')
-    : `<div class="empty-state"><div class="big">📝</div>No open notes right now</div>`;
-
-  const completedList = document.getElementById('completedList');
-  completedList.innerHTML = completedNotes.length
-    ? completedNotes.map(renderNoteCard).join('')
-    : `<div class="empty-state"><div class="big">✅</div>No completed notes yet</div>`;
-
-  const badge = document.getElementById('openCount');
-  if(activeNotes.length){ badge.style.display = 'inline-block'; badge.textContent = activeNotes.length; }
-  else{ badge.style.display = 'none'; }
+function renderFocus(){
+  const container = document.getElementById('focusList');
+  container.innerHTML = focusItems.length
+    ? focusItems.map(renderFocusCard).join('')
+    : `<div class="empty-state" style="grid-column:1/-1;"><div class="big">🎯</div>No focus items yet</div>`;
 }
 
-loadData();
-updateSyncBadge();
-flushQueue();
-
-// ===== BACKUP & RESTORE =====
-document.getElementById('backupBtn').addEventListener('click', () => {
+// ===== EXPORT / BACKUP / RESTORE (admin only) =====
+document.getElementById('exportBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
-  const backup = {
-    tool: 'handover-notes',
-    exportedAt: new Date().toISOString(),
-    [NOTES_KEY]: notes,
-    [EMPLOYEE_KEY]: employees
-  };
-  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  if(focusItems.length === 0){ alert('No focus items to export yet'); return; }
+  const headers = ['Item Code','Item / Brand Name','Target Type','Target Amount','Remaining','Added By','Date Added','Notes','Sales Log'];
+  const rows = focusItems.map(f => [
+    f.itemCode || '', f.itemName, f.targetType === 'value' ? 'Value (AED)' : 'Quantity',
+    f.targetAmount, f.remaining !== undefined ? f.remaining : f.targetAmount,
+    f.addedBy, f.dateDisplay, f.notes || '',
+    (f.salesLog || []).map(s => `${s.by}: ${s.amount} @ ${s.dateDisplay} ${s.timeDisplay}`).join(' | ')
+  ]);
+  let csv = '\uFEFF' + headers.join(',') + '\n';
+  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',') + '\n'; });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
+  const n = new Date();
   a.href = url;
-  a.download = `handover-notes-backup_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.download = `focus-on_${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
 
-document.getElementById('restoreBtn').addEventListener('click', () => {
+document.getElementById('backupBtn').addEventListener('click', () => {
   if(!isAdmin()) return;
-  document.getElementById('restoreInput').click();
+  const backup = {tool:'focus-on', exportedAt: new Date().toISOString(), [FOCUS_KEY]: focusItems, [EMPLOYEE_KEY]: employees.map(name => ({id: name, name: name, pin: employeePins[name] || ''}))};
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const n = new Date();
+  a.href = url;
+  a.download = `focus-on-backup_${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 });
-
+document.getElementById('restoreBtn').addEventListener('click', () => { if(!isAdmin()) return; document.getElementById('restoreInput').click(); });
 document.getElementById('restoreInput').addEventListener('change', async (e) => {
   if(!isAdmin()) return;
   const file = e.target.files[0];
@@ -807,31 +685,18 @@ document.getElementById('restoreInput').addEventListener('change', async (e) => 
   try{
     const text = await file.text();
     const data = JSON.parse(text);
-    if(!data[NOTES_KEY] && !data[EMPLOYEE_KEY]){
-      alert('This file does not look like a valid Handover Notes backup.');
-      return;
-    }
-    const count = (data[NOTES_KEY] || []).length;
-    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will contain ${count} notes and will REPLACE all current data.`)) return;
-
-    notes = data[NOTES_KEY] || [];
-    employees = data[EMPLOYEE_KEY] || [];
-    const ok1 = await saveNotes();
-    const ok2 = await saveEmployees();
-    if(ok1 && ok2){
-      alert('✓ Backup restored successfully.');
-      renderEmployeeOptions();
-      renderBoard();
-    }else{
-      alert('Something went wrong while restoring. Please try again.');
-    }
-  }catch(err){
-    alert('Could not read this file. Make sure it is a valid backup JSON file.');
-  }
+    if(!data[FOCUS_KEY]){ alert('This file does not look like a valid Focus On backup.'); return; }
+    if(!confirm(`Restore backup from ${data.exportedAt ? new Date(data.exportedAt).toLocaleString('en-GB') : 'unknown date'}?\nThis will REPLACE the current focus list.`)) return;
+    focusItems = data[FOCUS_KEY] || [];
+    const ok = await apiSave(FOCUS_KEY, focusItems);
+    if(ok){ alert('✓ Backup restored successfully.'); renderFocus(); }
+    else{ alert('Something went wrong while restoring. Please try again.'); }
+  }catch(err){ alert('Could not read this file. Make sure it is a valid backup JSON file.'); }
   e.target.value = '';
 });
-</script>
 
+loadData();
+</script>
 <script>
 // ===== Arabic / English toggle =====
 // Swaps the interface language without touching any stored data. Data the team
@@ -944,6 +809,5 @@ function currentLang(){
   if(currentLang() === 'ar') setTimeout(() => applyLang('ar'), 0);
 })();
 </script>
-
 </body>
 </html>
