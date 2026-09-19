@@ -715,25 +715,76 @@ function fileToBase64(file){
   });
 }
 
+// Resizes and compresses the photo before it ever leaves the phone. WhatsApp photos are
+// often 3000px+ and several MB - none of that extra resolution helps Gemini read text, it
+// just makes the upload and the AI call slower (and more likely to time out). Capping the
+// longest side at 1600px and re-encoding as JPEG typically cuts the payload by 80-90%.
+function compressImage(file, maxDimension, quality){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if(width > maxDimension || height > maxDimension){
+        if(width > height){ height = Math.round(height * maxDimension / width); width = maxDimension; }
+        else{ width = Math.round(width * maxDimension / height); height = maxDimension; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob => {
+        if(!blob){ reject(new Error('Could not compress image')); return; }
+        resolve(blob);
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Could not load image')); };
+    img.src = objectUrl;
+  });
+}
+
 document.getElementById('rxFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
-  rxMediaType = file.type || 'image/jpeg';
-  rxBase64 = await fileToBase64(file);
-  document.getElementById('rxLabel').textContent = '✓ ' + file.name;
-  const img = document.getElementById('rxPreview');
-  img.src = 'data:' + rxMediaType + ';base64,' + rxBase64;
-  img.style.display = 'block';
+  document.getElementById('rxLabel').textContent = 'Compressing image...';
+  try{
+    const compressed = await compressImage(file, 1280, 0.75);
+    rxMediaType = 'image/jpeg';
+    rxBase64 = await fileToBase64(compressed);
+    document.getElementById('rxLabel').textContent = '✓ ' + file.name;
+    const img = document.getElementById('rxPreview');
+    img.src = 'data:' + rxMediaType + ';base64,' + rxBase64;
+    img.style.display = 'block';
+  }catch(err){
+    // Fall back to the original file if compression fails for any reason
+    rxMediaType = file.type || 'image/jpeg';
+    rxBase64 = await fileToBase64(file);
+    document.getElementById('rxLabel').textContent = '✓ ' + file.name;
+    const img = document.getElementById('rxPreview');
+    img.src = 'data:' + rxMediaType + ';base64,' + rxBase64;
+    img.style.display = 'block';
+  }
 });
 document.getElementById('invFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
-  invMediaType = file.type || 'image/jpeg';
-  invBase64 = await fileToBase64(file);
-  document.getElementById('invLabel').textContent = '✓ ' + file.name;
-  const img = document.getElementById('invPreview');
-  img.src = 'data:' + invMediaType + ';base64,' + invBase64;
-  img.style.display = 'block';
+  document.getElementById('invLabel').textContent = 'Compressing image...';
+  try{
+    const compressed = await compressImage(file, 1280, 0.75);
+    invMediaType = 'image/jpeg';
+    invBase64 = await fileToBase64(compressed);
+    document.getElementById('invLabel').textContent = '✓ ' + file.name;
+    const img = document.getElementById('invPreview');
+    img.src = 'data:' + invMediaType + ';base64,' + invBase64;
+    img.style.display = 'block';
+  }catch(err){
+    invMediaType = file.type || 'image/jpeg';
+    invBase64 = await fileToBase64(file);
+    document.getElementById('invLabel').textContent = '✓ ' + file.name;
+    const img = document.getElementById('invPreview');
+    img.src = 'data:' + invMediaType + ';base64,' + invBase64;
+    img.style.display = 'block';
+  }
 });
 
 // ===== MEDICATION ROWS =====
@@ -773,34 +824,42 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
   }
   btn.disabled = true;
   statusEl.classList.remove('error');
-  statusEl.textContent = 'Reading images...';
 
-  try{
-    const images = [];
-    if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64});
-    if(invBase64) images.push({mimeType: invMediaType, data: invBase64});
+  const images = [];
+  if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64});
+  if(invBase64) images.push({mimeType: invMediaType, data: invBase64});
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
-    });
-    const data = await response.json();
-    if(!data.success) throw new Error(data.error || 'extraction failed');
-    const parsed = data.data;
+  let lastError = null;
+  for(let attempt = 1; attempt <= 2; attempt++){
+    statusEl.textContent = attempt === 1 ? 'Reading images...' : 'That took too long — trying once more...';
+    try{
+      const response = await fetchWithTimeout(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
+      }, 25000);
+      const data = await response.json();
+      if(!data.success) throw new Error(data.error || 'extraction failed');
+      const parsed = data.data;
 
-    if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
-    if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
-    if(parsed.emiratesId) document.getElementById('patEmiratesId').value = parsed.emiratesId;
-    if(parsed.dispenseDate) document.getElementById('dispenseDate').value = parsed.dispenseDate;
-    if(Array.isArray(parsed.medications) && parsed.medications.length){
-      clearMedsForm();
-      parsed.medications.forEach(m => addMedRow(m.name, m.qty));
+      if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
+      if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
+      if(parsed.emiratesId) document.getElementById('patEmiratesId').value = parsed.emiratesId;
+      if(parsed.dispenseDate) document.getElementById('dispenseDate').value = parsed.dispenseDate;
+      if(Array.isArray(parsed.medications) && parsed.medications.length){
+        clearMedsForm();
+        parsed.medications.forEach(m => addMedRow(m.name, m.qty));
+      }
+      statusEl.textContent = '✓ Extracted — please review the fields below before saving';
+      lastError = null;
+      break;
+    }catch(err){
+      lastError = err;
+      console.error('Extract with AI failed (attempt ' + attempt + '):', err);
     }
-    statusEl.textContent = '✓ Extracted — please review the fields below before saving';
-  }catch(err){
-    console.error('Extract with AI failed:', err);
-    statusEl.textContent = 'Could not read the image(s): ' + (err.message || err) + '. Please fill the fields manually below.';
+  }
+  if(lastError){
+    statusEl.textContent = 'Could not read the image(s): ' + (lastError.message || lastError) + '. Please fill the fields manually below, or try the photo again.';
     statusEl.classList.add('error');
   }
   btn.disabled = false;
