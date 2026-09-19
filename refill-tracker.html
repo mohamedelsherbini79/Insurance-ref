@@ -264,6 +264,49 @@
   </div>
 </div>
 
+<div id="dispenseModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="section-title">
+      <span id="dispModalTitle">Confirm Dispensed</span>
+      <button id="dispModalClose" aria-label="Close">✕</button>
+    </div>
+    <div id="dispPatientName" style="font-weight:900;font-size:.95rem;margin-bottom:12px;color:var(--purple);"></div>
+
+    <div class="field">
+      <label>Invoice / receipt image (optional — extracts medications)</label>
+      <div class="upload-box">
+        <input type="file" accept="image/*" id="dispInvFile" aria-label="Invoice image">
+        <div class="up-label" id="dispInvLabel">🧾 Tap to upload invoice photo</div>
+        <img id="dispInvPreview" style="display:none;">
+      </div>
+    </div>
+    <button class="extract-btn" id="dispExtractBtn">🔍 Extract medications with AI</button>
+    <div class="extract-status" id="dispExtractStatus"></div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="dispDate">Dispense date</label>
+        <input type="date" id="dispDate">
+      </div>
+      <div class="field">
+        <label for="dispCycleDays">Refill cycle</label>
+        <select id="dispCycleDays">
+          <option value="30">30 days</option>
+          <option value="60">60 days</option>
+          <option value="90">90 days</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Medications dispensed</label>
+      <div id="dispMedsList"></div>
+      <button class="add-med-btn" id="addDispMedBtn">+ Add medication</button>
+    </div>
+    <button class="submit-btn" id="dispConfirmBtn">✅ Confirm Dispensed</button>
+    <div class="status-msg" id="dispStatusMsg"></div>
+  </div>
+</div>
+
 <div class="quick-nav">
     <a href="hub.html">🏠 Hub</a>
     <a href="dashboard.html">📊 Dashboard</a>
@@ -1180,13 +1223,22 @@ const REMINDER_STATUS_META = [
 
 function renderReminderStatusRow(p){
   const current = p.reminderStatus && p.reminderStatus.status;
-  const buttons = REMINDER_STATUS_META.map(s => `
-    <button class="${current === s.key ? 'active ' + s.key : ''}" onclick="toggleReminderStatus('${p.id}','${s.key}')">${s.label}</button>
-  `).join('');
+  const buttons = REMINDER_STATUS_META.map(s => {
+    let action;
+    if(s.key === 'dispensed') action = `openDispenseModal('${p.id}')`;
+    else if(s.key === 'elsewhere') action = `confirmElsewhere('${p.id}')`;
+    else action = `toggleReminderStatus('${p.id}','${s.key}')`;
+    return `<button class="${current === s.key ? 'active ' + s.key : ''}" onclick="${action}">${s.label}</button>`;
+  }).join('');
   const note = (p.reminderStatus && p.reminderStatus.by)
     ? `<div class="reminder-status-note">${escapeHtml(p.reminderStatus.by)} · ${escapeHtml(displayDate(p.reminderStatus.date || ''))}</div>`
     : '';
   return `<div class="reminder-status">${buttons}</div>${note}`;
+}
+
+function confirmElsewhere(id){
+  const reenter = confirm('Re-enter this refill into the system with today\'s date? This starts a new cycle and will update Next Due.\n\nOK = re-enter now\nCancel = do nothing');
+  if(reenter) openDispenseModal(id, 'elsewhere');
 }
 
 async function toggleReminderStatus(id, status){
@@ -1209,11 +1261,167 @@ async function toggleReminderStatus(id, status){
   }
 }
 
+// ===== CONFIRM DISPENSED (with invoice OCR) =====
+let dispensingPatientId = null;
+let dispSource = 'in-branch';
+let dispInvBase64 = null, dispInvMediaType = null;
+let dispMedIdCounter = 0;
+
+function addDispMedRow(name, qty){
+  dispMedIdCounter++;
+  const id = 'disp-med-' + dispMedIdCounter;
+  const div = document.createElement('div');
+  div.className = 'med-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Medication name" class="med-name" value="${escapeHtml(name || '')}" aria-label="Medication name">
+    <input type="text" placeholder="Qty" class="qty-input med-qty" value="${escapeHtml(qty || '')}" aria-label="Qty">
+    <button class="rm-btn" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('dispMedsList').appendChild(div);
+}
+document.getElementById('addDispMedBtn').addEventListener('click', () => addDispMedRow());
+
+function getDispMedsFromForm(){
+  return Array.from(document.querySelectorAll('#dispMedsList .med-row')).map(row => ({
+    name: row.querySelector('.med-name').value.trim(),
+    qty: row.querySelector('.med-qty').value.trim()
+  })).filter(m => m.name);
+}
+
+function openDispenseModal(id, source){
+  const patient = patients.find(p => p.id === id);
+  if(!patient) return;
+  dispensingPatientId = id;
+  dispSource = source || 'in-branch';
+  dispInvBase64 = null; dispInvMediaType = null;
+  document.getElementById('dispModalTitle').textContent = dispSource === 'elsewhere' ? 'Confirm Dispensed Elsewhere' : 'Confirm Dispensed';
+  document.getElementById('dispConfirmBtn').textContent = dispSource === 'elsewhere' ? '✅ Confirm & Re-enter' : '✅ Confirm Dispensed';
+  document.getElementById('dispPatientName').textContent = patient.name;
+  document.getElementById('dispInvLabel').textContent = '🧾 Tap to upload invoice photo';
+  document.getElementById('dispInvPreview').style.display = 'none';
+  document.getElementById('dispInvFile').value = '';
+  document.getElementById('dispExtractStatus').textContent = '';
+  document.getElementById('dispExtractStatus').classList.remove('error');
+  document.getElementById('dispDate').value = todayISO();
+  document.getElementById('dispCycleDays').value = String(patient.cycleDays || 30);
+  document.getElementById('dispMedsList').innerHTML = '';
+  const meds = patient.medications && patient.medications.length ? patient.medications : [{name:'', qty:''}];
+  meds.forEach(m => addDispMedRow(m.name, m.qty));
+  document.getElementById('dispStatusMsg').textContent = '';
+  document.getElementById('dispStatusMsg').classList.remove('error');
+  document.getElementById('dispenseModal').classList.add('show');
+}
+
+function closeDispenseModal(){
+  document.getElementById('dispenseModal').classList.remove('show');
+  dispensingPatientId = null;
+  dispSource = 'in-branch';
+}
+document.getElementById('dispModalClose').addEventListener('click', closeDispenseModal);
+document.getElementById('dispenseModal').addEventListener('click', (e) => {
+  if(e.target.id === 'dispenseModal') closeDispenseModal();
+});
+
+document.getElementById('dispInvFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  document.getElementById('dispInvLabel').textContent = 'Compressing image...';
+  try{
+    const compressed = await compressImage(file, 1280, 0.75);
+    dispInvMediaType = 'image/jpeg';
+    dispInvBase64 = await fileToBase64(compressed);
+  }catch(err){
+    dispInvMediaType = file.type || 'image/jpeg';
+    dispInvBase64 = await fileToBase64(file);
+  }
+  document.getElementById('dispInvLabel').textContent = '✓ ' + file.name;
+  const img = document.getElementById('dispInvPreview');
+  img.src = 'data:' + dispInvMediaType + ';base64,' + dispInvBase64;
+  img.style.display = 'block';
+});
+
+document.getElementById('dispExtractBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('dispExtractStatus');
+  const btn = document.getElementById('dispExtractBtn');
+  if(!dispInvBase64){
+    statusEl.textContent = 'Upload an invoice image first';
+    statusEl.classList.add('error');
+    return;
+  }
+  btn.disabled = true;
+  statusEl.classList.remove('error');
+
+  let lastError = null;
+  for(let attempt = 1; attempt <= 2; attempt++){
+    statusEl.textContent = attempt === 1 ? 'Reading image... (this can take up to 30-40s)' : 'That took too long — trying once more...';
+    try{
+      const response = await fetchWithTimeout(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({action: 'extractOCR', images: [{mimeType: dispInvMediaType, data: dispInvBase64}], key: API_KEY})
+      }, 45000);
+      const data = await response.json();
+      if(!data.success) throw new Error(data.error || 'extraction failed');
+      const parsed = data.data;
+      if(Array.isArray(parsed.medications) && parsed.medications.length){
+        document.getElementById('dispMedsList').innerHTML = '';
+        parsed.medications.forEach(m => addDispMedRow(m.name, m.qty));
+      }
+      if(parsed.dispenseDate) document.getElementById('dispDate').value = parsed.dispenseDate;
+      statusEl.textContent = '✓ Extracted — please review the medications below';
+      lastError = null;
+      break;
+    }catch(err){
+      lastError = err;
+      console.error('Dispense OCR failed (attempt ' + attempt + '):', err);
+    }
+  }
+  if(lastError){
+    statusEl.textContent = 'Could not read the image: ' + (lastError.message || lastError) + '. Please fill medications manually below.';
+    statusEl.classList.add('error');
+  }
+  btn.disabled = false;
+});
+
+document.getElementById('dispConfirmBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('dispStatusMsg');
+  if(!dispensingPatientId) return;
+  const patient = patients.find(p => p.id === dispensingPatientId);
+  if(!patient){ closeDispenseModal(); return; }
+
+  const dispenseDate = document.getElementById('dispDate').value || todayISO();
+  const cycleDays = Number(document.getElementById('dispCycleDays').value) || patient.cycleDays || 30;
+  const meds = getDispMedsFromForm();
+  const source = dispSource;
+
+  const snapshot = JSON.parse(JSON.stringify(patient));
+  const historyEntry = {date: dispenseDate, medications: meds, addedBy: currentEmployee, source: source};
+  patient.medications = meds;
+  patient.lastDispenseDate = dispenseDate;
+  patient.cycleDays = cycleDays;
+  patient.nextDueDate = addDays(dispenseDate, cycleDays);
+  patient.history = patient.history || [];
+  patient.history.push(historyEntry);
+  delete patient.reminderStatus; // superseded by the actual dispense just recorded
+
+  renderPatients(); renderDue();
+  closeDispenseModal();
+
+  const ok = await apiUpdateOne(PATIENTS_KEY, patient);
+  if(!ok){
+    const idx = patients.findIndex(p => p.id === snapshot.id);
+    if(idx !== -1) patients[idx] = snapshot;
+    renderPatients(); renderDue();
+    alert('Could not save this record. Please check your connection and try again.');
+  }
+});
+
 function renderPatientCard(p){
   const status = getStatus(p);
   const medsStr = (p.medications || []).map(m => m.name + (m.qty ? ' ('+m.qty+')' : '')).join(', ') || 'No medications listed';
   const histHtml = (p.history || []).slice().reverse().map(h => `
-    <div class="hist-entry">${escapeHtml(displayDate(h.date))} — ${escapeHtml((h.medications||[]).map(m=>m.name).join(', ') || '-')} <span style="opacity:.7;">by ${escapeHtml(h.addedBy||'')}</span></div>
+    <div class="hist-entry">${escapeHtml(displayDate(h.date))} — ${escapeHtml((h.medications||[]).map(m=>m.name).join(', ') || '-')} <span style="opacity:.7;">by ${escapeHtml(h.addedBy||'')}</span>${h.source === 'elsewhere' ? ' <span style="color:var(--danger);font-weight:700;">(elsewhere)</span>' : ''}</div>
   `).join('');
   return `
     <div class="patient-card ${status}">
