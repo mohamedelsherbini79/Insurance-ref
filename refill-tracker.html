@@ -104,6 +104,15 @@
   .p-meta span{background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--line);}
   details.history summary{cursor:pointer;font-size:.75rem;color:var(--purple);font-weight:700;margin-top:8px;}
   .hist-entry{font-size:.75rem;color:var(--muted);padding:4px 0;border-bottom:1px dashed var(--line);}
+  .p-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+  .p-actions button{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-family:'Inter',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;color:var(--purple);}
+  .p-actions button.del-btn{color:var(--danger);}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(45,20,48,.55);z-index:998;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#fff;border-radius:18px;padding:22px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;}
+  .modal-box .section-title{display:flex;justify-content:space-between;align-items:center;}
+  .modal-box .section-title button{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);}
 
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
@@ -200,6 +209,53 @@
     <div id="adminEmployeeList"></div>
   </div>
 </div>
+
+<div id="editPatientModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="section-title">
+      <span>Edit patient</span>
+      <button id="editModalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="field">
+      <label for="editPatName">Patient name *</label>
+      <input type="text" id="editPatName">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="editPatPhone">Phone number *</label>
+        <input type="tel" id="editPatPhone">
+      </div>
+      <div class="field">
+        <label for="editDispenseDate">Last dispense date</label>
+        <input type="date" id="editDispenseDate">
+      </div>
+    </div>
+    <div class="field">
+      <label for="editPatEmiratesId">Emirates ID</label>
+      <input type="text" id="editPatEmiratesId">
+    </div>
+    <div class="field">
+      <label>Current medications</label>
+      <div id="editMedsList"></div>
+      <button class="add-med-btn" id="addEditMedBtn">+ Add medication</button>
+    </div>
+    <div class="field">
+      <label for="editCycleDays">Refill cycle</label>
+      <select id="editCycleDays">
+        <option value="30">30 days</option>
+        <option value="60">60 days</option>
+        <option value="90">90 days</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="editPatNotes">Notes (optional)</label>
+      <textarea id="editPatNotes" rows="2"></textarea>
+    </div>
+    <button class="submit-btn" id="editSaveBtn">💾 Save changes</button>
+    <div class="status-msg" id="editStatusMsg"></div>
+  </div>
+</div>
+
 <div class="quick-nav">
     <a href="hub.html">🏠 Hub</a>
     <a href="dashboard.html">📊 Dashboard</a>
@@ -813,6 +869,107 @@ function clearMedsForm(){
   document.getElementById('medsList').innerHTML = '';
 }
 
+// ===== EDIT PATIENT =====
+let editingPatientId = null;
+let editMedIdCounter = 0;
+
+function addEditMedRow(name, qty){
+  editMedIdCounter++;
+  const id = 'edit-med-' + editMedIdCounter;
+  const div = document.createElement('div');
+  div.className = 'med-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Medication name" class="med-name" value="${escapeHtml(name || '')}" aria-label="Medication name">
+    <input type="text" placeholder="Qty" class="qty-input med-qty" value="${escapeHtml(qty || '')}" aria-label="Qty">
+    <button class="rm-btn" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('editMedsList').appendChild(div);
+}
+document.getElementById('addEditMedBtn').addEventListener('click', () => addEditMedRow());
+
+function getEditMedsFromForm(){
+  return Array.from(document.querySelectorAll('#editMedsList .med-row')).map(row => ({
+    name: row.querySelector('.med-name').value.trim(),
+    qty: row.querySelector('.med-qty').value.trim()
+  })).filter(m => m.name);
+}
+
+function openEditModal(id){
+  const patient = patients.find(p => p.id === id);
+  if(!patient) return;
+  editingPatientId = id;
+  document.getElementById('editPatName').value = patient.name || '';
+  document.getElementById('editPatPhone').value = patient.phone || '';
+  document.getElementById('editPatEmiratesId').value = patient.emiratesId || '784-';
+  document.getElementById('editDispenseDate').value = patient.lastDispenseDate || todayISO();
+  document.getElementById('editCycleDays').value = String(patient.cycleDays || 30);
+  document.getElementById('editPatNotes').value = patient.notes || '';
+  document.getElementById('editMedsList').innerHTML = '';
+  const meds = patient.medications && patient.medications.length ? patient.medications : [{name:'', qty:''}];
+  meds.forEach(m => addEditMedRow(m.name, m.qty));
+  document.getElementById('editStatusMsg').textContent = '';
+  document.getElementById('editStatusMsg').classList.remove('error');
+  document.getElementById('editPatientModal').classList.add('show');
+}
+
+function closeEditModal(){
+  document.getElementById('editPatientModal').classList.remove('show');
+  editingPatientId = null;
+}
+document.getElementById('editModalClose').addEventListener('click', closeEditModal);
+document.getElementById('editPatientModal').addEventListener('click', (e) => {
+  if(e.target.id === 'editPatientModal') closeEditModal();
+});
+
+document.getElementById('editSaveBtn').addEventListener('click', async () => {
+  const statusEl = document.getElementById('editStatusMsg');
+  if(!editingPatientId) return;
+  const patient = patients.find(p => p.id === editingPatientId);
+  if(!patient) { closeEditModal(); return; }
+
+  const name = document.getElementById('editPatName').value.trim();
+  const phoneRaw = document.getElementById('editPatPhone').value.trim();
+  const emiratesId = document.getElementById('editPatEmiratesId').value.trim();
+  const lastDispenseDate = document.getElementById('editDispenseDate').value || patient.lastDispenseDate;
+  const cycleDays = Number(document.getElementById('editCycleDays').value) || 30;
+  const notes = document.getElementById('editPatNotes').value.trim();
+  const meds = getEditMedsFromForm();
+
+  if(!name || !phoneRaw){ statusEl.textContent='Patient name and phone number are required'; statusEl.classList.add('error'); return; }
+
+  const snapshot = JSON.parse(JSON.stringify(patient));
+  patient.name = name;
+  patient.phone = phoneRaw;
+  patient.emiratesId = emiratesId;
+  patient.lastDispenseDate = lastDispenseDate;
+  patient.cycleDays = cycleDays;
+  patient.nextDueDate = addDays(lastDispenseDate, cycleDays);
+  patient.notes = notes;
+  patient.medications = meds;
+
+  renderPatients(); renderDue();
+  closeEditModal();
+
+  const ok = await apiUpdateOne(PATIENTS_KEY, patient);
+  if(!ok){
+    const idx = patients.findIndex(p => p.id === snapshot.id);
+    if(idx !== -1) patients[idx] = snapshot;
+    renderPatients(); renderDue();
+    alert('Could not save these changes. Please check your connection and try again.');
+  }
+});
+
+async function deletePatientRecord(id){
+  if(!isAdmin()) return;
+  const patient = patients.find(p => p.id === id);
+  if(!patient) return;
+  if(!confirm('Delete the record for "' + patient.name + '"? This cannot be undone.')) return;
+  patients = patients.filter(p => p.id !== id);
+  renderPatients(); renderDue();
+  await apiDeleteOne(PATIENTS_KEY, id);
+}
+
 // ===== AI EXTRACTION =====
 document.getElementById('extractBtn').addEventListener('click', async () => {
   const statusEl = document.getElementById('extractStatus');
@@ -984,6 +1141,10 @@ function renderPatientCard(p){
       </div>
       ${p.notes ? `<div class="p-meta"><span>📝 ${escapeHtml(p.notes)}</span></div>` : ''}
       ${histHtml ? `<details class="history"><summary>View history (${p.history.length})</summary>${histHtml}</details>` : ''}
+      <div class="p-actions">
+        <button onclick="openEditModal('${p.id}')">✏️ Edit</button>
+        ${isAdmin() ? `<button class="del-btn" onclick="deletePatientRecord('${p.id}')">🗑️ Delete</button>` : ''}
+      </div>
     </div>
   `;
 }
