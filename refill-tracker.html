@@ -107,6 +107,14 @@
   .p-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
   .p-actions button{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-family:'Inter',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;color:var(--purple);}
   .p-actions button.del-btn{color:var(--danger);}
+  .reminder-status{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+  .reminder-status button{background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.68rem;cursor:pointer;color:var(--muted);}
+  .reminder-status button.active{color:#fff;border-color:transparent;}
+  .reminder-status button.active.sent{background:var(--purple);}
+  .reminder-status button.active.dispensed{background:var(--green-dark);}
+  .reminder-status button.active.no-response{background:var(--muted);}
+  .reminder-status button.active.elsewhere{background:var(--danger);}
+  .reminder-status-note{font-size:.68rem;color:var(--muted);margin-top:4px;}
 
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(45,20,48,.55);z-index:998;align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.show{display:flex;}
@@ -1054,6 +1062,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     patient.notes = notes || patient.notes;
     patient.history = patient.history || [];
     patient.history.push(historyEntry);
+    delete patient.reminderStatus; // new cycle started — clear last cycle's follow-up status
   }else{
     patient = {
       id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
@@ -1161,6 +1170,45 @@ async function copyReminderMessage(evt, id){
   }
 }
 
+// ===== FOLLOW-UP STATUS (reminder outcome) =====
+const REMINDER_STATUS_META = [
+  {key:'sent', label:'📨 Reminder sent'},
+  {key:'dispensed', label:'✅ Dispensed'},
+  {key:'no-response', label:'🔇 No response'},
+  {key:'elsewhere', label:'🏥 Dispensed elsewhere'}
+];
+
+function renderReminderStatusRow(p){
+  const current = p.reminderStatus && p.reminderStatus.status;
+  const buttons = REMINDER_STATUS_META.map(s => `
+    <button class="${current === s.key ? 'active ' + s.key : ''}" onclick="toggleReminderStatus('${p.id}','${s.key}')">${s.label}</button>
+  `).join('');
+  const note = (p.reminderStatus && p.reminderStatus.by)
+    ? `<div class="reminder-status-note">${escapeHtml(p.reminderStatus.by)} · ${escapeHtml(displayDate(p.reminderStatus.date || ''))}</div>`
+    : '';
+  return `<div class="reminder-status">${buttons}</div>${note}`;
+}
+
+async function toggleReminderStatus(id, status){
+  const patient = patients.find(p => p.id === id);
+  if(!patient) return;
+  const snapshot = JSON.parse(JSON.stringify(patient));
+  const isSame = patient.reminderStatus && patient.reminderStatus.status === status;
+  if(isSame){
+    delete patient.reminderStatus;
+  }else{
+    patient.reminderStatus = {status: status, by: currentEmployee || '', date: todayISO()};
+  }
+  renderPatients(); renderDue();
+  const ok = await apiUpdateOne(PATIENTS_KEY, patient);
+  if(!ok){
+    const idx = patients.findIndex(p => p.id === snapshot.id);
+    if(idx !== -1) patients[idx] = snapshot;
+    renderPatients(); renderDue();
+    alert('Could not save this status. Please check your connection and try again.');
+  }
+}
+
 function renderPatientCard(p){
   const status = getStatus(p);
   const medsStr = (p.medications || []).map(m => m.name + (m.qty ? ' ('+m.qty+')' : '')).join(', ') || 'No medications listed';
@@ -1184,6 +1232,7 @@ function renderPatientCard(p){
       </div>
       ${p.notes ? `<div class="p-meta"><span>📝 ${escapeHtml(p.notes)}</span></div>` : ''}
       ${histHtml ? `<details class="history"><summary>View history (${p.history.length})</summary>${histHtml}</details>` : ''}
+      ${status !== 'ok' ? renderReminderStatusRow(p) : ''}
       <div class="p-actions">
         <button onclick="copyReminderMessage(event, '${p.id}')">📋 Copy reminder</button>
         <button onclick="openEditModal('${p.id}')">✏️ Edit</button>
