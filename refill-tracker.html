@@ -831,13 +831,13 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
 
   let lastError = null;
   for(let attempt = 1; attempt <= 2; attempt++){
-    statusEl.textContent = attempt === 1 ? 'Reading images...' : 'That took too long — trying once more...';
+    statusEl.textContent = attempt === 1 ? 'Reading images... (this can take up to 30-40s)' : 'That took too long — trying once more...';
     try{
       const response = await fetchWithTimeout(API_URL, {
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
-      }, 25000);
+      }, 45000);
       const data = await response.json();
       if(!data.success) throw new Error(data.error || 'extraction failed');
       const parsed = data.data;
