@@ -60,6 +60,7 @@
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .item-form-card{max-width:480px;}
   .new-btn{width:100%;background:var(--purple);color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-bottom:16px;}
   .field{margin-bottom:12px;}
   .field label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px;}
@@ -72,8 +73,11 @@
 
   .item-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;border-right:4px solid var(--amber);position:relative;}
   .focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  .focus-grid .item-card{margin-bottom:0;border-right:none;border-top:4px solid var(--green-dark);}
+  .focus-grid .item-card{margin-bottom:0;}
   @media (max-width:520px){ .focus-grid{grid-template-columns:1fr;} }
+  @media (min-width:700px) and (max-width:999px){ .focus-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (min-width:1000px) and (max-width:1299px){ .focus-grid{grid-template-columns:repeat(4,1fr);} }
+  @media (min-width:1300px){ .focus-grid{grid-template-columns:repeat(6,1fr);} }
   .focus-progress-track{background:var(--bg);border:1px solid var(--line);border-radius:8px;height:10px;overflow:hidden;margin:8px 0;}
   .focus-progress-fill{background:linear-gradient(90deg,var(--purple),var(--green));height:100%;}
   .focus-sell-row{display:flex;gap:6px;margin-top:10px;}
@@ -97,15 +101,16 @@
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
 
-  .fixed-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 -4px 14px rgba(0,0,0,.06);}
-  .export-btn{flex:1;background:var(--purple);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+  .fixed-footer{position:fixed;bottom:16px;right:16px;left:auto;background:#fff;border:1px solid var(--line);border-radius:30px;padding:6px;display:flex;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,.15);width:auto;}
+  .export-btn{flex:none;background:var(--purple);color:#fff;border:none;padding:8px 14px;border-radius:20px;font-family:'Inter',sans-serif;font-weight:700;font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
   body{padding-bottom:70px;}
 
   @media (min-width: 860px){
     header{border-radius:0 0 26px 26px;padding:28px 40px 34px;}
     header h1{font-size:1.7rem;}
-    main{max-width:760px;margin:0 auto;padding:32px 24px 60px;}
+    main{max-width:1500px;margin:0 auto;padding:32px 24px 60px;}
     body{padding-bottom:0;}
+    .new-btn{max-width:340px;}
   }
 </style>
 </head>
@@ -171,7 +176,7 @@
 </div>
 
 <main>
-  <div class="card" id="newItemForm" style="display:none;">
+  <div class="card item-form-card" id="newItemForm" style="display:none;">
       <div class="row2">
         <div class="field">
           <label for="niCode">Item code</label>
@@ -201,13 +206,13 @@
       <div class="status-msg" id="newItemStatus"></div>
     </div>
   <button class="new-btn" id="newItemToggle" style="margin-bottom:16px;">+ Add Near-Expiry Item</button>
-  <div id="itemsList"></div>
+  <div id="itemsList" class="focus-grid"></div>
 </main>
 
 <div class="fixed-footer" id="footerActions" style="display:none;">
-  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export to Excel (CSV)</button>
-  <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
-  <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
+  <button class="export-btn" id="exportBtn" title="Export to Excel (CSV)" aria-label="Export to Excel (CSV)">📊 Export</button>
+  <button class="export-btn" id="backupBtn" style="background:var(--green-dark);" title="Backup" aria-label="Backup">💾 Backup</button>
+  <button class="export-btn" id="restoreBtn" style="background:var(--muted);" title="Restore" aria-label="Restore">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 

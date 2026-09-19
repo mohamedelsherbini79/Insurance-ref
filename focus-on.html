@@ -102,7 +102,7 @@
   .empty-state .big{font-size:2rem;margin-bottom:8px;}
 
   .fixed-footer{position:fixed;bottom:16px;right:16px;left:auto;background:#fff;border:1px solid var(--line);border-radius:30px;padding:6px;display:flex;gap:6px;box-shadow:0 4px 14px rgba(0,0,0,.15);width:auto;}
-  .export-btn{flex:none;width:42px;height:42px;padding:0;background:var(--purple);color:#fff;border:none;border-radius:50%;font-size:1.05rem;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .export-btn{flex:none;background:var(--purple);color:#fff;border:none;padding:8px 14px;border-radius:20px;font-family:'Inter',sans-serif;font-weight:700;font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
   body{padding-bottom:70px;}
 
   @media (min-width: 860px){
@@ -211,9 +211,9 @@
 </main>
 
 <div class="fixed-footer" id="footerActions" style="display:none;">
-  <button class="export-btn" id="exportBtn" title="Export to Excel (CSV)" aria-label="Export to Excel (CSV)">📊</button>
-  <button class="export-btn" id="backupBtn" style="background:var(--green-dark);" title="Backup" aria-label="Backup">💾</button>
-  <button class="export-btn" id="restoreBtn" style="background:var(--muted);" title="Restore" aria-label="Restore">⬆</button>
+  <button class="export-btn" id="exportBtn" title="Export to Excel (CSV)" aria-label="Export to Excel (CSV)">📊 Export</button>
+  <button class="export-btn" id="backupBtn" style="background:var(--green-dark);" title="Backup" aria-label="Backup">💾 Backup</button>
+  <button class="export-btn" id="restoreBtn" style="background:var(--muted);" title="Restore" aria-label="Restore">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 

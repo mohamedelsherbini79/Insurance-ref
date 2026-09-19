@@ -226,25 +226,31 @@
   .emp-bar .fill{background:linear-gradient(90deg,var(--purple),var(--green));height:100%;border-radius:8px;}
   .fixed-footer{
     position:fixed;
-    bottom:0;left:0;right:0;
+    bottom:16px;right:16px;left:auto;
     background:#fff;
-    border-top:1px solid var(--line);
-    padding:12px 18px;
+    border:1px solid var(--line);
+    border-radius:30px;
+    padding:6px;
     display:flex;
-    gap:10px;
-    box-shadow:0 -4px 14px rgba(0,0,0,.06);
+    gap:6px;
+    box-shadow:0 4px 14px rgba(0,0,0,.15);
+    width:auto;
   }
   .export-btn{
-    flex:1;
+    flex:none;
     background:var(--purple);
     color:#fff;
     border:none;
-    padding:12px;
-    border-radius:10px;
+    padding:8px 14px;
+    border-radius:20px;
     font-family:'Inter',sans-serif;
     font-weight:700;
-    font-size:.85rem;
+    font-size:.72rem;
     cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    white-space:nowrap;
   }
   .section-title{font-size:.95rem;font-weight:900;margin:0 0 10px;}
 
@@ -274,15 +280,6 @@
       gap:12px;
     }
     .toolbar{max-width:600px;}
-    .fixed-footer{
-      position:static;
-      max-width:960px;
-      margin:0 auto;
-      border-top:none;
-      box-shadow:none;
-      padding:0 24px 32px;
-    }
-    .export-btn{max-width:260px;margin-inline-start:auto;}
     .card{padding:20px 22px;}
   }
 </style>
@@ -452,11 +449,10 @@
   </div>
 </main>
 
-<div class="fixed-footer" id="footerActions" style="flex-wrap:wrap;display:none;">
-
-  <button class="export-btn" id="exportBtn" style="flex:1 1 100%;">Export to Excel (CSV)</button>
-  <button class="export-btn" id="backupBtn" style="flex:1;background:var(--green-dark);">💾 Backup</button>
-  <button class="export-btn" id="restoreBtn" style="flex:1;background:var(--muted);">⬆ Restore</button>
+<div class="fixed-footer" id="footerActions" style="display:none;">
+  <button class="export-btn" id="exportBtn" title="Export to Excel (CSV)" aria-label="Export to Excel (CSV)">📊 Export</button>
+  <button class="export-btn" id="backupBtn" style="background:var(--green-dark);" title="Backup" aria-label="Backup">💾 Backup</button>
+  <button class="export-btn" id="restoreBtn" style="background:var(--muted);" title="Restore" aria-label="Restore">⬆ Restore</button>
   <input type="file" id="restoreInput" accept="application/json" style="display:none;" aria-label="Restore backup file">
 </div>
 
