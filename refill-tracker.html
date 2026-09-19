@@ -1118,6 +1118,49 @@ function statusLabel(status, patient){
   return `Due in ${diff} days`;
 }
 
+// ===== CUSTOMER REMINDER MESSAGE =====
+function buildReminderMessage(p){
+  const diff = daysBetween(todayISO(), p.nextDueDate);
+  const medsNames = (p.medications || []).map(m => m.name).filter(Boolean).join(', ') || 'your usual medications';
+
+  let timingLine;
+  if(diff < 0){
+    timingLine = `This is a reminder that your medication refill was due ${Math.abs(diff)} day${Math.abs(diff) === 1 ? '' : 's'} ago and hasn't been renewed yet.`;
+  }else if(diff === 0){
+    timingLine = `This is a reminder that your medication refill is due today.`;
+  }else{
+    timingLine = `This is a reminder that your medication refill will be due in ${diff} day${diff === 1 ? '' : 's'}.`;
+  }
+
+  return `Hello ${p.name} 🌿
+
+${timingLine}
+
+Medications: ${medsNames}
+
+We'd be happy to see you soon to renew your prescription, or you can send us the new prescription so we can arrange delivery to you.
+
+Best regards,
+Medicina Pharmacy - Airport 3`;
+}
+
+async function copyReminderMessage(evt, id){
+  const patient = patients.find(p => p.id === id);
+  if(!patient) return;
+  const msg = buildReminderMessage(patient);
+  const btn = evt ? evt.currentTarget : null;
+  const originalText = btn ? btn.textContent : null;
+  try{
+    await navigator.clipboard.writeText(msg);
+    if(btn){
+      btn.textContent = '✓ Copied';
+      setTimeout(() => { btn.textContent = originalText; }, 1800);
+    }
+  }catch(err){
+    prompt('Copy this message manually (Ctrl/Cmd+C):', msg);
+  }
+}
+
 function renderPatientCard(p){
   const status = getStatus(p);
   const medsStr = (p.medications || []).map(m => m.name + (m.qty ? ' ('+m.qty+')' : '')).join(', ') || 'No medications listed';
@@ -1142,6 +1185,7 @@ function renderPatientCard(p){
       ${p.notes ? `<div class="p-meta"><span>📝 ${escapeHtml(p.notes)}</span></div>` : ''}
       ${histHtml ? `<details class="history"><summary>View history (${p.history.length})</summary>${histHtml}</details>` : ''}
       <div class="p-actions">
+        <button onclick="copyReminderMessage(event, '${p.id}')">📋 Copy reminder</button>
         <button onclick="openEditModal('${p.id}')">✏️ Edit</button>
         ${isAdmin() ? `<button class="del-btn" onclick="deletePatientRecord('${p.id}')">🗑️ Delete</button>` : ''}
       </div>
