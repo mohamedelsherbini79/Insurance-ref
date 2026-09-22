@@ -1038,6 +1038,28 @@ async function deletePatientRecord(id){
 }
 
 // ===== AI EXTRACTION =====
+// Each image is sent as its own separate, lighter Gemini call (in parallel) instead of
+// combining both into one request. A single combined call carries much more image data
+// and can take long enough to hit Google's own front-end timeout for Apps Script Web App
+// requests, returning an HTML error page instead of JSON. Splitting keeps each individual
+// request small and fast, and running them in parallel keeps total wait time about the
+// same as before (bounded by the slower of the two, not their sum).
+async function extractOneImage(image){
+  try{
+    const response = await fetchWithTimeout(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action: 'extractOCR', images: [image], key: API_KEY})
+    }, 90000);
+    const data = await parseJsonOrExplain(response);
+    if(!data.success) throw new Error(data.error || 'extraction failed');
+    return data.data;
+  }catch(err){
+    if(err && err.name === 'AbortError') throw new Error('the request took too long (over 90s) and timed out');
+    throw err;
+  }
+}
+
 document.getElementById('extractBtn').addEventListener('click', async () => {
   const statusEl = document.getElementById('extractStatus');
   const btn = document.getElementById('extractBtn');
@@ -1048,43 +1070,73 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
   }
   btn.disabled = true;
   statusEl.classList.remove('error');
+  statusEl.textContent = 'Reading images... (this can take up to 60-90s)';
 
-  const images = [];
-  if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64, role: 'prescription'});
-  if(invBase64) images.push({mimeType: invMediaType, data: invBase64, role: 'invoice'});
+  const tasks = [];
+  if(rxBase64) tasks.push(
+    extractOneImage({mimeType: rxMediaType, data: rxBase64, role: 'prescription'})
+      .then(d => ({role: 'prescription', data: d}))
+      .catch(e => ({role: 'prescription', error: e}))
+  );
+  if(invBase64) tasks.push(
+    extractOneImage({mimeType: invMediaType, data: invBase64, role: 'invoice'})
+      .then(d => ({role: 'invoice', data: d}))
+      .catch(e => ({role: 'invoice', error: e}))
+  );
 
-  let lastError = null;
-  for(let attempt = 1; attempt <= 2; attempt++){
-    statusEl.textContent = attempt === 1 ? 'Reading images... (this can take up to 60-90s)' : 'That took too long — trying once more...';
-    try{
-      const response = await fetchWithTimeout(API_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'text/plain;charset=utf-8'},
-        body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
-      }, 85000);
-      const data = await parseJsonOrExplain(response);
-      if(!data.success) throw new Error(data.error || 'extraction failed');
-      const parsed = data.data;
+  const results = await Promise.all(tasks);
+  const rxResult = results.find(r => r.role === 'prescription');
+  const invResult = results.find(r => r.role === 'invoice');
+  let anySuccess = false;
+  const errors = [];
+  let rxMeds = [];
 
-      if(parsed.patientName) document.getElementById('patName').value = parsed.patientName;
-      if(parsed.phone) document.getElementById('patPhone').value = parsed.phone;
-      if(parsed.emiratesId) document.getElementById('patEmiratesId').value = parsed.emiratesId;
-      if(parsed.dispenseDate) document.getElementById('dispenseDate').value = parsed.dispenseDate;
-      if(Array.isArray(parsed.medications) && parsed.medications.length){
-        clearMedsForm();
-        parsed.medications.forEach(m => addMedRow(m.name, m.qty));
-      }
-      statusEl.textContent = '✓ Extracted — please review the fields below before saving';
-      lastError = null;
-      break;
-    }catch(err){
-      lastError = err;
-      console.error('Extract with AI failed (attempt ' + attempt + '):', err);
+  if(rxResult){
+    if(rxResult.data){
+      anySuccess = true;
+      const d = rxResult.data;
+      if(d.patientName) document.getElementById('patName').value = d.patientName;
+      if(d.phone) document.getElementById('patPhone').value = d.phone;
+      if(d.emiratesId) document.getElementById('patEmiratesId').value = d.emiratesId;
+      if(d.dispenseDate) document.getElementById('dispenseDate').value = d.dispenseDate;
+      if(Array.isArray(d.medications)) rxMeds = d.medications;
+    }else{
+      console.error('Prescription extraction failed:', rxResult.error);
+      errors.push('prescription image: ' + (rxResult.error && (rxResult.error.message || rxResult.error)));
     }
   }
-  if(lastError){
-    const friendly = (lastError.name === 'AbortError') ? 'the request took too long (over 100s) and timed out' : (lastError.message || lastError);
-    statusEl.textContent = 'Could not read the image(s): ' + friendly + '. Please fill the fields manually below, or try the photo again.';
+
+  let medsApplied = false;
+  if(invResult){
+    if(invResult.data){
+      anySuccess = true;
+      const d = invResult.data;
+      if(d.dispenseDate && !document.getElementById('dispenseDate').value) document.getElementById('dispenseDate').value = d.dispenseDate;
+      if(Array.isArray(d.medications) && d.medications.length){
+        clearMedsForm();
+        d.medications.forEach(m => addMedRow(m.name, m.qty));
+        medsApplied = true;
+      }
+    }else{
+      console.error('Invoice extraction failed:', invResult.error);
+      errors.push('invoice image: ' + (invResult.error && (invResult.error.message || invResult.error)));
+    }
+  }
+  // No invoice, or invoice extraction found no medications - fall back to whatever the
+  // prescription itself listed.
+  if(!medsApplied && rxMeds.length){
+    clearMedsForm();
+    rxMeds.forEach(m => addMedRow(m.name, m.qty));
+  }
+
+  if(anySuccess && errors.length === 0){
+    statusEl.textContent = '✓ Extracted — please review the fields below before saving';
+    statusEl.classList.remove('error');
+  }else if(anySuccess){
+    statusEl.textContent = '✓ Partially extracted (' + errors.join('; ') + ') — please review and fill in the rest below';
+    statusEl.classList.add('error');
+  }else{
+    statusEl.textContent = 'Could not read the image(s): ' + errors.join('; ') + '. Please fill the fields manually below, or try the photo again.';
     statusEl.classList.add('error');
   }
   btn.disabled = false;
