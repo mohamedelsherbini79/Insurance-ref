@@ -1050,8 +1050,8 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
   statusEl.classList.remove('error');
 
   const images = [];
-  if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64});
-  if(invBase64) images.push({mimeType: invMediaType, data: invBase64});
+  if(rxBase64) images.push({mimeType: rxMediaType, data: rxBase64, role: 'prescription'});
+  if(invBase64) images.push({mimeType: invMediaType, data: invBase64, role: 'invoice'});
 
   let lastError = null;
   for(let attempt = 1; attempt <= 2; attempt++){
@@ -1376,7 +1376,7 @@ document.getElementById('dispExtractBtn').addEventListener('click', async () => 
       const response = await fetchWithTimeout(API_URL, {
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
-        body: JSON.stringify({action: 'extractOCR', images: [{mimeType: dispInvMediaType, data: dispInvBase64}], key: API_KEY})
+        body: JSON.stringify({action: 'extractOCR', images: [{mimeType: dispInvMediaType, data: dispInvBase64, role: 'invoice'}], key: API_KEY})
       }, 85000);
       const data = await parseJsonOrExplain(response);
       if(!data.success) throw new Error(data.error || 'extraction failed');
