@@ -497,6 +497,23 @@ async function fetchWithTimeout(url, options, timeoutMs){
   }
 }
 
+// The Apps Script HTTP endpoint occasionally returns an HTML error page (instead of our
+// JSON) when the request runs long enough to hit Google's own front-end timeout for Web
+// App requests - this is separate from, and shorter than, the script's own execution
+// budget. When that happens response.json() throws a cryptic "Unexpected token '<'"
+// parse error, so this wraps it with a clear explanation instead.
+async function parseJsonOrExplain(response){
+  const text = await response.text();
+  try{
+    return JSON.parse(text);
+  }catch(parseErr){
+    if(text.trim().startsWith('<')){
+      throw new Error('the server took too long to respond and Google returned an error page instead of a result (this can happen on a slow connection or when the request runs long) — please try again, or try uploading one image at a time');
+    }
+    throw parseErr;
+  }
+}
+
 // Instant-on-reopen cache: render immediately from last-seen data, refresh in the background
 function getCached(key){
   try{ return JSON.parse(localStorage.getItem('cache-'+key) || 'null'); }catch(e){ return null; }
@@ -1044,8 +1061,8 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
-      }, 100000);
-      const data = await response.json();
+      }, 85000);
+      const data = await parseJsonOrExplain(response);
       if(!data.success) throw new Error(data.error || 'extraction failed');
       const parsed = data.data;
 
@@ -1360,8 +1377,8 @@ document.getElementById('dispExtractBtn').addEventListener('click', async () => 
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: JSON.stringify({action: 'extractOCR', images: [{mimeType: dispInvMediaType, data: dispInvBase64}], key: API_KEY})
-      }, 100000);
-      const data = await response.json();
+      }, 85000);
+      const data = await parseJsonOrExplain(response);
       if(!data.success) throw new Error(data.error || 'extraction failed');
       const parsed = data.data;
       if(Array.isArray(parsed.medications) && parsed.medications.length){
