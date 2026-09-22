@@ -1038,13 +1038,13 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
 
   let lastError = null;
   for(let attempt = 1; attempt <= 2; attempt++){
-    statusEl.textContent = attempt === 1 ? 'Reading images... (this can take up to 30-40s)' : 'That took too long — trying once more...';
+    statusEl.textContent = attempt === 1 ? 'Reading images... (this can take up to 60-90s)' : 'That took too long — trying once more...';
     try{
       const response = await fetchWithTimeout(API_URL, {
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: JSON.stringify({action: 'extractOCR', images: images, key: API_KEY})
-      }, 45000);
+      }, 100000);
       const data = await response.json();
       if(!data.success) throw new Error(data.error || 'extraction failed');
       const parsed = data.data;
@@ -1066,7 +1066,8 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
     }
   }
   if(lastError){
-    statusEl.textContent = 'Could not read the image(s): ' + (lastError.message || lastError) + '. Please fill the fields manually below, or try the photo again.';
+    const friendly = (lastError.name === 'AbortError') ? 'the request took too long (over 100s) and timed out' : (lastError.message || lastError);
+    statusEl.textContent = 'Could not read the image(s): ' + friendly + '. Please fill the fields manually below, or try the photo again.';
     statusEl.classList.add('error');
   }
   btn.disabled = false;
@@ -1353,13 +1354,13 @@ document.getElementById('dispExtractBtn').addEventListener('click', async () => 
 
   let lastError = null;
   for(let attempt = 1; attempt <= 2; attempt++){
-    statusEl.textContent = attempt === 1 ? 'Reading image... (this can take up to 30-40s)' : 'That took too long — trying once more...';
+    statusEl.textContent = attempt === 1 ? 'Reading image... (this can take up to 60-90s)' : 'That took too long — trying once more...';
     try{
       const response = await fetchWithTimeout(API_URL, {
         method: 'POST',
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: JSON.stringify({action: 'extractOCR', images: [{mimeType: dispInvMediaType, data: dispInvBase64}], key: API_KEY})
-      }, 45000);
+      }, 100000);
       const data = await response.json();
       if(!data.success) throw new Error(data.error || 'extraction failed');
       const parsed = data.data;
@@ -1377,7 +1378,8 @@ document.getElementById('dispExtractBtn').addEventListener('click', async () => 
     }
   }
   if(lastError){
-    statusEl.textContent = 'Could not read the image: ' + (lastError.message || lastError) + '. Please fill medications manually below.';
+    const friendly = (lastError.name === 'AbortError') ? 'the request took too long (over 100s) and timed out' : (lastError.message || lastError);
+    statusEl.textContent = 'Could not read the image: ' + friendly + '. Please fill medications manually below.';
     statusEl.classList.add('error');
   }
   btn.disabled = false;
